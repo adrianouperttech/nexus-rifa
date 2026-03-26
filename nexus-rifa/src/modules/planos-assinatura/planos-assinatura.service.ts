@@ -20,9 +20,11 @@ export class PlanosAssinaturaService {
   ) {
     this.mercadoPagoApiUrl = this.configService.get<string>(
       'MERCADO_PAGO_API_URL',
+      '',
     );
     this.mercadoPagoAccessToken = this.configService.get<string>(
       'MERCADO_PAGO_ACCESS_TOKEN',
+      '',
     );
   }
 
@@ -51,7 +53,7 @@ export class PlanosAssinaturaService {
         ),
       );
 
-      const responseData = response.data;
+      const responseData = response.data as any;
 
       const newPlanoAssinatura = this.planoAssinaturaRepository.create({
         id: responseData.id,
@@ -60,8 +62,15 @@ export class PlanosAssinaturaService {
       });
 
       return await this.planoAssinaturaRepository.save(newPlanoAssinatura);
-    } catch (error) {
-      throw new HttpException(error.response.data, error.response.status);
+    } catch (error: any) {
+      if (error.response) {
+        throw new HttpException(error.response.data, error.response.status);
+      } else {
+        throw new HttpException(
+          error.message,
+          error.status || '500'
+        );
+      }
     }
   }
 }

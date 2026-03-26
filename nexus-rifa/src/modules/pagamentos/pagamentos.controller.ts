@@ -1,16 +1,9 @@
-import {
-  Controller,
-  Post,
-  Body,
-  HttpCode,
-  HttpStatus,
-  UseGuards,
-  Req,
-} from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards, Req } from '@nestjs/common';
 import { PagamentosService } from './pagamentos.service';
 import { CreatePagamentoDto } from './dto/create-pagamento.dto';
 import { WebhookValidationService } from '../../common/security/webhook-validation.service';
 import { AuthGuard } from '@nestjs/passport';
+import { TenantInfo, GetTenantInfo } from '../../common/decorators/tenant-info.decorator';
 
 interface WebhookPayload {
   transacao_id: string;
@@ -25,16 +18,23 @@ export class PagamentosController {
   ) {}
 
   @Post()
-  create(@Body() createPagamentoDto: CreatePagamentoDto) {
-    return this.pagamentosService.create(createPagamentoDto);
+  create(
+    @GetTenantInfo() tenantInfo: TenantInfo,
+    @Body() createPagamentoDto: CreatePagamentoDto,
+  ) {
+    return this.pagamentosService.create(tenantInfo.id, createPagamentoDto);
   }
 
   @Post('webhook')
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthGuard('webhook'))
   async handleWebhook(@Req() req: Request, @Body() payload: WebhookPayload) {
-    const signature = req.headers['x-hub-signature'];
-    const isValid = this.webhookValidationService.validate(req.body, signature);
+    const signature = req.headers.get('x-hub-signature');
+    const isValid = this.webhookValidationService.validate(
+      JSON.stringify(payload),
+      signature,
+      process.env.WEBHOOK_SECRET,
+    );
     if (!isValid) {
       throw new Error('Invalid webhook signature');
     }

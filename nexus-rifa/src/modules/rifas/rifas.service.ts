@@ -8,26 +8,35 @@ import { Repository } from 'typeorm';
 import { Rifa } from './entities/rifa.entity';
 import { CreateRifaDto } from './dto/create-rifa.dto';
 import { UpdateRifaDto } from './dto/update-rifa.dto';
-import { BillingService } from '../billing/billing.service';
+import { AssinaturasService } from '../assinaturas/assinaturas.service';
+import { PlansService } from '../plans/plans.service';
 
 @Injectable()
 export class RifasService {
   constructor(
     @InjectRepository(Rifa)
     private readonly rifasRepository: Repository<Rifa>,
-    private readonly billingService: BillingService,
+    private readonly assinaturasService: AssinaturasService,
+    private readonly plansService: PlansService,
   ) {}
 
   async create(tenant_id: string, createRifaDto: CreateRifaDto): Promise<Rifa> {
-    const subscription = await this.billingService.findByTenantId(tenant_id);
+    const subscription = await this.assinaturasService.findByTenantId(tenant_id);
 
-    if (!subscription || subscription.status !== 'active') {
+    if (!subscription || subscription.status !== 'authorized') {
       throw new ForbiddenException('No active subscription found.');
     }
 
+    const plan = await this.plansService.findOne(subscription.plan_id);
+    if (!plan) {
+      throw new NotFoundException(
+        `Plan with ID "${subscription.plan_id}" not found`,
+      );
+    }
+
     const count = await this.rifasRepository.count({ where: { tenant_id } });
-    if (count >= subscription.plan.max_products) {
-      throw new ForbiddenException('Product limit reached.');
+    if (count >= plan.limit) {
+      throw new ForbiddenException('Raffle limit reached.');
     }
 
     const rifa = this.rifasRepository.create({ ...createRifaDto, tenant_id });
@@ -56,10 +65,12 @@ export class RifasService {
     const rifa = await this.rifasRepository.preload({
       id: id,
       ...updateRifaDto,
-      tenant_id,
     });
     if (!rifa) {
       throw new NotFoundException(`Rifa with ID "${id}" not found`);
+    }
+    if (rifa.tenant_id !== tenant_id) {
+      throw new ForbiddenException();
     }
     return this.rifasRepository.save(rifa);
   }

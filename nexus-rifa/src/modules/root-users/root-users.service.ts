@@ -10,7 +10,7 @@ export class RootUsersService {
     private readonly rootUserRepository: Repository<RootUser>,
   ) {}
 
-  async findByEmail(email: string): Promise<RootUser | undefined> {
+  async findByEmail(email: string): Promise<RootUser | null> {
     return this.rootUserRepository.findOne({ where: { email } });
   }
 }

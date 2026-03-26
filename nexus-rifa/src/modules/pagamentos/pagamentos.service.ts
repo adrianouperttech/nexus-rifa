@@ -22,9 +22,12 @@ export class PagamentosService {
     private readonly reservasService: ReservasService,
   ) {}
 
-  async create(createPagamentoDto: CreatePagamentoDto): Promise<any> {
+  async create(
+    tenant_id: string,
+    createPagamentoDto: CreatePagamentoDto,
+  ): Promise<any> {
     const { reserva_id } = createPagamentoDto;
-    const reserva = await this.reservasService.findOne(reserva_id);
+    const reserva = await this.reservasService.findOne(tenant_id, reserva_id);
 
     if (reserva.status !== 'disponivel') {
       throw new ConflictException(
@@ -53,7 +56,7 @@ export class PagamentosService {
     });
     await this.pagamentoRepository.save(pagamento);
 
-    await this.reservasService.updateStatus(reserva_id, 'pendente');
+    await this.reservasService.updateStatus(tenant_id, reserva_id, 'pendente');
 
     // Em um app real, você retornaria os dados para o frontend renderizar o QR Code
     return {
@@ -69,6 +72,7 @@ export class PagamentosService {
   ): Promise<void> {
     const pagamento = await this.pagamentoRepository.findOne({
       where: { transacao_id },
+      relations: ['reserva'],
     });
     if (!pagamento) {
       throw new NotFoundException(
@@ -87,6 +91,10 @@ export class PagamentosService {
     pagamento.status = status;
     await this.pagamentoRepository.save(pagamento);
 
-    await this.reservasService.updateStatus(pagamento.reserva_id, status);
+    await this.reservasService.updateStatus(
+      pagamento.reserva.tenant_id,
+      pagamento.reserva_id,
+      status,
+    );
   }
 }

@@ -29,8 +29,9 @@ export class UsersService {
   }
 
   async findOne(tenant_id: string, id: string): Promise<User> {
-    const user = await this.userRepository.findOne({
-      where: { id, tenant_id },
+    const user = await this.userRepository.findOneBy({
+      id,
+      tenant_id,
     });
     if (!user) {
       throw new NotFoundException(`User with ID "${id}" not found`);
@@ -39,8 +40,9 @@ export class UsersService {
   }
 
   async findByEmail(tenant_id: string, email: string): Promise<User> {
-    const user = await this.userRepository.findOne({
-      where: { email, tenant_id },
+    const user = await this.userRepository.findOneBy({
+      email,
+      tenant_id,
     });
     if (!user) {
       throw new NotFoundException(`User with email "${email}" not found`);
@@ -58,7 +60,6 @@ export class UsersService {
     }
     const user = await this.userRepository.preload({
       id: id,
-      tenant_id: tenant_id,
       ...updateUserDto,
     });
     if (!user) {

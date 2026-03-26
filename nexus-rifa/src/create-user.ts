@@ -6,8 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
   const usersService = app.get(UsersService);
 
-  const user = await usersService.create({
-    tenant_id: 'tenant-id-placeholder',
+  const user = await usersService.create('tenant-id-placeholder', {
     nome: 'Novo Usuário',
     email: 'usuario@email.com',
     password: 'senha123',

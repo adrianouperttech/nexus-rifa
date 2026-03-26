@@ -20,9 +20,11 @@ export class AssinaturasService {
   ) {
     this.mercadoPagoApiUrl = this.configService.get<string>(
       'MERCADO_PAGO_API_URL',
+      'https://api.mercadopago.com',
     );
     this.mercadoPagoAccessToken = this.configService.get<string>(
       'MERCADO_PAGO_ACCESS_TOKEN',
+      ''
     );
   }
 
@@ -42,7 +44,7 @@ export class AssinaturasService {
     };
 
     try {
-      const response = await firstValueFrom(
+      const response: any = await firstValueFrom(
         this.httpService.post(`${this.mercadoPagoApiUrl}/preapproval`, data, {
           headers: {
             'Content-Type': 'application/json',
@@ -75,7 +77,7 @@ export class AssinaturasService {
       const preapprovalId = data.data.id;
 
       try {
-        const response = await firstValueFrom(
+        const response: any = await firstValueFrom(
           this.httpService.get(
             `${this.mercadoPagoApiUrl}/preapproval/${preapprovalId}`,
             {
@@ -103,21 +105,10 @@ export class AssinaturasService {
     return { message: 'Webhook received' };
   }
 
-  async isBillingActive(tenantId: string): Promise<boolean> {
-    const assinatura = await this.assinaturaRepository.findOne({
+  async findByTenantId(tenantId: string): Promise<Assinatura | null> {
+    return this.assinaturaRepository.findOne({
       where: { tenant_id: tenantId },
       order: { start_date: 'DESC' },
     });
-
-    if (!assinatura) {
-      return false;
-    }
-
-    const isActive = assinatura.status === 'authorized';
-
-    const isNotExpired =
-      !assinatura.end_date || new Date(assinatura.end_date) > new Date();
-
-    return isActive && isNotExpired;
   }
 }

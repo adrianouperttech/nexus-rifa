@@ -8,12 +8,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Subscription } from './entities/subscription.entity';
 import { PlansService } from '../plans/plans.service';
-import { MercadoPago } from 'mercadopago';
+import MercadoPago, { PreApproval, PreApprovalPlan } from 'mercadopago';
 import { UsersService } from '../users/users.service';
 import { TenantsService } from '../tenants/tenants.service';
 
 @Injectable()
 export class BillingService {
+  private preApprovalPlanClient: PreApprovalPlan;
+  private preApprovalClient: PreApproval;
+
   constructor(
     @InjectRepository(Subscription)
     private readonly subscriptionRepository: Repository<Subscription>,
@@ -29,9 +32,12 @@ export class BillingService {
 
     @Inject('MERCADOPAGO')
     private readonly mercadoPago: MercadoPago,
-  ) {}
+  ) {
+    this.preApprovalPlanClient = new PreApprovalPlan(this.mercadoPago);
+    this.preApprovalClient = new PreApproval(this.mercadoPago);
+  }
 
-  async findByTenantId(tenant_id: string): Promise<Subscription> {
+  async findByTenantId(tenant_id: string): Promise<Subscription | null> {
     return this.subscriptionRepository.findOne({ where: { tenant_id } });
   }
 
@@ -50,26 +56,22 @@ export class BillingService {
       throw new NotFoundException(`User with ID "${user_id}" not found`);
     }
 
-    const preapprovalPlan = await this.mercadoPago.preapprovalPlan.create({
-      body: {
-        reason: plan.name,
-        auto_recurring: {
-          frequency: 1,
-          frequency_type: 'months',
-          transaction_amount: plan.price,
-          currency_id: 'BRL',
-        },
-        back_url: 'https://nexus-rifa.com/billing/success',
-        payer_email: user.email,
+    const preapprovalPlan = await this.preApprovalPlanClient.create({
+      reason: plan.name,
+      auto_recurring: {
+        frequency: 1,
+        frequency_type: 'months',
+        transaction_amount: plan.price,
+        currency_id: 'BRL',
       },
+      back_url: 'https://nexus-rifa.com/billing/success',
+      payer_email: user.email,
     });
 
-    const preapproval = await this.mercadoPago.preapproval.create({
-      body: {
-        preapproval_plan_id: preapprovalPlan.id,
-        payer_email: user.email,
-        back_url: 'https://nexus-rifa.com/billing/success',
-      },
+    const preapproval = await this.preApprovalClient.create({
+      preapproval_plan_id: preapprovalPlan.id,
+      payer_email: user.email,
+      back_url: 'https://nexus-rifa.com/billing/success',
     });
 
     return { init_point: preapproval.init_point };
@@ -77,9 +79,9 @@ export class BillingService {
 
   async handleWebhook(notification: any) {
     if (notification.type === 'preapproval') {
-      const preapproval = await this.mercadoPago.preapproval.findById(
-        notification.data.id,
-      );
+      const preapproval = await this.preApprovalClient.get({
+        id: notification.data.id,
+      });
 
       const tenant = await this.tenantsService.findByEmail(
         preapproval.payer_email,

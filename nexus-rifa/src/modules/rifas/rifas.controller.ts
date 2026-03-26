@@ -12,10 +12,8 @@ import { RifasService } from './rifas.service';
 import { CreateRifaDto } from './dto/create-rifa.dto';
 import { UpdateRifaDto } from './dto/update-rifa.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { BillingGuard } from '../../common/guards/billing.guard';
 
 @Controller('tenants/:tenant_id/rifas')
-@UseGuards(BillingGuard)
 export class RifasController {
   constructor(private readonly rifasService: RifasService) {}
 

@@ -4,7 +4,7 @@ import { BillingController } from './billing.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Subscription } from './entities/subscription.entity';
 import { PlansModule } from '../plans/plans.module';
-import { MercadoPago } from 'mercadopago';
+import MercadoPago from 'mercadopago';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from '../users/users.module';
 import { TenantsModule } from '../tenants/tenants.module';
@@ -24,7 +24,7 @@ import { TenantsModule } from '../tenants/tenants.module';
       provide: 'MERCADOPAGO',
       useFactory: () => {
         return new MercadoPago({
-          accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN,
+          accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN || '',
         });
       },
     },
