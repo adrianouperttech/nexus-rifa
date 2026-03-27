@@ -1,5 +1,3 @@
-name: CI/CD Blue/Green Deployment
-
 on:
   push:
     branches:
@@ -41,16 +39,14 @@ jobs:
       - name: Determine Environments
         id: get_env
         run: |
-          # Reads the .active_env file to determine which environment is live.
-          # The other one becomes the target for this deployment.
-          if [[ $(cat ./.active_env) == "blue" ]]; then
+          # Check if the file exists and if its content is "blue"
+          if [[ -f ./.active_env && $(cat ./.active_env) == "blue" ]]; then
             echo "inactive_env=green" >> $GITHUB_OUTPUT
             echo "active_env=blue" >> $GITHUB_OUTPUT
           else
             echo "inactive_env=blue" >> $GITHUB_OUTPUT
             echo "active_env=green" >> $GITHUB_OUTPUT
           fi
-
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
@@ -59,36 +55,52 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run Migrations on Inactive DB
+      - name: Run Migrations on Blue DB
+        if: steps.get_env.outputs.inactive_env == 'blue'
         env:
-          # Assumes you have secrets like DB_HOST_BLUE, DB_HOST_GREEN, etc.
-          DB_HOST: ${{ secrets[format('DB_HOST_{0}', upper(steps.get_env.outputs.inactive_env))] }}
-          DB_PORT: ${{ secrets[format('DB_PORT_{0}', upper(steps.get_env.outputs.inactive_env))] }}
-          DB_USERNAME: ${{ secrets[format('DB_USERNAME_{0}', upper(steps.get_env.outputs.inactive_env))] }}
-          DB_PASSWORD: ${{ secrets[format('DB_PASSWORD_{0}', upper(steps.get_env.outputs.inactive_env))] }}
-          DB_DATABASE: ${{ secrets[format('DB_DATABASE_{0}', upper(steps.get_env.outputs.inactive_env))] }}
+          DB_HOST: ${{ secrets.DB_HOST_BLUE }}
+          DB_PORT: ${{ secrets.DB_PORT_BLUE }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME_BLUE }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD_BLUE }}
+          DB_DATABASE: ${{ secrets.DB_DATABASE_BLUE }}
         run: |
-          echo "Running migrations on the ${{ steps.get_env.outputs.inactive_env }} database..."
-          # The migration script uses environment variables for DB credentials
+          echo "Running migrations on the blue database..."
           npm run migration:run
 
-      - name: Deploy to Inactive Server
+      - name: Run Migrations on Green DB
+        if: steps.get_env.outputs.inactive_env == 'green'
+        env:
+          DB_HOST: ${{ secrets.DB_HOST_GREEN }}
+          DB_PORT: ${{ secrets.DB_PORT_GREEN }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME_GREEN }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD_GREEN }}
+          DB_DATABASE: ${{ secrets.DB_DATABASE_GREEN }}
         run: |
-          echo "Deploying application to the ${{ steps.get_env.outputs.inactive_env }} server..."
-          # ----------------- TO DO -----------------
-          # Add your deployment script here.
-          # This could involve SSH, SCP, rsync, or a cloud provider's CLI.
-          # Example using SSH:
-          # ssh user@${{ secrets[format('SERVER_HOST_{0}', upper(steps.get_env.outputs.inactive_env))] }} 'cd /var/www/app && git pull && npm install --production && pm2 restart app_name'
-          echo "Deployment to ${{ steps.get_env.outputs.inactive_env }} completed."
+          echo "Running migrations on the green database..."
+          npm run migration:run
 
+      - name: Deploy to Blue Server
+        if: steps.get_env.outputs.inactive_env == 'blue'
+        run: |
+          echo "Deploying to BLUE server..."
+          # Example using SSH with the specific secret for the blue server:
+          # ssh user@${{ secrets.SERVER_HOST_BLUE }} 'cd /var/www/app && git pull && npm install --production && pm2 restart app_name'
+          echo "Deployment to blue completed."
+
+      - name: Deploy to Green Server
+        if: steps.get_env.outputs.inactive_env == 'green'
+        run: |
+          echo "Deploying to GREEN server..."
+          # Example using SSH with the specific secret for the green server:
+          # ssh user@${{ secrets.SERVER_HOST_GREEN }} 'cd /var/www/app && git pull && npm install --production && pm2 restart app_name'
+          echo "Deployment to green completed."
 
   wait_for_approval:
     name: Manual Approval
     runs-on: ubuntu-latest
     needs: deploy_to_inactive
     environment:
-      name: production # This can be used to protect the environment
+      name: production
     steps:
       - name: Request manual approval to switch traffic
         uses: trstringer/manual-approval@v1
@@ -99,13 +111,12 @@ jobs:
           issue-title: "🚀 Deploy Blue/Green: Approve traffic switch to ${{ needs.deploy_to_inactive.outputs.inactive_env }}"
           issue-body: |
             Deployment to the **${{ needs.deploy_to_inactive.outputs.inactive_env }}** environment is complete.
-
             Please perform any final validation and approve this step to switch live traffic to the new version.
 
   switch_traffic_to_new_env:
     name: Switch Live Traffic
     runs-on: ubuntu-latest
-    needs: wait_for_approval
+    needs: [wait_for_approval, deploy_to_inactive]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -115,10 +126,8 @@ jobs:
           echo "Switching live traffic to ${{ needs.deploy_to_inactive.outputs.inactive_env }}..."
           # ----------------- TO DO -----------------
           # Add your traffic switching script here.
-          # This could involve updating a reverse proxy (Nginx, HAProxy) or using a cloud provider's API.
           # Example: ssh user@load_balancer 'update_config.sh ${{ needs.deploy_to_inactive.outputs.inactive_env }}'
           echo "Traffic switched."
-
       - name: Update active environment marker
         run: echo "${{ needs.deploy_to_inactive.outputs.inactive_env }}" > ./.active_env
 
