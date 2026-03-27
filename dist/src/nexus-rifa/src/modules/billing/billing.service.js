@@ -10,8 +10,8 @@ exports.BillingService = void 0;
 const common_1 = require("@nestjs/common");
 let BillingService = class BillingService {
 };
-exports.BillingService = BillingService;
-exports.BillingService = BillingService = __decorate([
+BillingService = __decorate([
     (0, common_1.Injectable)()
 ], BillingService);
+exports.BillingService = BillingService;
 //# sourceMappingURL=billing.service.js.map

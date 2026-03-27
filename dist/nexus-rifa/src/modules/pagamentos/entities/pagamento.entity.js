@@ -20,7 +20,6 @@ let Pagamento = class Pagamento {
     gateway_pagamento;
     transacao_id;
 };
-exports.Pagamento = Pagamento;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
     __metadata("design:type", String)
@@ -46,7 +45,8 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Pagamento.prototype, "transacao_id", void 0);
-exports.Pagamento = Pagamento = __decorate([
+Pagamento = __decorate([
     (0, typeorm_1.Entity)()
 ], Pagamento);
+exports.Pagamento = Pagamento;
 //# sourceMappingURL=pagamento.entity.js.map

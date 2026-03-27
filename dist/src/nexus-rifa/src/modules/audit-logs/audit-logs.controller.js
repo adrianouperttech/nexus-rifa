@@ -10,8 +10,8 @@ exports.AuditLogsController = void 0;
 const common_1 = require("@nestjs/common");
 let AuditLogsController = class AuditLogsController {
 };
-exports.AuditLogsController = AuditLogsController;
-exports.AuditLogsController = AuditLogsController = __decorate([
+AuditLogsController = __decorate([
     (0, common_1.Controller)('audit-logs')
 ], AuditLogsController);
+exports.AuditLogsController = AuditLogsController;
 //# sourceMappingURL=audit-logs.controller.js.map

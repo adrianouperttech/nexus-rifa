@@ -36,7 +36,6 @@ let SubscriptionsController = class SubscriptionsController {
         return this.subscriptionsService.remove(id);
     }
 };
-exports.SubscriptionsController = SubscriptionsController;
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
@@ -72,8 +71,9 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], SubscriptionsController.prototype, "remove", null);
-exports.SubscriptionsController = SubscriptionsController = __decorate([
+SubscriptionsController = __decorate([
     (0, common_1.Controller)('subscriptions'),
     __metadata("design:paramtypes", [subscriptions_service_1.SubscriptionsService])
 ], SubscriptionsController);
+exports.SubscriptionsController = SubscriptionsController;
 //# sourceMappingURL=subscriptions.controller.js.map

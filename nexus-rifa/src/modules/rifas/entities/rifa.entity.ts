@@ -37,6 +37,12 @@ export class Rifa {
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 
+  @Column({ type: 'integer' })
+  limite: number;
+
+  @Column({ type: 'text' })
+  nome: string;
+
   @ManyToOne(() => Tenant, (tenant) => tenant.rifas)
   @JoinColumn({ name: 'tenant_id' })
   tenant: Tenant;
@@ -46,9 +52,6 @@ export class Rifa {
 
   @OneToMany(() => Reserva, (reserva) => reserva.rifa)
   reservas: Reserva[];
-
-  @OneToMany(() => Pagamento, (pagamento) => pagamento.rifa)
-  pagamentos: Pagamento[];
 
   @OneToMany(() => Premio, (premio) => premio.rifa)
   premios: Premio[];

@@ -8,10 +8,10 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { PlansService } from '../../plans/plans.service';
-import { CreatePlanDto } from '../../plans/dto/create-plan.dto';
-import { UpdatePlanDto } from '../../plans/dto/update-plan.dto';
-import { AdminGuard } from '../auth/guards/admin.guard';
+import { PlansService } from '../../../plans/plans.service';
+import { CreatePlanDto } from '../../../plans/dto/create-plan.dto';
+import { UpdatePlanDto } from '../../../plans/dto/update-plan.dto';
+import { AdminGuard } from '../../auth/guards/admin.guard';
 
 @UseGuards(AdminGuard)
 @Controller('admin/plans')

@@ -21,7 +21,6 @@ let Subscription = class Subscription {
     tenant;
     created_at;
 };
-exports.Subscription = Subscription;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
     __metadata("design:type", String)
@@ -51,7 +50,8 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }),
     __metadata("design:type", Date)
 ], Subscription.prototype, "created_at", void 0);
-exports.Subscription = Subscription = __decorate([
+Subscription = __decorate([
     (0, typeorm_1.Entity)('subscriptions')
 ], Subscription);
+exports.Subscription = Subscription;
 //# sourceMappingURL=subscription.entity.js.map

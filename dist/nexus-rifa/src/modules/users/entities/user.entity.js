@@ -23,7 +23,6 @@ let User = class User {
     ativo;
     created_at;
 };
-exports.User = User;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
     __metadata("design:type", String)
@@ -61,8 +60,9 @@ __decorate([
     (0, typeorm_1.CreateDateColumn)({ type: 'timestamp' }),
     __metadata("design:type", Date)
 ], User.prototype, "created_at", void 0);
-exports.User = User = __decorate([
+User = __decorate([
     (0, typeorm_1.Entity)('users'),
     (0, typeorm_1.Unique)(['tenant_id', 'email'])
 ], User);
+exports.User = User;
 //# sourceMappingURL=user.entity.js.map

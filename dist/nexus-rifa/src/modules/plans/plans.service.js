@@ -53,10 +53,10 @@ let PlansService = class PlansService {
         }
     }
 };
-exports.PlansService = PlansService;
-exports.PlansService = PlansService = __decorate([
+PlansService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(plan_entity_1.Plan)),
     __metadata("design:paramtypes", [typeorm_2.Repository])
 ], PlansService);
+exports.PlansService = PlansService;
 //# sourceMappingURL=plans.service.js.map

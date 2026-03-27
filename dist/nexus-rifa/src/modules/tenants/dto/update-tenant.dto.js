@@ -17,7 +17,6 @@ class UpdateTenantDto extends (0, mapped_types_1.PartialType)(create_tenant_dto_
     nome;
     email;
 }
-exports.UpdateTenantDto = UpdateTenantDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
@@ -28,4 +27,5 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateTenantDto.prototype, "email", void 0);
+exports.UpdateTenantDto = UpdateTenantDto;
 //# sourceMappingURL=update-tenant.dto.js.map

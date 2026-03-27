@@ -65,12 +65,12 @@ let PlanosAssinaturaService = class PlanosAssinaturaService {
         }
     }
 };
-exports.PlanosAssinaturaService = PlanosAssinaturaService;
-exports.PlanosAssinaturaService = PlanosAssinaturaService = __decorate([
+PlanosAssinaturaService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(plano_assinatura_entity_1.PlanoAssinatura)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         axios_1.HttpService,
         config_1.ConfigService])
 ], PlanosAssinaturaService);
+exports.PlanosAssinaturaService = PlanosAssinaturaService;
 //# sourceMappingURL=planos-assinatura.service.js.map

@@ -10,8 +10,8 @@ exports.RootUsersService = void 0;
 const common_1 = require("@nestjs/common");
 let RootUsersService = class RootUsersService {
 };
-exports.RootUsersService = RootUsersService;
-exports.RootUsersService = RootUsersService = __decorate([
+RootUsersService = __decorate([
     (0, common_1.Injectable)()
 ], RootUsersService);
+exports.RootUsersService = RootUsersService;
 //# sourceMappingURL=root-users.service.js.map

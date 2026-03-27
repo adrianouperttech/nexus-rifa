@@ -10,8 +10,8 @@ exports.ReservasController = void 0;
 const common_1 = require("@nestjs/common");
 let ReservasController = class ReservasController {
 };
-exports.ReservasController = ReservasController;
-exports.ReservasController = ReservasController = __decorate([
+ReservasController = __decorate([
     (0, common_1.Controller)('reservas')
 ], ReservasController);
+exports.ReservasController = ReservasController;
 //# sourceMappingURL=reservas.controller.js.map

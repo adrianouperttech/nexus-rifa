@@ -12,11 +12,11 @@ const billing_controller_1 = require("./billing.controller");
 const billing_service_1 = require("./billing.service");
 let BillingModule = class BillingModule {
 };
-exports.BillingModule = BillingModule;
-exports.BillingModule = BillingModule = __decorate([
+BillingModule = __decorate([
     (0, common_1.Module)({
         controllers: [billing_controller_1.BillingController],
         providers: [billing_service_1.BillingService]
     })
 ], BillingModule);
+exports.BillingModule = BillingModule;
 //# sourceMappingURL=billing.module.js.map

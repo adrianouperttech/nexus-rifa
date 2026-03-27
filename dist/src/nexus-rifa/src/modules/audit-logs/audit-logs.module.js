@@ -12,11 +12,11 @@ const audit_logs_controller_1 = require("./audit-logs.controller");
 const audit_logs_service_1 = require("./audit-logs.service");
 let AuditLogsModule = class AuditLogsModule {
 };
-exports.AuditLogsModule = AuditLogsModule;
-exports.AuditLogsModule = AuditLogsModule = __decorate([
+AuditLogsModule = __decorate([
     (0, common_1.Module)({
         controllers: [audit_logs_controller_1.AuditLogsController],
         providers: [audit_logs_service_1.AuditLogsService]
     })
 ], AuditLogsModule);
+exports.AuditLogsModule = AuditLogsModule;
 //# sourceMappingURL=audit-logs.module.js.map

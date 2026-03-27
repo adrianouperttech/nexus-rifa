@@ -18,7 +18,6 @@ let Subscription = class Subscription {
     planId;
     status;
 };
-exports.Subscription = Subscription;
 __decorate([
     (0, mongoose_1.Prop)({
         type: String,
@@ -48,10 +47,11 @@ __decorate([
     }),
     __metadata("design:type", String)
 ], Subscription.prototype, "status", void 0);
-exports.Subscription = Subscription = __decorate([
+Subscription = __decorate([
     (0, mongoose_1.Schema)({
         timestamps: true,
     })
 ], Subscription);
+exports.Subscription = Subscription;
 exports.SubscriptionSchema = mongoose_1.SchemaFactory.createForClass(Subscription);
 //# sourceMappingURL=subscription.entity.js.map

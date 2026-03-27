@@ -16,7 +16,6 @@ class CreateAssinaturaDto {
     payer_email;
     card_token_id;
 }
-exports.CreateAssinaturaDto = CreateAssinaturaDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
@@ -32,4 +31,5 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateAssinaturaDto.prototype, "card_token_id", void 0);
+exports.CreateAssinaturaDto = CreateAssinaturaDto;
 //# sourceMappingURL=create-assinatura.dto.js.map

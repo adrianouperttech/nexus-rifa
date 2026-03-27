@@ -74,21 +74,46 @@ let BillingService = class BillingService {
             throw new common_1.NotFoundException(`User with ID "${user_id}" not found`);
         }
         const preapprovalPlan = await this.preApprovalPlanClient.create({
-            reason: plan.name,
-            auto_recurring: {
-                frequency: 1,
-                frequency_type: 'months',
-                transaction_amount: plan.price,
-                currency_id: 'BRL',
+            body: {
+                reason: plan.name,
+                auto_recurring: {
+                    frequency: 1,
+                    frequency_type: 'months',
+                    transaction_amount: plan.price,
+                    currency_id: 'BRL',
+                },
+                back_url: 'https://nexus-rifa.com/billing/success',
             },
-            back_url: 'https://nexus-rifa.com/billing/success',
-            payer_email: user.email,
         });
         const preapproval = await this.preApprovalClient.create({
-            preapproval_plan_id: preapprovalPlan.id,
-            payer_email: user.email,
-            back_url: 'https://nexus-rifa.com/billing/success',
+            body: {
+                preapproval_plan_id: preapprovalPlan.id,
+                payer_email: user.email,
+                back_url: 'https://nexus-rifa.com/billing/success',
+            },
         });
+        if (!preapproval.init_point) {
+            throw new Error('Failed to create subscription');
+        }
+        let subscription = await this.findByTenantId(tenant_id);
+        if (subscription) {
+            subscription.plan_id = plan_id;
+            if (preapproval.id) {
+                subscription.payment_gateway_subscription_id = preapproval.id;
+            }
+            if (preapproval.status) {
+                subscription.status = preapproval.status;
+            }
+        }
+        else {
+            subscription = this.subscriptionRepository.create({
+                tenant_id,
+                plan_id,
+                payment_gateway_subscription_id: preapproval.id,
+                status: preapproval.status,
+            });
+        }
+        await this.subscriptionRepository.save(subscription);
         return { init_point: preapproval.init_point };
     }
     async handleWebhook(notification) {
@@ -96,29 +121,22 @@ let BillingService = class BillingService {
             const preapproval = await this.preApprovalClient.get({
                 id: notification.data.id,
             });
-            const tenant = await this.tenantsService.findByEmail(preapproval.payer_email);
-            if (!tenant) {
-                throw new common_1.NotFoundException(`Tenant with email "${preapproval.payer_email}" not found`);
+            if (!preapproval.id) {
+                return;
             }
-            let subscription = await this.findByTenantId(tenant.id);
+            const subscription = await this.subscriptionRepository.findOne({
+                where: { payment_gateway_subscription_id: preapproval.id },
+            });
             if (subscription) {
-                subscription.status = preapproval.status;
-                subscription.payment_gateway_subscription_id = preapproval.id;
+                if (preapproval.status) {
+                    subscription.status = preapproval.status;
+                }
+                await this.subscriptionRepository.save(subscription);
             }
-            else {
-                subscription = this.subscriptionRepository.create({
-                    tenant_id: tenant.id,
-                    plan_id: preapproval.preapproval_plan_id,
-                    status: preapproval.status,
-                    payment_gateway_subscription_id: preapproval.id,
-                });
-            }
-            await this.subscriptionRepository.save(subscription);
         }
     }
 };
-exports.BillingService = BillingService;
-exports.BillingService = BillingService = __decorate([
+BillingService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(subscription_entity_1.Subscription)),
     __param(1, (0, common_1.Inject)((0, common_1.forwardRef)(() => plans_service_1.PlansService))),
@@ -131,4 +149,5 @@ exports.BillingService = BillingService = __decorate([
         tenants_service_1.TenantsService,
         mercadopago_1.default])
 ], BillingService);
+exports.BillingService = BillingService;
 //# sourceMappingURL=billing.service.js.map

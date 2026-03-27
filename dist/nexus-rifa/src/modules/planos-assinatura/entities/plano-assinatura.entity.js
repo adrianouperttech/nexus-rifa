@@ -18,7 +18,6 @@ let PlanoAssinatura = class PlanoAssinatura {
     created_at;
     updated_at;
 };
-exports.PlanoAssinatura = PlanoAssinatura;
 __decorate([
     (0, typeorm_1.PrimaryColumn)(),
     __metadata("design:type", String)
@@ -39,7 +38,8 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
 ], PlanoAssinatura.prototype, "updated_at", void 0);
-exports.PlanoAssinatura = PlanoAssinatura = __decorate([
+PlanoAssinatura = __decorate([
     (0, typeorm_1.Entity)()
 ], PlanoAssinatura);
+exports.PlanoAssinatura = PlanoAssinatura;
 //# sourceMappingURL=plano-assinatura.entity.js.map

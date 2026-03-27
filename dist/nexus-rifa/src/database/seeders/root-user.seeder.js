@@ -35,11 +35,11 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const nestjs_seeder_1 = require("nestjs-seeder");
+exports.RootUserSeeder = void 0;
+const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const root_user_entity_1 = require("../../modules/root-users/entities/root-user.entity");
-const typeorm_2 = require("@nestjs/typeorm");
-const typeorm_3 = require("typeorm");
+const typeorm_2 = require("typeorm");
 const bcrypt = __importStar(require("bcrypt"));
 let RootUserSeeder = class RootUserSeeder {
     rootUserRepository;
@@ -47,20 +47,24 @@ let RootUserSeeder = class RootUserSeeder {
         this.rootUserRepository = rootUserRepository;
     }
     async run() {
+        const existingUser = await this.rootUserRepository.findOne({ where: { email: 'root@example.com' } });
+        if (existingUser) {
+            console.log("Root user already exists, skipping seed.");
+            return;
+        }
         const salt = await bcrypt.genSalt();
         const hashedPassword = await bcrypt.hash('root', salt);
         const rootUser = this.rootUserRepository.create({
             email: 'root@example.com',
             password: hashedPassword,
         });
-        await this.rootUserRepository.save(rootUser);
+        return this.rootUserRepository.save(rootUser);
     }
 };
 RootUserSeeder = __decorate([
-    __param(0, (0, typeorm_2.InjectRepository)(root_user_entity_1.RootUser)),
-    __metadata("design:paramtypes", [typeorm_3.Repository])
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_1.InjectRepository)(root_user_entity_1.RootUser)),
+    __metadata("design:paramtypes", [typeorm_2.Repository])
 ], RootUserSeeder);
-(0, nestjs_seeder_1.seeder)({
-    imports: [typeorm_1.TypeOrmModule.forFeature([root_user_entity_1.RootUser])],
-}).run([RootUserSeeder]);
+exports.RootUserSeeder = RootUserSeeder;
 //# sourceMappingURL=root-user.seeder.js.map

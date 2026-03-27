@@ -32,10 +32,10 @@ let ReservasService = class ReservasService {
         this.whatsappService = whatsappService;
     }
     async create(createReservaDto, tenant_id) {
-        const { rifa_id, numero, cliente_email, cliente_whatsapp } = createReservaDto;
+        const { rifa_id, numero, email, whatsapp } = createReservaDto;
         const rifa = await this.rifasService.findOne(tenant_id, rifa_id);
-        if (numero > rifa.limit) {
-            throw new common_1.ConflictException(`O número ${numero} está acima do limite de ${rifa.limit} da rifa.`);
+        if (numero > rifa.limite) {
+            throw new common_1.ConflictException(`O número ${numero} está acima do limite de ${rifa.limite} da rifa.`);
         }
         const existingReserva = await this.reservaRepository.findOne({
             where: { rifa_id, numero },
@@ -49,8 +49,8 @@ let ReservasService = class ReservasService {
             status: 'disponivel',
         });
         const savedReserva = await this.reservaRepository.save(reserva);
-        await this.emailService.send(cliente_email, 'Reserva Realizada', `Sua reserva para a rifa ${rifa.nome}, número ${numero} foi realizada com sucesso!`);
-        await this.whatsappService.send(cliente_whatsapp, `Sua reserva para a rifa ${rifa.nome}, número ${numero} foi realizada com sucesso!`);
+        await this.emailService.send(email, `Sua reserva para a rifa ${rifa.nome}, número ${numero} foi realizada com sucesso!`);
+        await this.whatsappService.send(whatsapp, `Sua reserva para a rifa ${rifa.nome}, número ${numero} foi realizada com sucesso!`);
         return savedReserva;
     }
     async findAll(tenant_id) {
@@ -58,9 +58,6 @@ let ReservasService = class ReservasService {
             where: { tenant_id },
             relations: ['rifa'],
         });
-    }
-    async findByStatus(status) {
-        return this.reservaRepository.find({ where: { status } });
     }
     async findOne(tenant_id, id) {
         const reserva = await this.reservaRepository.findOne({
@@ -83,20 +80,22 @@ let ReservasService = class ReservasService {
         }
         return this.reservaRepository.save(reserva);
     }
-    async updateStatus(tenant_id, id, status) {
-        const reserva = await this.findOne(tenant_id, id);
-        reserva.status = status;
-        return this.reservaRepository.save(reserva);
-    }
     async remove(tenant_id, id) {
         const result = await this.reservaRepository.delete({ id, tenant_id });
         if (result.affected === 0) {
             throw new common_1.NotFoundException(`Reserva with ID "${id}" not found`);
         }
     }
+    async findByStatus(tenant_id, status) {
+        return this.reservaRepository.find({ where: { tenant_id, status } });
+    }
+    async updateStatus(tenant_id, id, status) {
+        const reserva = await this.findOne(tenant_id, id);
+        reserva.status = status;
+        return this.reservaRepository.save(reserva);
+    }
 };
-exports.ReservasService = ReservasService;
-exports.ReservasService = ReservasService = __decorate([
+ReservasService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(reserva_entity_1.Reserva)),
     __param(1, (0, common_1.Inject)((0, common_1.forwardRef)(() => rifas_service_1.RifasService))),
@@ -105,4 +104,5 @@ exports.ReservasService = ReservasService = __decorate([
         email_service_1.EmailService,
         whatsapp_service_1.WhatsappService])
 ], ReservasService);
+exports.ReservasService = ReservasService;
 //# sourceMappingURL=reservas.service.js.map

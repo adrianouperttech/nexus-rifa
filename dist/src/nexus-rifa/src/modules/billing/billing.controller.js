@@ -10,8 +10,8 @@ exports.BillingController = void 0;
 const common_1 = require("@nestjs/common");
 let BillingController = class BillingController {
 };
-exports.BillingController = BillingController;
-exports.BillingController = BillingController = __decorate([
+BillingController = __decorate([
     (0, common_1.Controller)('billing')
 ], BillingController);
+exports.BillingController = BillingController;
 //# sourceMappingURL=billing.controller.js.map

@@ -64,13 +64,11 @@ export class RifasService {
   ): Promise<Rifa> {
     const rifa = await this.rifasRepository.preload({
       id: id,
+      tenant_id: tenant_id,
       ...updateRifaDto,
     });
     if (!rifa) {
       throw new NotFoundException(`Rifa with ID "${id}" not found`);
-    }
-    if (rifa.tenant_id !== tenant_id) {
-      throw new ForbiddenException();
     }
     return this.rifasRepository.save(rifa);
   }

@@ -14,7 +14,6 @@ const typeorm_1 = require("typeorm");
 const tenant_entity_1 = require("../../tenants/entities/tenant.entity");
 const cota_entity_1 = require("../../cotas/entities/cota.entity");
 const reserva_entity_1 = require("../../reservas/entities/reserva.entity");
-const pagamento_entity_1 = require("../../pagamentos/entities/pagamento.entity");
 const premio_entity_1 = require("../../premios/entities/premio.entity");
 let Rifa = class Rifa {
     id;
@@ -27,13 +26,13 @@ let Rifa = class Rifa {
     chave_pix;
     status;
     created_at;
+    limite;
+    nome;
     tenant;
     cotas;
     reservas;
-    pagamentos;
     premios;
 };
-exports.Rifa = Rifa;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
     __metadata("design:type", String)
@@ -75,6 +74,14 @@ __decorate([
     __metadata("design:type", Date)
 ], Rifa.prototype, "created_at", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: 'integer' }),
+    __metadata("design:type", Number)
+], Rifa.prototype, "limite", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'text' }),
+    __metadata("design:type", String)
+], Rifa.prototype, "nome", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => tenant_entity_1.Tenant, (tenant) => tenant.rifas),
     (0, typeorm_1.JoinColumn)({ name: 'tenant_id' }),
     __metadata("design:type", tenant_entity_1.Tenant)
@@ -88,14 +95,11 @@ __decorate([
     __metadata("design:type", Array)
 ], Rifa.prototype, "reservas", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => pagamento_entity_1.Pagamento, (pagamento) => pagamento.rifa),
-    __metadata("design:type", Array)
-], Rifa.prototype, "pagamentos", void 0);
-__decorate([
     (0, typeorm_1.OneToMany)(() => premio_entity_1.Premio, (premio) => premio.rifa),
     __metadata("design:type", Array)
 ], Rifa.prototype, "premios", void 0);
-exports.Rifa = Rifa = __decorate([
+Rifa = __decorate([
     (0, typeorm_1.Entity)('rifas')
 ], Rifa);
+exports.Rifa = Rifa;
 //# sourceMappingURL=rifa.entity.js.map

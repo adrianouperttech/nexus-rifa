@@ -1,17 +1,24 @@
-import { seeder } from 'nestjs-seeder';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { RootUser } from '../../modules/root-users/entities/root-user.entity';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { RootUser } from '../../modules/root-users/entities/root-user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
-class RootUserSeeder {
+@Injectable()
+export class RootUserSeeder {
   constructor(
     @InjectRepository(RootUser)
     private readonly rootUserRepository: Repository<RootUser>,
   ) {}
 
-  async run() {
+  async run(): Promise<any> {
+    const existingUser = await this.rootUserRepository.findOne({where: {email: 'root@example.com'}});
+
+    if (existingUser) {
+        console.log("Root user already exists, skipping seed.");
+        return;
+    }
+      
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash('root', salt);
 
@@ -19,11 +26,7 @@ class RootUserSeeder {
       email: 'root@example.com',
       password: hashedPassword,
     });
-
-    await this.rootUserRepository.save(rootUser);
+    
+    return this.rootUserRepository.save(rootUser);
   }
 }
-
-seeder({
-  imports: [TypeOrmModule.forFeature([RootUser])],
-}).run([RootUserSeeder]);

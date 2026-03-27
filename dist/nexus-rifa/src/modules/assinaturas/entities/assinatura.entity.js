@@ -23,7 +23,6 @@ let Assinatura = class Assinatura {
     created_at;
     updated_at;
 };
-exports.Assinatura = Assinatura;
 __decorate([
     (0, typeorm_1.PrimaryColumn)(),
     __metadata("design:type", String)
@@ -64,7 +63,8 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
 ], Assinatura.prototype, "updated_at", void 0);
-exports.Assinatura = Assinatura = __decorate([
+Assinatura = __decorate([
     (0, typeorm_1.Entity)()
 ], Assinatura);
+exports.Assinatura = Assinatura;
 //# sourceMappingURL=assinatura.entity.js.map

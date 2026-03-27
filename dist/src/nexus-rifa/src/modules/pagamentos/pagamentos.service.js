@@ -10,8 +10,8 @@ exports.PagamentosService = void 0;
 const common_1 = require("@nestjs/common");
 let PagamentosService = class PagamentosService {
 };
-exports.PagamentosService = PagamentosService;
-exports.PagamentosService = PagamentosService = __decorate([
+PagamentosService = __decorate([
     (0, common_1.Injectable)()
 ], PagamentosService);
+exports.PagamentosService = PagamentosService;
 //# sourceMappingURL=pagamentos.service.js.map

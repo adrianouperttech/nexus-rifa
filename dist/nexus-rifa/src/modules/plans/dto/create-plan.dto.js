@@ -16,7 +16,6 @@ class CreatePlanDto {
     price;
     limit;
 }
-exports.CreatePlanDto = CreatePlanDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
@@ -31,4 +30,5 @@ __decorate([
     (0, class_validator_1.IsPositive)(),
     __metadata("design:type", Number)
 ], CreatePlanDto.prototype, "limit", void 0);
+exports.CreatePlanDto = CreatePlanDto;
 //# sourceMappingURL=create-plan.dto.js.map

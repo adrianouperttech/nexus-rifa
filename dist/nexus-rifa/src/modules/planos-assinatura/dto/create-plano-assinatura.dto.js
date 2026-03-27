@@ -16,7 +16,6 @@ class CreatePlanoAssinaturaDto {
     auto_recurring;
     back_url;
 }
-exports.CreatePlanoAssinaturaDto = CreatePlanoAssinaturaDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
@@ -32,4 +31,5 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreatePlanoAssinaturaDto.prototype, "back_url", void 0);
+exports.CreatePlanoAssinaturaDto = CreatePlanoAssinaturaDto;
 //# sourceMappingURL=create-plano-assinatura.dto.js.map

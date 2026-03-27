@@ -18,7 +18,6 @@ class CreateReservaDto {
     whatsapp;
     email;
 }
-exports.CreateReservaDto = CreateReservaDto;
 __decorate([
     (0, class_validator_1.IsUUID)(),
     (0, class_validator_1.IsNotEmpty)(),
@@ -44,4 +43,5 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateReservaDto.prototype, "email", void 0);
+exports.CreateReservaDto = CreateReservaDto;
 //# sourceMappingURL=create-reserva.dto.js.map

@@ -25,20 +25,19 @@ let ReservasController = class ReservasController {
     create(createReservaDto, tenant_id) {
         return this.reservasService.create(createReservaDto, tenant_id);
     }
-    findAll() {
-        return this.reservasService.findAll();
+    findAll(tenant_id) {
+        return this.reservasService.findAll(tenant_id);
     }
-    findOne(id) {
-        return this.reservasService.findOne(id);
+    findOne(id, tenant_id) {
+        return this.reservasService.findOne(tenant_id, id);
     }
-    update(id, updateReservaDto) {
-        return this.reservasService.update(id, updateReservaDto);
+    update(id, updateReservaDto, tenant_id) {
+        return this.reservasService.update(tenant_id, id, updateReservaDto);
     }
-    remove(id) {
-        return this.reservasService.remove(id);
+    remove(id, tenant_id) {
+        return this.reservasService.remove(tenant_id, id);
     }
 };
-exports.ReservasController = ReservasController;
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
@@ -49,34 +48,39 @@ __decorate([
 ], ReservasController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Headers)('tenant_id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], ReservasController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Headers)('tenant_id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], ReservasController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Put)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Headers)('tenant_id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_reserva_dto_1.UpdateReservaDto]),
+    __metadata("design:paramtypes", [String, update_reserva_dto_1.UpdateReservaDto, String]),
     __metadata("design:returntype", void 0)
 ], ReservasController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Headers)('tenant_id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], ReservasController.prototype, "remove", null);
-exports.ReservasController = ReservasController = __decorate([
+ReservasController = __decorate([
     (0, common_1.Controller)('reservas'),
     __metadata("design:paramtypes", [reservas_service_1.ReservasService])
 ], ReservasController);
+exports.ReservasController = ReservasController;
 //# sourceMappingURL=reservas.controller.js.map

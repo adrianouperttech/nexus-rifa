@@ -94,7 +94,7 @@ export class PagamentosService {
     await this.reservasService.updateStatus(
       pagamento.reserva.tenant_id,
       pagamento.reserva_id,
-      status,
+      status === 'pago' ? 'confirmada' : 'disponivel'
     );
   }
 }

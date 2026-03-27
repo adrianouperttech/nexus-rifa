@@ -24,11 +24,11 @@ export class SubscriptionsService {
     return this.subscriptionModel.find().exec();
   }
 
-  async findOne(id: string): Promise<Subscription> {
+  async findOne(id: string): Promise<Subscription | null> {
     return this.subscriptionModel.findOne({ id }).exec();
   }
 
-  async update(id: string, updateSubscriptionDto: any): Promise<Subscription> {
+  async update(id: string, updateSubscriptionDto: any): Promise<Subscription | null> {
     return this.subscriptionModel.findOneAndUpdate(
       { id },
       updateSubscriptionDto,

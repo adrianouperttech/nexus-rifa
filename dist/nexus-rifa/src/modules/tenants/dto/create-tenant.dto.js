@@ -15,7 +15,6 @@ class CreateTenantDto {
     nome;
     email;
 }
-exports.CreateTenantDto = CreateTenantDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
@@ -26,4 +25,5 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateTenantDto.prototype, "email", void 0);
+exports.CreateTenantDto = CreateTenantDto;
 //# sourceMappingURL=create-tenant.dto.js.map

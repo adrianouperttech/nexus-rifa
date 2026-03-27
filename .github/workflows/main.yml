@@ -1,0 +1,129 @@
+name: CI/CD Blue/Green Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_and_test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Run tests
+        run: npm test
+
+  deploy_to_inactive:
+    name: Deploy to Inactive Environment
+    runs-on: ubuntu-latest
+    needs: build_and_test
+    outputs:
+      inactive_env: ${{ steps.get_env.outputs.inactive_env }}
+      active_env: ${{ steps.get_env.outputs.active_env }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Determine Environments
+        id: get_env
+        run: |
+          # Reads the .active_env file to determine which environment is live.
+          # The other one becomes the target for this deployment.
+          if [[ $(cat ./.active_env) == "blue" ]]; then
+            echo "inactive_env=green" >> $GITHUB_OUTPUT
+            echo "active_env=blue" >> $GITHUB_OUTPUT
+          else
+            echo "inactive_env=blue" >> $GITHUB_OUTPUT
+            echo "active_env=green" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Migrations on Inactive DB
+        env:
+          # Assumes you have secrets like DB_HOST_BLUE, DB_HOST_GREEN, etc.
+          DB_HOST: ${{ secrets[format('DB_HOST_{0}', upper(steps.get_env.outputs.inactive_env))] }}
+          DB_PORT: ${{ secrets[format('DB_PORT_{0}', upper(steps.get_env.outputs.inactive_env))] }}
+          DB_USERNAME: ${{ secrets[format('DB_USERNAME_{0}', upper(steps.get_env.outputs.inactive_env))] }}
+          DB_PASSWORD: ${{ secrets[format('DB_PASSWORD_{0}', upper(steps.get_env.outputs.inactive_env))] }}
+          DB_DATABASE: ${{ secrets[format('DB_DATABASE_{0}', upper(steps.get_env.outputs.inactive_env))] }}
+        run: |
+          echo "Running migrations on the ${{ steps.get_env.outputs.inactive_env }} database..."
+          # The migration script uses environment variables for DB credentials
+          npm run migration:run
+
+      - name: Deploy to Inactive Server
+        run: |
+          echo "Deploying application to the ${{ steps.get_env.outputs.inactive_env }} server..."
+          # ----------------- TO DO -----------------
+          # Add your deployment script here.
+          # This could involve SSH, SCP, rsync, or a cloud provider's CLI.
+          # Example using SSH:
+          # ssh user@${{ secrets[format('SERVER_HOST_{0}', upper(steps.get_env.outputs.inactive_env))] }} 'cd /var/www/app && git pull && npm install --production && pm2 restart app_name'
+          echo "Deployment to ${{ steps.get_env.outputs.inactive_env }} completed."
+
+
+  wait_for_approval:
+    name: Manual Approval
+    runs-on: ubuntu-latest
+    needs: deploy_to_inactive
+    environment:
+      name: production # This can be used to protect the environment
+    steps:
+      - name: Request manual approval to switch traffic
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ secrets.GITHUB_TOKEN }}
+          approvers: <YOUR_GITHUB_USERNAME> # ----------------- TO DO -----------------
+          minimum-approvals: 1
+          issue-title: "🚀 Deploy Blue/Green: Approve traffic switch to ${{ needs.deploy_to_inactive.outputs.inactive_env }}"
+          issue-body: |
+            Deployment to the **${{ needs.deploy_to_inactive.outputs.inactive_env }}** environment is complete.
+
+            Please perform any final validation and approve this step to switch live traffic to the new version.
+
+  switch_traffic_to_new_env:
+    name: Switch Live Traffic
+    runs-on: ubuntu-latest
+    needs: wait_for_approval
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Switch Traffic
+        run: |
+          echo "Switching live traffic to ${{ needs.deploy_to_inactive.outputs.inactive_env }}..."
+          # ----------------- TO DO -----------------
+          # Add your traffic switching script here.
+          # This could involve updating a reverse proxy (Nginx, HAProxy) or using a cloud provider's API.
+          # Example: ssh user@load_balancer 'update_config.sh ${{ needs.deploy_to_inactive.outputs.inactive_env }}'
+          echo "Traffic switched."
+
+      - name: Update active environment marker
+        run: echo "${{ needs.deploy_to_inactive.outputs.inactive_env }}" > ./.active_env
+
+      - name: Commit updated active environment
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "chore(ci): set active environment to ${{ needs.deploy_to_inactive.outputs.inactive_env }}"
+          file_pattern: .active_env

@@ -12,11 +12,11 @@ const pagamentos_controller_1 = require("./pagamentos.controller");
 const pagamentos_service_1 = require("./pagamentos.service");
 let PagamentosModule = class PagamentosModule {
 };
-exports.PagamentosModule = PagamentosModule;
-exports.PagamentosModule = PagamentosModule = __decorate([
+PagamentosModule = __decorate([
     (0, common_1.Module)({
         controllers: [pagamentos_controller_1.PagamentosController],
         providers: [pagamentos_service_1.PagamentosService]
     })
 ], PagamentosModule);
+exports.PagamentosModule = PagamentosModule;
 //# sourceMappingURL=pagamentos.module.js.map

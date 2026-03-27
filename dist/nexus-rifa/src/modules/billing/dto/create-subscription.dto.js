@@ -14,10 +14,10 @@ const class_validator_1 = require("class-validator");
 class CreateSubscriptionDto {
     planId;
 }
-exports.CreateSubscriptionDto = CreateSubscriptionDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateSubscriptionDto.prototype, "planId", void 0);
+exports.CreateSubscriptionDto = CreateSubscriptionDto;
 //# sourceMappingURL=create-subscription.dto.js.map

@@ -26,7 +26,6 @@ let Reserva = class Reserva {
     tenant;
     rifa;
 };
-exports.Reserva = Reserva;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
     __metadata("design:type", String)
@@ -73,7 +72,8 @@ __decorate([
     (0, typeorm_1.JoinColumn)({ name: 'rifa_id' }),
     __metadata("design:type", rifa_entity_1.Rifa)
 ], Reserva.prototype, "rifa", void 0);
-exports.Reserva = Reserva = __decorate([
+Reserva = __decorate([
     (0, typeorm_1.Entity)('reservas')
 ], Reserva);
+exports.Reserva = Reserva;
 //# sourceMappingURL=reserva.entity.js.map

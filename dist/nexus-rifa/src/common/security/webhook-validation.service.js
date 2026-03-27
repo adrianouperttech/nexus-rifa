@@ -41,8 +41,8 @@ let WebhookValidationService = class WebhookValidationService {
         return hash === signature;
     }
 };
-exports.WebhookValidationService = WebhookValidationService;
-exports.WebhookValidationService = WebhookValidationService = __decorate([
+WebhookValidationService = __decorate([
     (0, common_1.Injectable)()
 ], WebhookValidationService);
+exports.WebhookValidationService = WebhookValidationService;
 //# sourceMappingURL=webhook-validation.service.js.map

@@ -20,7 +20,6 @@ let AuditLog = class AuditLog {
     dados;
     created_at;
 };
-exports.AuditLog = AuditLog;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
     __metadata("design:type", String)
@@ -49,7 +48,8 @@ __decorate([
     (0, typeorm_1.CreateDateColumn)({ type: 'timestamp' }),
     __metadata("design:type", Date)
 ], AuditLog.prototype, "created_at", void 0);
-exports.AuditLog = AuditLog = __decorate([
+AuditLog = __decorate([
     (0, typeorm_1.Entity)('audit_logs')
 ], AuditLog);
+exports.AuditLog = AuditLog;
 //# sourceMappingURL=audit-log.entity.js.map

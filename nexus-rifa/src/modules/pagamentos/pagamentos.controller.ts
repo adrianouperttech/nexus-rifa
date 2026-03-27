@@ -3,7 +3,7 @@ import { PagamentosService } from './pagamentos.service';
 import { CreatePagamentoDto } from './dto/create-pagamento.dto';
 import { WebhookValidationService } from '../../common/security/webhook-validation.service';
 import { AuthGuard } from '@nestjs/passport';
-import { TenantInfo, GetTenantInfo } from '../../common/decorators/tenant-info.decorator';
+import { TenantInfo, GetTenantInfo } from '../tenants/decorators/tenant-info.decorator';
 
 interface WebhookPayload {
   transacao_id: string;
@@ -30,6 +30,9 @@ export class PagamentosController {
   @UseGuards(AuthGuard('webhook'))
   async handleWebhook(@Req() req: Request, @Body() payload: WebhookPayload) {
     const signature = req.headers.get('x-hub-signature');
+    if (!process.env.WEBHOOK_SECRET) {
+      throw new Error('WEBHOOK_SECRET not set');
+    }
     const isValid = this.webhookValidationService.validate(
       JSON.stringify(payload),
       signature,

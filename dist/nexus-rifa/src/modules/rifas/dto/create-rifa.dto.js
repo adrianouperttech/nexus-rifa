@@ -17,7 +17,6 @@ class CreateRifaDto {
     price;
     limit;
 }
-exports.CreateRifaDto = CreateRifaDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
@@ -37,4 +36,5 @@ __decorate([
     (0, class_validator_1.IsPositive)(),
     __metadata("design:type", Number)
 ], CreateRifaDto.prototype, "limit", void 0);
+exports.CreateRifaDto = CreateRifaDto;
 //# sourceMappingURL=create-rifa.dto.js.map

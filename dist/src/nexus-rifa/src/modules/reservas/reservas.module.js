@@ -12,11 +12,11 @@ const reservas_controller_1 = require("./reservas.controller");
 const reservas_service_1 = require("./reservas.service");
 let ReservasModule = class ReservasModule {
 };
-exports.ReservasModule = ReservasModule;
-exports.ReservasModule = ReservasModule = __decorate([
+ReservasModule = __decorate([
     (0, common_1.Module)({
         controllers: [reservas_controller_1.ReservasController],
         providers: [reservas_service_1.ReservasService]
     })
 ], ReservasModule);
+exports.ReservasModule = ReservasModule;
 //# sourceMappingURL=reservas.module.js.map

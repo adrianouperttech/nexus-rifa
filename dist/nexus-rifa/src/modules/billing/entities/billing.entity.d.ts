@@ -1,3 +1,8 @@
+/// <reference types="mongoose/types/document" />
+/// <reference types="mongoose/types/types" />
+/// <reference types="mongoose/types/models" />
+/// <reference types="mongoose/types/schemaoptions" />
+/// <reference types="mongoose/types/utility" />
 /// <reference types="nexus-rifa/node_modules/mongoose/types/aggregate" />
 /// <reference types="nexus-rifa/node_modules/mongoose/types/callback" />
 /// <reference types="nexus-rifa/node_modules/mongoose/types/collection" />
@@ -22,8 +27,8 @@
 /// <reference types="nexus-rifa/node_modules/mongoose/types/virtuals" />
 /// <reference types="nexus-rifa/node_modules/mongoose/types" />
 /// <reference types="nexus-rifa/node_modules/mongoose/types/schematypes" />
-/// <reference types="nexus-rifa/node_modules/mongoose/types/inferschematype" />
 /// <reference types="nexus-rifa/node_modules/mongoose/types/inferrawdoctype" />
+/// <reference types="nexus-rifa/node_modules/mongoose/types/inferschematype" />
 import { Document } from 'mongoose';
 export type BillingDocument = Billing & Document;
 export declare class Billing {

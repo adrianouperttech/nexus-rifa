@@ -25,22 +25,26 @@ export class ReservasController {
   }
 
   @Get()
-  findAll() {
-    return this.reservasService.findAll();
+  findAll(@Headers('tenant_id') tenant_id: string) {
+    return this.reservasService.findAll(tenant_id);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.reservasService.findOne(id);
+  findOne(@Param('id') id: string, @Headers('tenant_id') tenant_id: string) {
+    return this.reservasService.findOne(tenant_id, id);
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateReservaDto: UpdateReservaDto) {
-    return this.reservasService.update(id, updateReservaDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateReservaDto: UpdateReservaDto,
+    @Headers('tenant_id') tenant_id: string,
+  ) {
+    return this.reservasService.update(tenant_id, id, updateReservaDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.reservasService.remove(id);
+  remove(@Param('id') id: string, @Headers('tenant_id') tenant_id: string) {
+    return this.reservasService.remove(tenant_id, id);
   }
 }

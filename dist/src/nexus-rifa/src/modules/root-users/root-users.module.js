@@ -12,11 +12,11 @@ const root_users_controller_1 = require("./root-users.controller");
 const root_users_service_1 = require("./root-users.service");
 let RootUsersModule = class RootUsersModule {
 };
-exports.RootUsersModule = RootUsersModule;
-exports.RootUsersModule = RootUsersModule = __decorate([
+RootUsersModule = __decorate([
     (0, common_1.Module)({
         controllers: [root_users_controller_1.RootUsersController],
         providers: [root_users_service_1.RootUsersService]
     })
 ], RootUsersModule);
+exports.RootUsersModule = RootUsersModule;
 //# sourceMappingURL=root-users.module.js.map

@@ -10,8 +10,8 @@ exports.ReservasService = void 0;
 const common_1 = require("@nestjs/common");
 let ReservasService = class ReservasService {
 };
-exports.ReservasService = ReservasService;
-exports.ReservasService = ReservasService = __decorate([
+ReservasService = __decorate([
     (0, common_1.Injectable)()
 ], ReservasService);
+exports.ReservasService = ReservasService;
 //# sourceMappingURL=reservas.service.js.map

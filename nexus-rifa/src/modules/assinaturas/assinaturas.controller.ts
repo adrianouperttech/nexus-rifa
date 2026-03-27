@@ -1,7 +1,7 @@
 import { Controller, Post, Body, UseGuards, Param } from '@nestjs/common';
 import { AssinaturasService } from './assinaturas.service';
 import { CreateAssinaturaDto } from './dto/create-assinatura.dto';
-import { BillingGuard } from '../../common/guards/billing.guard';
+import { BillingGuard } from '../../billing/guards/billing.guard';
 
 @Controller('tenants/:tenant_id/assinaturas')
 export class AssinaturasController {

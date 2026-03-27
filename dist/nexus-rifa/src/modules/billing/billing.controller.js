@@ -30,7 +30,6 @@ let BillingController = class BillingController {
         this.billingService.handleWebhook(notification);
     }
 };
-exports.BillingController = BillingController;
 __decorate([
     (0, common_1.Post)('subscribe'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
@@ -48,8 +47,9 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], BillingController.prototype, "webhook", null);
-exports.BillingController = BillingController = __decorate([
+BillingController = __decorate([
     (0, common_1.Controller)('billing'),
     __metadata("design:paramtypes", [billing_service_1.BillingService])
 ], BillingController);
+exports.BillingController = BillingController;
 //# sourceMappingURL=billing.controller.js.map

@@ -12,11 +12,11 @@ const plans_controller_1 = require("./plans.controller");
 const plans_service_1 = require("./plans.service");
 let PlansModule = class PlansModule {
 };
-exports.PlansModule = PlansModule;
-exports.PlansModule = PlansModule = __decorate([
+PlansModule = __decorate([
     (0, common_1.Module)({
         controllers: [plans_controller_1.PlansController],
         providers: [plans_service_1.PlansService]
     })
 ], PlansModule);
+exports.PlansModule = PlansModule;
 //# sourceMappingURL=plans.module.js.map

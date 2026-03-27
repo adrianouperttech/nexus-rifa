@@ -14,7 +14,6 @@ const class_validator_1 = require("class-validator");
 class UpdatePagamentoDto {
     status;
 }
-exports.UpdatePagamentoDto = UpdatePagamentoDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
@@ -22,4 +21,5 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdatePagamentoDto.prototype, "status", void 0);
+exports.UpdatePagamentoDto = UpdatePagamentoDto;
 //# sourceMappingURL=update-pagamento.dto.js.map

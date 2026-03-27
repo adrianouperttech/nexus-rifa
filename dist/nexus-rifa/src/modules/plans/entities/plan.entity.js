@@ -16,9 +16,9 @@ let Plan = class Plan {
     name;
     price;
     limit;
+    mercadopago_plan_id;
     created_at;
 };
-exports.Plan = Plan;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
     __metadata("design:type", String)
@@ -36,10 +36,15 @@ __decorate([
     __metadata("design:type", Number)
 ], Plan.prototype, "limit", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: 'text', nullable: true }),
+    __metadata("design:type", String)
+], Plan.prototype, "mercadopago_plan_id", void 0);
+__decorate([
     (0, typeorm_1.CreateDateColumn)({ type: 'timestamp' }),
     __metadata("design:type", Date)
 ], Plan.prototype, "created_at", void 0);
-exports.Plan = Plan = __decorate([
+Plan = __decorate([
     (0, typeorm_1.Entity)('plans')
 ], Plan);
+exports.Plan = Plan;
 //# sourceMappingURL=plan.entity.js.map

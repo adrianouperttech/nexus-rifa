@@ -15,7 +15,6 @@ const user_entity_1 = require("../../users/entities/user.entity");
 const rifa_entity_1 = require("../../rifas/entities/rifa.entity");
 const cota_entity_1 = require("../../cotas/entities/cota.entity");
 const reserva_entity_1 = require("../../reservas/entities/reserva.entity");
-const pagamento_entity_1 = require("../../pagamentos/entities/pagamento.entity");
 const subscription_entity_1 = require("../../billing/entities/subscription.entity");
 let Tenant = class Tenant {
     id;
@@ -27,10 +26,8 @@ let Tenant = class Tenant {
     rifas;
     cotas;
     reservas;
-    pagamentos;
     subscriptions;
 };
-exports.Tenant = Tenant;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
     __metadata("design:type", String)
@@ -68,14 +65,11 @@ __decorate([
     __metadata("design:type", Array)
 ], Tenant.prototype, "reservas", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => pagamento_entity_1.Pagamento, (pagamento) => pagamento.tenant),
-    __metadata("design:type", Array)
-], Tenant.prototype, "pagamentos", void 0);
-__decorate([
     (0, typeorm_1.OneToMany)(() => subscription_entity_1.Subscription, (subscription) => subscription.tenant),
     __metadata("design:type", Array)
 ], Tenant.prototype, "subscriptions", void 0);
-exports.Tenant = Tenant = __decorate([
+Tenant = __decorate([
     (0, typeorm_1.Entity)('tenants')
 ], Tenant);
+exports.Tenant = Tenant;
 //# sourceMappingURL=tenant.entity.js.map

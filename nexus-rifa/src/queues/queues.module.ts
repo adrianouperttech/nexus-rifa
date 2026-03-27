@@ -1,20 +1,23 @@
 import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bull';
+import { PaymentConsumer } from './consumers/payment.consumer';
+import { WhatsappConsumer } from './consumers/whatsapp.consumer';
+import { EmailConsumer } from './consumers/email.consumer';
 
 @Module({
   imports: [
     BullModule.forRoot({
       redis: {
-        host: process.env.REDIS_HOST || 'localhost',
-        port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+        host: 'localhost',
+        port: 6379,
       },
     }),
     BullModule.registerQueue(
-      { name: 'payments' },
+      { name: 'payment' },
       { name: 'whatsapp' },
       { name: 'email' },
     ),
   ],
-  exports: [BullModule],
+  providers: [PaymentConsumer, WhatsappConsumer, EmailConsumer],
 })
 export class QueuesModule {}

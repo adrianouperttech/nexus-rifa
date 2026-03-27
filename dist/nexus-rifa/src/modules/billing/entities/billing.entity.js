@@ -20,7 +20,6 @@ let Billing = class Billing {
     endDate;
     status;
 };
-exports.Billing = Billing;
 __decorate([
     (0, mongoose_1.Prop)({
         type: String,
@@ -64,10 +63,11 @@ __decorate([
     }),
     __metadata("design:type", String)
 ], Billing.prototype, "status", void 0);
-exports.Billing = Billing = __decorate([
+Billing = __decorate([
     (0, mongoose_1.Schema)({
         timestamps: true,
     })
 ], Billing);
+exports.Billing = Billing;
 exports.BillingSchema = mongoose_1.SchemaFactory.createForClass(Billing);
 //# sourceMappingURL=billing.entity.js.map

@@ -20,7 +20,6 @@ let Premio = class Premio {
     created_at;
     rifa;
 };
-exports.Premio = Premio;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
     __metadata("design:type", String)
@@ -46,7 +45,8 @@ __decorate([
     (0, typeorm_1.JoinColumn)({ name: 'rifa_id' }),
     __metadata("design:type", rifa_entity_1.Rifa)
 ], Premio.prototype, "rifa", void 0);
-exports.Premio = Premio = __decorate([
+Premio = __decorate([
     (0, typeorm_1.Entity)('premios')
 ], Premio);
+exports.Premio = Premio;
 //# sourceMappingURL=premio.entity.js.map

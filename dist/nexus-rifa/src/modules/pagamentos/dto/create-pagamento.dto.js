@@ -14,10 +14,10 @@ const class_validator_1 = require("class-validator");
 class CreatePagamentoDto {
     reserva_id;
 }
-exports.CreatePagamentoDto = CreatePagamentoDto;
 __decorate([
     (0, class_validator_1.IsUUID)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreatePagamentoDto.prototype, "reserva_id", void 0);
+exports.CreatePagamentoDto = CreatePagamentoDto;
 //# sourceMappingURL=create-pagamento.dto.js.map

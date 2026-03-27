@@ -31,8 +31,6 @@ export class Tenant {
   cotas: Cota[];
   @OneToMany(() => Reserva, (reserva) => reserva.tenant)
   reservas: Reserva[];
-  @OneToMany(() => Pagamento, (pagamento) => pagamento.tenant)
-  pagamentos: Pagamento[];
   @OneToMany(() => Subscription, (subscription) => subscription.tenant)
   subscriptions: Subscription[];
 }

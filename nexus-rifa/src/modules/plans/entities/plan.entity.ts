@@ -19,6 +19,9 @@ export class Plan {
   @Column({ type: 'integer' })
   limit: number;
 
+  @Column({ type: 'text', nullable: true })
+  mercadopago_plan_id: string;
+
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 }

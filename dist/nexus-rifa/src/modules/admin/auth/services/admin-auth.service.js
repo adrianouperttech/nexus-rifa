@@ -31,13 +31,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdminAuthService = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const bcrypt = __importStar(require("bcrypt"));
-const root_users_service_1 = require("../../root-users/root-users.service");
+const root_users_service_1 = require("../../../root-users/root-users.service");
 let AdminAuthService = class AdminAuthService {
     rootUsersService;
     jwtService;
@@ -61,9 +60,10 @@ let AdminAuthService = class AdminAuthService {
         };
     }
 };
-exports.AdminAuthService = AdminAuthService;
-exports.AdminAuthService = AdminAuthService = __decorate([
+AdminAuthService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof root_users_service_1.RootUsersService !== "undefined" && root_users_service_1.RootUsersService) === "function" ? _a : Object, jwt_1.JwtService])
+    __metadata("design:paramtypes", [root_users_service_1.RootUsersService,
+        jwt_1.JwtService])
 ], AdminAuthService);
+exports.AdminAuthService = AdminAuthService;
 //# sourceMappingURL=admin-auth.service.js.map

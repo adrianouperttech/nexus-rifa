@@ -10,8 +10,8 @@ exports.AuditLogsService = void 0;
 const common_1 = require("@nestjs/common");
 let AuditLogsService = class AuditLogsService {
 };
-exports.AuditLogsService = AuditLogsService;
-exports.AuditLogsService = AuditLogsService = __decorate([
+AuditLogsService = __decorate([
     (0, common_1.Injectable)()
 ], AuditLogsService);
+exports.AuditLogsService = AuditLogsService;
 //# sourceMappingURL=audit-logs.service.js.map

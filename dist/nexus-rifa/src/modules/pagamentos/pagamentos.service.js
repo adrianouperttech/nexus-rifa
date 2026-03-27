@@ -68,15 +68,15 @@ let PagamentosService = class PagamentosService {
         }
         pagamento.status = status;
         await this.pagamentoRepository.save(pagamento);
-        await this.reservasService.updateStatus(pagamento.reserva.tenant_id, pagamento.reserva_id, status);
+        await this.reservasService.updateStatus(pagamento.reserva.tenant_id, pagamento.reserva_id, status === 'pago' ? 'confirmada' : 'disponivel');
     }
 };
-exports.PagamentosService = PagamentosService;
-exports.PagamentosService = PagamentosService = __decorate([
+PagamentosService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(pagamento_entity_1.Pagamento)),
     __param(1, (0, common_1.Inject)((0, common_1.forwardRef)(() => reservas_service_1.ReservasService))),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         reservas_service_1.ReservasService])
 ], PagamentosService);
+exports.PagamentosService = PagamentosService;
 //# sourceMappingURL=pagamentos.service.js.map

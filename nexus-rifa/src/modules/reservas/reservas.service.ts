@@ -31,14 +31,13 @@ export class ReservasService {
     createReservaDto: CreateReservaDto,
     tenant_id: string,
   ): Promise<Reserva> {
-    const { rifa_id, numero, cliente_email, cliente_whatsapp } =
-      createReservaDto;
+    const { rifa_id, numero, email, whatsapp } = createReservaDto;
 
     const rifa = await this.rifasService.findOne(tenant_id, rifa_id);
 
-    if (numero > rifa.limit) {
+    if (numero > rifa.limite) {
       throw new ConflictException(
-        `O número ${numero} está acima do limite de ${rifa.limit} da rifa.`,
+        `O número ${numero} está acima do limite de ${rifa.limite} da rifa.`,
       );
     }
 
@@ -60,12 +59,11 @@ export class ReservasService {
     const savedReserva = await this.reservaRepository.save(reserva);
 
     await this.emailService.send(
-      cliente_email,
-      'Reserva Realizada',
+      email,
       `Sua reserva para a rifa ${rifa.nome}, número ${numero} foi realizada com sucesso!`,
     );
     await this.whatsappService.send(
-      cliente_whatsapp,
+      whatsapp,
       `Sua reserva para a rifa ${rifa.nome}, número ${numero} foi realizada com sucesso!`,
     );
 
@@ -77,10 +75,6 @@ export class ReservasService {
       where: { tenant_id },
       relations: ['rifa'],
     });
-  }
-
-  async findByStatus(status: string): Promise<Reserva[]> {
-    return this.reservaRepository.find({ where: { status } });
   }
 
   async findOne(tenant_id: string, id: string): Promise<Reserva> {
@@ -110,20 +104,20 @@ export class ReservasService {
     return this.reservaRepository.save(reserva);
   }
 
-  async updateStatus(
-    tenant_id: string,
-    id: string,
-    status: string,
-  ): Promise<Reserva> {
-    const reserva = await this.findOne(tenant_id, id);
-    reserva.status = status;
-    return this.reservaRepository.save(reserva);
-  }
-
   async remove(tenant_id: string, id: string): Promise<void> {
     const result = await this.reservaRepository.delete({ id, tenant_id });
     if (result.affected === 0) {
       throw new NotFoundException(`Reserva with ID "${id}" not found`);
     }
+  }
+
+  async findByStatus(tenant_id: string, status: string): Promise<Reserva[]> {
+    return this.reservaRepository.find({ where: { tenant_id, status } });
+  }
+
+  async updateStatus(tenant_id: string, id: string, status: string): Promise<Reserva> {
+    const reserva = await this.findOne(tenant_id, id);
+    reserva.status = status;
+    return this.reservaRepository.save(reserva);
   }
 }

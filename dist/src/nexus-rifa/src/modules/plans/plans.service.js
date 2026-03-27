@@ -10,8 +10,8 @@ exports.PlansService = void 0;
 const common_1 = require("@nestjs/common");
 let PlansService = class PlansService {
 };
-exports.PlansService = PlansService;
-exports.PlansService = PlansService = __decorate([
+PlansService = __decorate([
     (0, common_1.Injectable)()
 ], PlansService);
+exports.PlansService = PlansService;
 //# sourceMappingURL=plans.service.js.map

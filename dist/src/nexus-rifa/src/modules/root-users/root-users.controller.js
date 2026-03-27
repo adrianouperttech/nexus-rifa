@@ -10,8 +10,8 @@ exports.RootUsersController = void 0;
 const common_1 = require("@nestjs/common");
 let RootUsersController = class RootUsersController {
 };
-exports.RootUsersController = RootUsersController;
-exports.RootUsersController = RootUsersController = __decorate([
+RootUsersController = __decorate([
     (0, common_1.Controller)('root-users')
 ], RootUsersController);
+exports.RootUsersController = RootUsersController;
 //# sourceMappingURL=root-users.controller.js.map

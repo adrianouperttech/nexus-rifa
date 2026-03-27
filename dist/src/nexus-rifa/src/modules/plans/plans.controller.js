@@ -10,8 +10,8 @@ exports.PlansController = void 0;
 const common_1 = require("@nestjs/common");
 let PlansController = class PlansController {
 };
-exports.PlansController = PlansController;
-exports.PlansController = PlansController = __decorate([
+PlansController = __decorate([
     (0, common_1.Controller)('plans')
 ], PlansController);
+exports.PlansController = PlansController;
 //# sourceMappingURL=plans.controller.js.map

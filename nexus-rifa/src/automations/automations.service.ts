@@ -17,26 +17,30 @@ export class AutomationsService {
   @Cron(CronExpression.EVERY_HOUR)
   async handleExpireReservas() {
     this.logger.log('Verificando reservas expiradas...');
-    const pendingReservas = await this.reservasService.findByStatus(
-      'disponivel',
-    );
-    const now = new Date();
+    const tenants = await this.tenantsService.findAll();
+    for (const tenant of tenants) {
+      const pendingReservas = await this.reservasService.findByStatus(
+        tenant.id,
+        'disponivel',
+      );
+      const now = new Date();
 
-    for (const reserva of pendingReservas) {
-      const createdAt = new Date(reserva.created_at);
-      const expirationTime = new Date(
-        createdAt.getTime() + 24 * 60 * 60 * 1000,
-      ); // 24 hours
+      for (const reserva of pendingReservas) {
+        const createdAt = new Date(reserva.created_at);
+        const expirationTime = new Date(
+          createdAt.getTime() + 24 * 60 * 60 * 1000,
+        ); // 24 hours
 
-      if (now > expirationTime) {
-        this.logger.log(
-          `Reserva ${reserva.id} expirada. Atualizando status...`,
-        );
-        await this.reservasService.updateStatus(
-          reserva.tenant_id,
-          reserva.id,
-          'expirada',
-        );
+        if (now > expirationTime) {
+          this.logger.log(
+            `Reserva ${reserva.id} expirada. Atualizando status...`,
+          );
+          await this.reservasService.updateStatus(
+            reserva.tenant_id,
+            reserva.id,
+            'expirada',
+          );
+        }
       }
     }
   }

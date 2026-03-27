@@ -10,8 +10,8 @@ exports.PagamentosController = void 0;
 const common_1 = require("@nestjs/common");
 let PagamentosController = class PagamentosController {
 };
-exports.PagamentosController = PagamentosController;
-exports.PagamentosController = PagamentosController = __decorate([
+PagamentosController = __decorate([
     (0, common_1.Controller)('pagamentos')
 ], PagamentosController);
+exports.PagamentosController = PagamentosController;
 //# sourceMappingURL=pagamentos.controller.js.map

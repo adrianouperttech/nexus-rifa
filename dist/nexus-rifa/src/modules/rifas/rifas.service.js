@@ -59,13 +59,11 @@ let RifasService = class RifasService {
     async update(tenant_id, id, updateRifaDto) {
         const rifa = await this.rifasRepository.preload({
             id: id,
+            tenant_id: tenant_id,
             ...updateRifaDto,
         });
         if (!rifa) {
             throw new common_1.NotFoundException(`Rifa with ID "${id}" not found`);
-        }
-        if (rifa.tenant_id !== tenant_id) {
-            throw new common_1.ForbiddenException();
         }
         return this.rifasRepository.save(rifa);
     }
@@ -76,12 +74,12 @@ let RifasService = class RifasService {
         }
     }
 };
-exports.RifasService = RifasService;
-exports.RifasService = RifasService = __decorate([
+RifasService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(rifa_entity_1.Rifa)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         assinaturas_service_1.AssinaturasService,
         plans_service_1.PlansService])
 ], RifasService);
+exports.RifasService = RifasService;
 //# sourceMappingURL=rifas.service.js.map

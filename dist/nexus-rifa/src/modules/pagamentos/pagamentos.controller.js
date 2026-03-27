@@ -11,7 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PagamentosController = void 0;
 const common_1 = require("@nestjs/common");
@@ -19,7 +18,7 @@ const pagamentos_service_1 = require("./pagamentos.service");
 const create_pagamento_dto_1 = require("./dto/create-pagamento.dto");
 const webhook_validation_service_1 = require("../../common/security/webhook-validation.service");
 const passport_1 = require("@nestjs/passport");
-const tenant_info_decorator_1 = require("../../common/decorators/tenant-info.decorator");
+const tenant_info_decorator_1 = require("../tenants/decorators/tenant-info.decorator");
 let PagamentosController = class PagamentosController {
     pagamentosService;
     webhookValidationService;
@@ -32,6 +31,9 @@ let PagamentosController = class PagamentosController {
     }
     async handleWebhook(req, payload) {
         const signature = req.headers.get('x-hub-signature');
+        if (!process.env.WEBHOOK_SECRET) {
+            throw new Error('WEBHOOK_SECRET not set');
+        }
         const isValid = this.webhookValidationService.validate(JSON.stringify(payload), signature, process.env.WEBHOOK_SECRET);
         if (!isValid) {
             throw new Error('Invalid webhook signature');
@@ -40,13 +42,12 @@ let PagamentosController = class PagamentosController {
         await this.pagamentosService.handlePagamentoWebhook(transacao_id, status);
     }
 };
-exports.PagamentosController = PagamentosController;
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, tenant_info_decorator_1.GetTenantInfo)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_a = typeof tenant_info_decorator_1.TenantInfo !== "undefined" && tenant_info_decorator_1.TenantInfo) === "function" ? _a : Object, create_pagamento_dto_1.CreatePagamentoDto]),
+    __metadata("design:paramtypes", [Object, create_pagamento_dto_1.CreatePagamentoDto]),
     __metadata("design:returntype", void 0)
 ], PagamentosController.prototype, "create", null);
 __decorate([
@@ -59,9 +60,10 @@ __decorate([
     __metadata("design:paramtypes", [Request, Object]),
     __metadata("design:returntype", Promise)
 ], PagamentosController.prototype, "handleWebhook", null);
-exports.PagamentosController = PagamentosController = __decorate([
+PagamentosController = __decorate([
     (0, common_1.Controller)('pagamentos'),
     __metadata("design:paramtypes", [pagamentos_service_1.PagamentosService,
         webhook_validation_service_1.WebhookValidationService])
 ], PagamentosController);
+exports.PagamentosController = PagamentosController;
 //# sourceMappingURL=pagamentos.controller.js.map
