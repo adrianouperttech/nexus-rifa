@@ -1,47 +1,39 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Param,
+  HttpCode,
+  HttpStatus,
+  Headers,
+} from '@nestjs/common';
 import { PagamentosService } from './pagamentos.service';
 import { CreatePagamentoDto } from './dto/create-pagamento.dto';
-import { WebhookValidationService } from '../../common/security/webhook-validation.service';
-import { AuthGuard } from '@nestjs/passport';
-import { TenantInfo, GetTenantInfo } from '../tenants/decorators/tenant-info.decorator';
-
-interface WebhookPayload {
-  transacao_id: string;
-  status: 'pago' | 'cancelado';
-}
 
 @Controller('pagamentos')
 export class PagamentosController {
-  constructor(
-    private readonly pagamentosService: PagamentosService,
-    private readonly webhookValidationService: WebhookValidationService,
-  ) {}
+  constructor(private readonly pagamentosService: PagamentosService) {}
 
   @Post()
   create(
-    @GetTenantInfo() tenantInfo: TenantInfo,
+    @Headers('tenant-id') tenant_id: string, // Supondo que você use um header para o tenant
     @Body() createPagamentoDto: CreatePagamentoDto,
   ) {
-    return this.pagamentosService.create(tenantInfo.id, createPagamentoDto);
+    return this.pagamentosService.create(tenant_id, createPagamentoDto);
   }
 
+  // Rota para receber os webhooks do Mercado Pago
   @Post('webhook')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(AuthGuard('webhook'))
-  async handleWebhook(@Req() req: Request, @Body() payload: WebhookPayload) {
-    const signature = req.headers.get('x-hub-signature');
-    if (!process.env.WEBHOOK_SECRET) {
-      throw new Error('WEBHOOK_SECRET not set');
+  @HttpCode(HttpStatus.OK) // Sempre retorne 200 OK para o Mercado Pago
+  async handleWebhook(@Body() notification: any) {
+    console.log('Webhook do Mercado Pago recebido:', notification);
+    try {
+      await this.pagamentosService.handlePagamentoWebhook(notification);
+    } catch (error) {
+      console.error('Erro ao processar webhook:', error);
+      // Mesmo com erro, retornamos 200 para evitar que o MP sobrecarregue com retentativas.
+      // A lógica de erro já foi logada para análise.
     }
-    const isValid = this.webhookValidationService.validate(
-      JSON.stringify(payload),
-      signature,
-      process.env.WEBHOOK_SECRET,
-    );
-    if (!isValid) {
-      throw new Error('Invalid webhook signature');
-    }
-    const { transacao_id, status } = payload;
-    await this.pagamentosService.handlePagamentoWebhook(transacao_id, status);
+    // O retorno é implícito, respondendo com 200 OK e sem corpo.
   }
 }
