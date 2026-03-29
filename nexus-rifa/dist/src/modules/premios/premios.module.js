@@ -12,12 +12,12 @@ const typeorm_1 = require("@nestjs/typeorm");
 const premio_entity_1 = require("./entities/premio.entity");
 let PremiosModule = class PremiosModule {
 };
-PremiosModule = __decorate([
+exports.PremiosModule = PremiosModule;
+exports.PremiosModule = PremiosModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([premio_entity_1.Premio])],
         controllers: [],
         providers: [],
     })
 ], PremiosModule);
-exports.PremiosModule = PremiosModule;
 //# sourceMappingURL=premios.module.js.map

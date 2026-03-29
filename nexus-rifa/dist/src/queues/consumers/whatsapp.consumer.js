@@ -16,14 +16,14 @@ let WhatsappConsumer = class WhatsappConsumer {
         console.log('Sending WhatsApp message:', job.data);
     }
 };
+exports.WhatsappConsumer = WhatsappConsumer;
 __decorate([
     (0, bull_1.Process)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], WhatsappConsumer.prototype, "process", null);
-WhatsappConsumer = __decorate([
+exports.WhatsappConsumer = WhatsappConsumer = __decorate([
     (0, bull_1.Processor)('whatsapp')
 ], WhatsappConsumer);
-exports.WhatsappConsumer = WhatsappConsumer;
 //# sourceMappingURL=whatsapp.consumer.js.map

@@ -37,10 +37,10 @@ let UserService = class UserService {
         return this.usersRepository.save(user);
     }
 };
-UserService = __decorate([
+exports.UserService = UserService;
+exports.UserService = UserService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
     __metadata("design:paramtypes", [typeorm_2.Repository])
 ], UserService);
-exports.UserService = UserService;
 //# sourceMappingURL=user.service.js.map

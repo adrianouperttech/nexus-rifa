@@ -15,12 +15,12 @@ const plano_assinatura_entity_1 = require("./entities/plano-assinatura.entity");
 const axios_1 = require("@nestjs/axios");
 let PlanosAssinaturaModule = class PlanosAssinaturaModule {
 };
-PlanosAssinaturaModule = __decorate([
+exports.PlanosAssinaturaModule = PlanosAssinaturaModule;
+exports.PlanosAssinaturaModule = PlanosAssinaturaModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([plano_assinatura_entity_1.PlanoAssinatura]), axios_1.HttpModule],
         controllers: [planos_assinatura_controller_1.PlanosAssinaturaController],
         providers: [planos_assinatura_service_1.PlanosAssinaturaService],
     })
 ], PlanosAssinaturaModule);
-exports.PlanosAssinaturaModule = PlanosAssinaturaModule;
 //# sourceMappingURL=planos-assinatura.module.js.map

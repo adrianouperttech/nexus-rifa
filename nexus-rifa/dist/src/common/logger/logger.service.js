@@ -25,8 +25,8 @@ let MyLogger = class MyLogger {
         console.log(message);
     }
 };
-MyLogger = __decorate([
+exports.MyLogger = MyLogger;
+exports.MyLogger = MyLogger = __decorate([
     (0, common_1.Injectable)()
 ], MyLogger);
-exports.MyLogger = MyLogger;
 //# sourceMappingURL=logger.service.js.map

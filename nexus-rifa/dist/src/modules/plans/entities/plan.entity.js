@@ -13,6 +13,7 @@ exports.Plan = void 0;
 const typeorm_1 = require("typeorm");
 let Plan = class Plan {
 };
+exports.Plan = Plan;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
     __metadata("design:type", String)
@@ -37,8 +38,7 @@ __decorate([
     (0, typeorm_1.CreateDateColumn)({ type: 'timestamp' }),
     __metadata("design:type", Date)
 ], Plan.prototype, "created_at", void 0);
-Plan = __decorate([
+exports.Plan = Plan = __decorate([
     (0, typeorm_1.Entity)('plans')
 ], Plan);
-exports.Plan = Plan;
 //# sourceMappingURL=plan.entity.js.map

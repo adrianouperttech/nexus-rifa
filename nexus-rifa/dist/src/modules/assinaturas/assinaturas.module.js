@@ -15,12 +15,12 @@ const assinatura_entity_1 = require("./entities/assinatura.entity");
 const axios_1 = require("@nestjs/axios");
 let AssinaturasModule = class AssinaturasModule {
 };
-AssinaturasModule = __decorate([
+exports.AssinaturasModule = AssinaturasModule;
+exports.AssinaturasModule = AssinaturasModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([assinatura_entity_1.Assinatura]), axios_1.HttpModule],
         controllers: [assinaturas_controller_1.AssinaturasController],
         providers: [assinaturas_service_1.AssinaturasService],
     })
 ], AssinaturasModule);
-exports.AssinaturasModule = AssinaturasModule;
 //# sourceMappingURL=assinaturas.module.js.map

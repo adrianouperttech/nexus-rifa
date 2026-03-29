@@ -14,6 +14,7 @@ const typeorm_1 = require("typeorm");
 const tenant_entity_1 = require("../../tenants/entities/tenant.entity");
 let Subscription = class Subscription {
 };
+exports.Subscription = Subscription;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
     __metadata("design:type", String)
@@ -43,8 +44,7 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }),
     __metadata("design:type", Date)
 ], Subscription.prototype, "created_at", void 0);
-Subscription = __decorate([
+exports.Subscription = Subscription = __decorate([
     (0, typeorm_1.Entity)('subscriptions')
 ], Subscription);
-exports.Subscription = Subscription;
 //# sourceMappingURL=subscription.entity.js.map

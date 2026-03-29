@@ -14,6 +14,7 @@ const mongoose_1 = require("@nestjs/mongoose");
 const uuid_1 = require("uuid");
 let Subscription = class Subscription {
 };
+exports.Subscription = Subscription;
 __decorate([
     (0, mongoose_1.Prop)({
         type: String,
@@ -43,11 +44,10 @@ __decorate([
     }),
     __metadata("design:type", String)
 ], Subscription.prototype, "status", void 0);
-Subscription = __decorate([
+exports.Subscription = Subscription = __decorate([
     (0, mongoose_1.Schema)({
         timestamps: true,
     })
 ], Subscription);
-exports.Subscription = Subscription;
 exports.SubscriptionSchema = mongoose_1.SchemaFactory.createForClass(Subscription);
 //# sourceMappingURL=subscription.entity.js.map

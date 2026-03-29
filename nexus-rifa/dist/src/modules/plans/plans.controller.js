@@ -41,6 +41,7 @@ let PlansController = class PlansController {
         return this.plansService.remove(id);
     }
 };
+exports.PlansController = PlansController;
 __decorate([
     (0, common_1.Post)(),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
@@ -82,9 +83,8 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], PlansController.prototype, "remove", null);
-PlansController = __decorate([
+exports.PlansController = PlansController = __decorate([
     (0, common_1.Controller)('plans'),
     __metadata("design:paramtypes", [plans_service_1.PlansService])
 ], PlansController);
-exports.PlansController = PlansController;
 //# sourceMappingURL=plans.controller.js.map

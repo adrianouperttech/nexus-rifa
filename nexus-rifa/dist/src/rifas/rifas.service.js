@@ -49,10 +49,10 @@ let RifasService = class RifasService {
         }
     }
 };
-RifasService = __decorate([
+exports.RifasService = RifasService;
+exports.RifasService = RifasService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(rifa_entity_1.Rifa)),
     __metadata("design:paramtypes", [typeorm_2.Repository])
 ], RifasService);
-exports.RifasService = RifasService;
 //# sourceMappingURL=rifas.service.js.map

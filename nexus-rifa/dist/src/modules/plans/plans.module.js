@@ -15,7 +15,8 @@ const plans_controller_1 = require("./plans.controller");
 const billing_module_1 = require("../billing/billing.module");
 let PlansModule = class PlansModule {
 };
-PlansModule = __decorate([
+exports.PlansModule = PlansModule;
+exports.PlansModule = PlansModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([plan_entity_1.Plan]), (0, common_1.forwardRef)(() => billing_module_1.BillingModule)],
         providers: [plans_service_1.PlansService],
@@ -23,5 +24,4 @@ PlansModule = __decorate([
         exports: [plans_service_1.PlansService],
     })
 ], PlansModule);
-exports.PlansModule = PlansModule;
 //# sourceMappingURL=plans.module.js.map

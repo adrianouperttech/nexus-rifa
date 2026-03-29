@@ -38,10 +38,10 @@ let SubscriptionsService = class SubscriptionsService {
         return this.subscriptionModel.deleteOne({ id }).exec();
     }
 };
-SubscriptionsService = __decorate([
+exports.SubscriptionsService = SubscriptionsService;
+exports.SubscriptionsService = SubscriptionsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)(subscription_entity_1.Subscription.name)),
     __metadata("design:paramtypes", [mongoose_2.Model])
 ], SubscriptionsService);
-exports.SubscriptionsService = SubscriptionsService;
 //# sourceMappingURL=subscriptions.service.js.map

@@ -35,10 +35,10 @@ let AdminAuthService = class AdminAuthService {
         };
     }
 };
-AdminAuthService = __decorate([
+exports.AdminAuthService = AdminAuthService;
+exports.AdminAuthService = AdminAuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [root_users_service_1.RootUsersService,
         jwt_1.JwtService])
 ], AdminAuthService);
-exports.AdminAuthService = AdminAuthService;
 //# sourceMappingURL=admin-auth.service.js.map

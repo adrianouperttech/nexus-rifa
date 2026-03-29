@@ -1,5 +1,4 @@
 import { Logger } from '@nestjs/common';
-import 'winston-daily-rotate-file';
 export declare class LoggerService extends Logger {
     private readonly logger;
     constructor();

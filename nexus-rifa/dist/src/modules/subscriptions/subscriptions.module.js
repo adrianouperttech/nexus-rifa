@@ -14,7 +14,8 @@ const subscriptions_controller_1 = require("./subscriptions.controller");
 const subscriptions_service_1 = require("./subscriptions.service");
 let SubscriptionsModule = class SubscriptionsModule {
 };
-SubscriptionsModule = __decorate([
+exports.SubscriptionsModule = SubscriptionsModule;
+exports.SubscriptionsModule = SubscriptionsModule = __decorate([
     (0, common_1.Module)({
         imports: [
             mongoose_1.MongooseModule.forFeature([
@@ -25,5 +26,4 @@ SubscriptionsModule = __decorate([
         providers: [subscriptions_service_1.SubscriptionsService],
     })
 ], SubscriptionsModule);
-exports.SubscriptionsModule = SubscriptionsModule;
 //# sourceMappingURL=subscriptions.module.js.map

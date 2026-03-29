@@ -15,7 +15,8 @@ const reserva_entity_1 = require("./entities/reserva.entity");
 const rifas_module_1 = require("../rifas/rifas.module");
 let ReservasModule = class ReservasModule {
 };
-ReservasModule = __decorate([
+exports.ReservasModule = ReservasModule;
+exports.ReservasModule = ReservasModule = __decorate([
     (0, common_1.Module)({
         imports: [
             typeorm_1.TypeOrmModule.forFeature([reserva_entity_1.Reserva]),
@@ -26,5 +27,4 @@ ReservasModule = __decorate([
         exports: [reservas_service_1.ReservasService],
     })
 ], ReservasModule);
-exports.ReservasModule = ReservasModule;
 //# sourceMappingURL=reservas.module.js.map

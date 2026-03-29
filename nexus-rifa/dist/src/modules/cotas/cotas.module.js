@@ -12,12 +12,12 @@ const typeorm_1 = require("@nestjs/typeorm");
 const cota_entity_1 = require("./entities/cota.entity");
 let CotasModule = class CotasModule {
 };
-CotasModule = __decorate([
+exports.CotasModule = CotasModule;
+exports.CotasModule = CotasModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([cota_entity_1.Cota])],
         controllers: [],
         providers: [],
     })
 ], CotasModule);
-exports.CotasModule = CotasModule;
 //# sourceMappingURL=cotas.module.js.map

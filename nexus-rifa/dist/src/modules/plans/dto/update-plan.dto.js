@@ -13,6 +13,7 @@ exports.UpdatePlanDto = void 0;
 const class_validator_1 = require("class-validator");
 class UpdatePlanDto {
 }
+exports.UpdatePlanDto = UpdatePlanDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
@@ -30,5 +31,4 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Number)
 ], UpdatePlanDto.prototype, "limit", void 0);
-exports.UpdatePlanDto = UpdatePlanDto;
 //# sourceMappingURL=update-plan.dto.js.map

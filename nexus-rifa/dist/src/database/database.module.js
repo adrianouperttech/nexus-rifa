@@ -11,7 +11,8 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 let DatabaseModule = class DatabaseModule {
 };
-DatabaseModule = __decorate([
+exports.DatabaseModule = DatabaseModule;
+exports.DatabaseModule = DatabaseModule = __decorate([
     (0, common_1.Module)({
         imports: [
             typeorm_1.TypeOrmModule.forRootAsync({
@@ -29,5 +30,4 @@ DatabaseModule = __decorate([
         ],
     })
 ], DatabaseModule);
-exports.DatabaseModule = DatabaseModule;
 //# sourceMappingURL=database.module.js.map

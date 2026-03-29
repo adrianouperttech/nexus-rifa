@@ -14,7 +14,8 @@ const whatsapp_consumer_1 = require("./consumers/whatsapp.consumer");
 const email_consumer_1 = require("./consumers/email.consumer");
 let QueuesModule = class QueuesModule {
 };
-QueuesModule = __decorate([
+exports.QueuesModule = QueuesModule;
+exports.QueuesModule = QueuesModule = __decorate([
     (0, common_1.Module)({
         imports: [
             bull_1.BullModule.forRoot({
@@ -28,5 +29,4 @@ QueuesModule = __decorate([
         providers: [payment_consumer_1.PaymentConsumer, whatsapp_consumer_1.WhatsappConsumer, email_consumer_1.EmailConsumer],
     })
 ], QueuesModule);
-exports.QueuesModule = QueuesModule;
 //# sourceMappingURL=queues.module.js.map

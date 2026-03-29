@@ -37,6 +37,7 @@ let ReservasController = class ReservasController {
         return this.reservasService.remove(tenant_id, id);
     }
 };
+exports.ReservasController = ReservasController;
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
@@ -77,9 +78,8 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], ReservasController.prototype, "remove", null);
-ReservasController = __decorate([
+exports.ReservasController = ReservasController = __decorate([
     (0, common_1.Controller)('reservas'),
     __metadata("design:paramtypes", [reservas_service_1.ReservasService])
 ], ReservasController);
-exports.ReservasController = ReservasController;
 //# sourceMappingURL=reservas.controller.js.map

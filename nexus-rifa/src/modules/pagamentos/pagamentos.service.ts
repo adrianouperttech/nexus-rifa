@@ -47,34 +47,32 @@ export class PagamentosService {
     });
 
     if (existingPagamento) {
-      // Aqui você pode decidir retornar o pagamento existente em vez de criar um novo
-      // Por enquanto, vamos lançar um erro para evitar duplicatas.
       throw new ConflictException(
         `Já existe um pagamento pendente para a reserva ${reserva_id}.`,
       );
     }
 
-    // --- Integração com Gateway de Pagamento PIX (Mercado Pago) ---
     const payment = new Payment(this.mercadopago);
 
     const expirationDate = new Date();
-    expirationDate.setMinutes(expirationDate.getMinutes() + 30); // QR Code expira em 30 minutos
+    expirationDate.setMinutes(expirationDate.getMinutes() + 30);
 
     try {
       const paymentResponse = await payment.create({
         body: {
-          transaction_amount: reserva.rifa.preco,
-          description: `Pagamento da reserva para a rifa "${reserva.rifa.titulo}"`, // Adicionado para clareza
+          transaction_amount: reserva.rifa.valor_cota, // CORRIGIDO
+          description: `Pagamento da reserva para a rifa "${reserva.rifa.titulo}"`,
           payment_method_id: 'pix',
           date_of_expiration: expirationDate.toISOString(),
           payer: {
-            email: reserva.comprador.email,
-            first_name: reserva.comprador.nome.split(' ')[0], // Pega o primeiro nome
-            last_name: reserva.comprador.nome.split(' ').slice(1).join(' ') || undefined, // Pega o sobrenome
-            identification: {
-              type: 'CPF',
-              number: reserva.comprador.cpf.replace(/\D/g, ''), // Remove formatação do CPF
-            },
+            email: reserva.email, // CORRIGIDO
+            first_name: reserva.nome.split(' ')[0], // CORRIGIDO
+            last_name: reserva.nome.split(' ').slice(1).join(' ') || undefined, // CORRIGIDO
+            // A propriedade CPF não existe na entidade Reserva, removida por enquanto
+            // identification: {
+            //   type: 'CPF',
+            //   number: reserva.cpf.replace(/\D/g, ''),
+            // },
           },
           notification_url: `${process.env.APP_URL}/pagamentos/webhook`,
         },
@@ -107,8 +105,8 @@ export class PagamentosService {
       return {
         message: 'Pagamento PIX criado. Aguardando pagamento.',
         transacao_id,
-        qr_code_data, // Link para o QR Code
-        qr_code_base64, // QR Code em Base64 para exibir na tela
+        qr_code_data,
+        qr_code_base64,
       };
     } catch (error) {
       console.error('Erro ao criar pagamento no Mercado Pago:', error);
@@ -121,7 +119,6 @@ export class PagamentosService {
   async handlePagamentoWebhook(
     notification: any,
   ): Promise<void> {
-    // O webhook do Mercado Pago notifica sobre o tópico 'payment'
     if (notification.type === 'payment' && notification.data && notification.data.id) {
       const paymentId = notification.data.id;
       const payment = new Payment(this.mercadopago);
@@ -137,7 +134,7 @@ export class PagamentosService {
 
         if (!pagamento) {
           console.warn(`Pagamento com transacao_id "${transacao_id}" não encontrado.`);
-          return; // Retorna 200 OK para o MP não reenviar
+          return;
         }
 
         if (pagamento.status !== 'pendente') {
@@ -160,7 +157,6 @@ export class PagamentosService {
             novoStatusReserva = 'disponivel';
             break;
           default:
-            // Ignora outros status como 'in_process', etc.
             return;
         }
 
@@ -174,7 +170,6 @@ export class PagamentosService {
         );
       } catch (error) {
         console.error('Erro ao processar webhook do Mercado Pago:', error);
-        // Lançar um erro aqui faria o MP tentar reenviar, o que pode ser útil
         throw new InternalServerErrorException('Erro ao consultar status do pagamento no gateway.');
       }
     }

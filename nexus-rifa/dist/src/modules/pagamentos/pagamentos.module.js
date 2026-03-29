@@ -17,7 +17,8 @@ const reservas_module_1 = require("../reservas/reservas.module");
 const webhook_validation_service_1 = require("../../common/security/webhook-validation.service");
 let PagamentosModule = class PagamentosModule {
 };
-PagamentosModule = __decorate([
+exports.PagamentosModule = PagamentosModule;
+exports.PagamentosModule = PagamentosModule = __decorate([
     (0, common_1.Module)({
         imports: [
             typeorm_1.TypeOrmModule.forFeature([pagamento_entity_1.Pagamento]),
@@ -32,5 +33,4 @@ PagamentosModule = __decorate([
         exports: [pagamentos_service_1.PagamentosService],
     })
 ], PagamentosModule);
-exports.PagamentosModule = PagamentosModule;
 //# sourceMappingURL=pagamentos.module.js.map

@@ -14,6 +14,7 @@ const typeorm_1 = require("typeorm");
 const rifa_entity_1 = require("../../rifas/entities/rifa.entity");
 let Premio = class Premio {
 };
+exports.Premio = Premio;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
     __metadata("design:type", String)
@@ -39,8 +40,7 @@ __decorate([
     (0, typeorm_1.JoinColumn)({ name: 'rifa_id' }),
     __metadata("design:type", rifa_entity_1.Rifa)
 ], Premio.prototype, "rifa", void 0);
-Premio = __decorate([
+exports.Premio = Premio = __decorate([
     (0, typeorm_1.Entity)('premios')
 ], Premio);
-exports.Premio = Premio;
 //# sourceMappingURL=premio.entity.js.map

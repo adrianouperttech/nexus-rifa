@@ -16,7 +16,8 @@ const admin_plans_controller_1 = require("./plans/controllers/admin-plans.contro
 const plans_module_1 = require("../plans/plans.module");
 let AdminModule = class AdminModule {
 };
-AdminModule = __decorate([
+exports.AdminModule = AdminModule;
+exports.AdminModule = AdminModule = __decorate([
     (0, common_1.Module)({
         imports: [
             root_users_module_1.RootUsersModule,
@@ -30,5 +31,4 @@ AdminModule = __decorate([
         providers: [admin_auth_service_1.AdminAuthService],
     })
 ], AdminModule);
-exports.AdminModule = AdminModule;
 //# sourceMappingURL=admin.module.js.map

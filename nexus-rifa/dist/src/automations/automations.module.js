@@ -15,7 +15,8 @@ const billing_module_1 = require("../modules/billing/billing.module");
 const tenants_module_1 = require("../modules/tenants/tenants.module");
 let AutomationsModule = class AutomationsModule {
 };
-AutomationsModule = __decorate([
+exports.AutomationsModule = AutomationsModule;
+exports.AutomationsModule = AutomationsModule = __decorate([
     (0, common_1.Module)({
         imports: [
             schedule_1.ScheduleModule.forRoot(),
@@ -26,5 +27,4 @@ AutomationsModule = __decorate([
         providers: [automations_service_1.AutomationsService],
     })
 ], AutomationsModule);
-exports.AutomationsModule = AutomationsModule;
 //# sourceMappingURL=automations.module.js.map

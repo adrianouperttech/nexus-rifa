@@ -13,6 +13,7 @@ exports.Assinatura = void 0;
 const typeorm_1 = require("typeorm");
 let Assinatura = class Assinatura {
 };
+exports.Assinatura = Assinatura;
 __decorate([
     (0, typeorm_1.PrimaryColumn)(),
     __metadata("design:type", String)
@@ -53,8 +54,7 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
 ], Assinatura.prototype, "updated_at", void 0);
-Assinatura = __decorate([
+exports.Assinatura = Assinatura = __decorate([
     (0, typeorm_1.Entity)()
 ], Assinatura);
-exports.Assinatura = Assinatura;
 //# sourceMappingURL=assinatura.entity.js.map

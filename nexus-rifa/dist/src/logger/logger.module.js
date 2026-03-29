@@ -11,7 +11,8 @@ const common_1 = require("@nestjs/common");
 const logger_config_1 = require("./logger.config");
 let LoggerModule = class LoggerModule {
 };
-LoggerModule = __decorate([
+exports.LoggerModule = LoggerModule;
+exports.LoggerModule = LoggerModule = __decorate([
     (0, common_1.Global)(),
     (0, common_1.Module)({
         providers: [
@@ -23,5 +24,4 @@ LoggerModule = __decorate([
         exports: ['LOGGER'],
     })
 ], LoggerModule);
-exports.LoggerModule = LoggerModule;
 //# sourceMappingURL=logger.module.js.map

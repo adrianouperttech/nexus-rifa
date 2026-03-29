@@ -12,12 +12,12 @@ const typeorm_1 = require("@nestjs/typeorm");
 const audit_log_entity_1 = require("./entities/audit-log.entity");
 let AuditLogsModule = class AuditLogsModule {
 };
-AuditLogsModule = __decorate([
+exports.AuditLogsModule = AuditLogsModule;
+exports.AuditLogsModule = AuditLogsModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([audit_log_entity_1.AuditLog])],
         controllers: [],
         providers: [],
     })
 ], AuditLogsModule);
-exports.AuditLogsModule = AuditLogsModule;
 //# sourceMappingURL=audit-logs.module.js.map

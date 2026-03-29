@@ -18,6 +18,7 @@ const reserva_entity_1 = require("../../reservas/entities/reserva.entity");
 const subscription_entity_1 = require("../../billing/entities/subscription.entity");
 let Tenant = class Tenant {
 };
+exports.Tenant = Tenant;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
     __metadata("design:type", String)
@@ -58,8 +59,7 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => subscription_entity_1.Subscription, (subscription) => subscription.tenant),
     __metadata("design:type", Array)
 ], Tenant.prototype, "subscriptions", void 0);
-Tenant = __decorate([
+exports.Tenant = Tenant = __decorate([
     (0, typeorm_1.Entity)('tenants')
 ], Tenant);
-exports.Tenant = Tenant;
 //# sourceMappingURL=tenant.entity.js.map

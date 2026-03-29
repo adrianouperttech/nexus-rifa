@@ -19,7 +19,8 @@ const users_module_1 = require("../users/users.module");
 const tenants_module_1 = require("../tenants/tenants.module");
 let BillingModule = class BillingModule {
 };
-BillingModule = __decorate([
+exports.BillingModule = BillingModule;
+exports.BillingModule = BillingModule = __decorate([
     (0, common_1.Module)({
         imports: [
             config_1.ConfigModule.forRoot(),
@@ -42,5 +43,4 @@ BillingModule = __decorate([
         ],
     })
 ], BillingModule);
-exports.BillingModule = BillingModule;
 //# sourceMappingURL=billing.module.js.map

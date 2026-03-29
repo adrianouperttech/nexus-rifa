@@ -16,8 +16,8 @@ let AdminGuard = class AdminGuard extends (0, passport_1.AuthGuard)('jwt') {
         return user && user.is_root;
     }
 };
-AdminGuard = __decorate([
+exports.AdminGuard = AdminGuard;
+exports.AdminGuard = AdminGuard = __decorate([
     (0, common_1.Injectable)()
 ], AdminGuard);
-exports.AdminGuard = AdminGuard;
 //# sourceMappingURL=admin.guard.js.map

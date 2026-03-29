@@ -16,12 +16,12 @@ const assinaturas_module_1 = require("../assinaturas/assinaturas.module");
 const plans_module_1 = require("../plans/plans.module");
 let RifasModule = class RifasModule {
 };
-RifasModule = __decorate([
+exports.RifasModule = RifasModule;
+exports.RifasModule = RifasModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([rifa_entity_1.Rifa]), assinaturas_module_1.AssinaturasModule, plans_module_1.PlansModule],
         controllers: [rifas_controller_1.RifasController],
         providers: [rifas_service_1.RifasService],
     })
 ], RifasModule);
-exports.RifasModule = RifasModule;
 //# sourceMappingURL=rifas.module.js.map

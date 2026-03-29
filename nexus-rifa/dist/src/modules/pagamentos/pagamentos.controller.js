@@ -16,52 +16,42 @@ exports.PagamentosController = void 0;
 const common_1 = require("@nestjs/common");
 const pagamentos_service_1 = require("./pagamentos.service");
 const create_pagamento_dto_1 = require("./dto/create-pagamento.dto");
-const webhook_validation_service_1 = require("../../common/security/webhook-validation.service");
-const passport_1 = require("@nestjs/passport");
-const tenant_info_decorator_1 = require("../tenants/decorators/tenant-info.decorator");
 let PagamentosController = class PagamentosController {
-    constructor(pagamentosService, webhookValidationService) {
+    constructor(pagamentosService) {
         this.pagamentosService = pagamentosService;
-        this.webhookValidationService = webhookValidationService;
     }
-    create(tenantInfo, createPagamentoDto) {
-        return this.pagamentosService.create(tenantInfo.id, createPagamentoDto);
+    create(tenant_id, createPagamentoDto) {
+        return this.pagamentosService.create(tenant_id, createPagamentoDto);
     }
-    async handleWebhook(req, payload) {
-        const signature = req.headers.get('x-hub-signature');
-        if (!process.env.WEBHOOK_SECRET) {
-            throw new Error('WEBHOOK_SECRET not set');
+    async handleWebhook(notification) {
+        console.log('Webhook do Mercado Pago recebido:', notification);
+        try {
+            await this.pagamentosService.handlePagamentoWebhook(notification);
         }
-        const isValid = this.webhookValidationService.validate(JSON.stringify(payload), signature, process.env.WEBHOOK_SECRET);
-        if (!isValid) {
-            throw new Error('Invalid webhook signature');
+        catch (error) {
+            console.error('Erro ao processar webhook:', error);
         }
-        const { transacao_id, status } = payload;
-        await this.pagamentosService.handlePagamentoWebhook(transacao_id, status);
     }
 };
+exports.PagamentosController = PagamentosController;
 __decorate([
     (0, common_1.Post)(),
-    __param(0, (0, tenant_info_decorator_1.GetTenantInfo)()),
+    __param(0, (0, common_1.Headers)('tenant-id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, create_pagamento_dto_1.CreatePagamentoDto]),
+    __metadata("design:paramtypes", [String, create_pagamento_dto_1.CreatePagamentoDto]),
     __metadata("design:returntype", void 0)
 ], PagamentosController.prototype, "create", null);
 __decorate([
     (0, common_1.Post)('webhook'),
-    (0, common_1.HttpCode)(common_1.HttpStatus.NO_CONTENT),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('webhook')),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Body)()),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Request, Object]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], PagamentosController.prototype, "handleWebhook", null);
-PagamentosController = __decorate([
+exports.PagamentosController = PagamentosController = __decorate([
     (0, common_1.Controller)('pagamentos'),
-    __metadata("design:paramtypes", [pagamentos_service_1.PagamentosService,
-        webhook_validation_service_1.WebhookValidationService])
+    __metadata("design:paramtypes", [pagamentos_service_1.PagamentosService])
 ], PagamentosController);
-exports.PagamentosController = PagamentosController;
 //# sourceMappingURL=pagamentos.controller.js.map

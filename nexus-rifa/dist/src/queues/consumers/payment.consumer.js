@@ -16,14 +16,14 @@ let PaymentConsumer = class PaymentConsumer {
         console.log('Processing payment:', job.data);
     }
 };
+exports.PaymentConsumer = PaymentConsumer;
 __decorate([
     (0, bull_1.Process)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], PaymentConsumer.prototype, "process", null);
-PaymentConsumer = __decorate([
+exports.PaymentConsumer = PaymentConsumer = __decorate([
     (0, bull_1.Processor)('payment')
 ], PaymentConsumer);
-exports.PaymentConsumer = PaymentConsumer;
 //# sourceMappingURL=payment.consumer.js.map

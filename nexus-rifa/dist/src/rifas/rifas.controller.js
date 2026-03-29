@@ -40,6 +40,7 @@ let RifasController = class RifasController {
         return this.rifasService.remove(+id);
     }
 };
+exports.RifasController = RifasController;
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
@@ -81,9 +82,8 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], RifasController.prototype, "remove", null);
-RifasController = __decorate([
+exports.RifasController = RifasController = __decorate([
     (0, common_1.Controller)('rifas'),
     __metadata("design:paramtypes", [rifas_service_1.RifasService])
 ], RifasController);
-exports.RifasController = RifasController;
 //# sourceMappingURL=rifas.controller.js.map

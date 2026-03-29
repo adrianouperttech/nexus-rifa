@@ -13,6 +13,7 @@ exports.PlanoAssinatura = void 0;
 const typeorm_1 = require("typeorm");
 let PlanoAssinatura = class PlanoAssinatura {
 };
+exports.PlanoAssinatura = PlanoAssinatura;
 __decorate([
     (0, typeorm_1.PrimaryColumn)(),
     __metadata("design:type", String)
@@ -33,8 +34,7 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
 ], PlanoAssinatura.prototype, "updated_at", void 0);
-PlanoAssinatura = __decorate([
+exports.PlanoAssinatura = PlanoAssinatura = __decorate([
     (0, typeorm_1.Entity)()
 ], PlanoAssinatura);
-exports.PlanoAssinatura = PlanoAssinatura;
 //# sourceMappingURL=plano-assinatura.entity.js.map

@@ -16,7 +16,8 @@ const users_module_1 = require("../users/users.module");
 const platform_express_1 = require("@nestjs/platform-express");
 let TenantsModule = class TenantsModule {
 };
-TenantsModule = __decorate([
+exports.TenantsModule = TenantsModule;
+exports.TenantsModule = TenantsModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([tenant_entity_1.Tenant]), users_module_1.UsersModule, platform_express_1.MulterModule],
         controllers: [tenants_controller_1.TenantsController],
@@ -24,5 +25,4 @@ TenantsModule = __decorate([
         exports: [tenants_service_1.TenantsService],
     })
 ], TenantsModule);
-exports.TenantsModule = TenantsModule;
 //# sourceMappingURL=tenants.module.js.map

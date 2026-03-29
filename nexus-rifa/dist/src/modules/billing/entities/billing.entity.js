@@ -14,6 +14,7 @@ const mongoose_1 = require("@nestjs/mongoose");
 const uuid_1 = require("uuid");
 let Billing = class Billing {
 };
+exports.Billing = Billing;
 __decorate([
     (0, mongoose_1.Prop)({
         type: String,
@@ -57,11 +58,10 @@ __decorate([
     }),
     __metadata("design:type", String)
 ], Billing.prototype, "status", void 0);
-Billing = __decorate([
+exports.Billing = Billing = __decorate([
     (0, mongoose_1.Schema)({
         timestamps: true,
     })
 ], Billing);
-exports.Billing = Billing;
 exports.BillingSchema = mongoose_1.SchemaFactory.createForClass(Billing);
 //# sourceMappingURL=billing.entity.js.map

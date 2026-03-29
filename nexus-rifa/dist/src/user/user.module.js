@@ -13,12 +13,12 @@ const user_entity_1 = require("./user.entity");
 const user_service_1 = require("./user.service");
 let UserModule = class UserModule {
 };
-UserModule = __decorate([
+exports.UserModule = UserModule;
+exports.UserModule = UserModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.User])],
         providers: [user_service_1.UserService],
         exports: [user_service_1.UserService],
     })
 ], UserModule);
-exports.UserModule = UserModule;
 //# sourceMappingURL=user.module.js.map

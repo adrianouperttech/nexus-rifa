@@ -16,14 +16,14 @@ let EmailConsumer = class EmailConsumer {
         console.log('Sending email:', job.data);
     }
 };
+exports.EmailConsumer = EmailConsumer;
 __decorate([
     (0, bull_1.Process)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], EmailConsumer.prototype, "process", null);
-EmailConsumer = __decorate([
+exports.EmailConsumer = EmailConsumer = __decorate([
     (0, bull_1.Processor)('email')
 ], EmailConsumer);
-exports.EmailConsumer = EmailConsumer;
 //# sourceMappingURL=email.consumer.js.map

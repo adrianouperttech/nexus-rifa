@@ -13,8 +13,8 @@ let BillingGuard = class BillingGuard {
         return true;
     }
 };
-BillingGuard = __decorate([
+exports.BillingGuard = BillingGuard;
+exports.BillingGuard = BillingGuard = __decorate([
     (0, common_1.Injectable)()
 ], BillingGuard);
-exports.BillingGuard = BillingGuard;
 //# sourceMappingURL=billing.guard.js.map

@@ -15,6 +15,7 @@ const create_reserva_dto_1 = require("./create-reserva.dto");
 const class_validator_1 = require("class-validator");
 class UpdateReservaDto extends (0, mapped_types_1.PartialType)(create_reserva_dto_1.CreateReservaDto) {
 }
+exports.UpdateReservaDto = UpdateReservaDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
@@ -38,5 +39,4 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateReservaDto.prototype, "status", void 0);
-exports.UpdateReservaDto = UpdateReservaDto;
 //# sourceMappingURL=update-reserva.dto.js.map

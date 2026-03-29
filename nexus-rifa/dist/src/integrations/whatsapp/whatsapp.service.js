@@ -13,8 +13,8 @@ let WhatsappService = class WhatsappService {
         console.log(`Sending WhatsApp message to ${to}: ${message}`);
     }
 };
-WhatsappService = __decorate([
+exports.WhatsappService = WhatsappService;
+exports.WhatsappService = WhatsappService = __decorate([
     (0, common_1.Injectable)()
 ], WhatsappService);
-exports.WhatsappService = WhatsappService;
 //# sourceMappingURL=whatsapp.service.js.map

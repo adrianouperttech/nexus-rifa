@@ -106,7 +106,8 @@ let BillingService = class BillingService {
         }
     }
 };
-BillingService = __decorate([
+exports.BillingService = BillingService;
+exports.BillingService = BillingService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(subscription_entity_1.Subscription)),
     __param(1, (0, common_1.Inject)((0, common_1.forwardRef)(() => plans_service_1.PlansService))),
@@ -119,5 +120,4 @@ BillingService = __decorate([
         tenants_service_1.TenantsService,
         mercadopago_1.default])
 ], BillingService);
-exports.BillingService = BillingService;
 //# sourceMappingURL=billing.service.js.map

@@ -32,9 +32,9 @@ let JwtRefreshStrategy = class JwtRefreshStrategy extends (0, passport_1.Passpor
         return { userId: payload.sub, email: payload.email, roles: payload.roles };
     }
 };
-JwtRefreshStrategy = __decorate([
+exports.JwtRefreshStrategy = JwtRefreshStrategy;
+exports.JwtRefreshStrategy = JwtRefreshStrategy = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [user_service_1.UserService])
 ], JwtRefreshStrategy);
-exports.JwtRefreshStrategy = JwtRefreshStrategy;
 //# sourceMappingURL=jwt-refresh.strategy.js.map

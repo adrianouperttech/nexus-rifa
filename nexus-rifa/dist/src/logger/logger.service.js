@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoggerService = void 0;
 const common_1 = require("@nestjs/common");
 const winston = require("winston");
-require("winston-daily-rotate-file");
+const DailyRotateFile = require("winston-daily-rotate-file");
 let LoggerService = class LoggerService extends common_1.Logger {
     constructor() {
         super();
@@ -21,7 +21,7 @@ let LoggerService = class LoggerService extends common_1.Logger {
             format: winston.format.json(),
             transports: [
                 new winston.transports.Console(),
-                new winston.transports.DailyRotateFile({
+                new DailyRotateFile({
                     filename: 'logs/application-%DATE%.log',
                     datePattern: 'YYYY-MM-DD-HH',
                     zippedArchive: true,
@@ -62,9 +62,9 @@ let LoggerService = class LoggerService extends common_1.Logger {
         }
     }
 };
-LoggerService = __decorate([
+exports.LoggerService = LoggerService;
+exports.LoggerService = LoggerService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [])
 ], LoggerService);
-exports.LoggerService = LoggerService;
 //# sourceMappingURL=logger.service.js.map

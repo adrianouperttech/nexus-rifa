@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config'; // Importado ConfigService
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { RifasModule } from './rifas/rifas.module';
@@ -8,15 +9,24 @@ import { User } from './user/user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: 'your_password',
-      database: 'nexus-rifa',
-      entities: [Rifa, User],
-      synchronize: true,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
+    // Configuração do TypeORM modificada para ser assíncrona e usar variáveis de ambiente
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get<string>('DB_HOST'),
+        port: configService.get<number>('DB_PORT'),
+        username: configService.get<string>('DB_USERNAME'),
+        password: configService.get<string>('DB_PASSWORD'),
+        database: configService.get<string>('DB_DATABASE'),
+        entities: [Rifa, User],
+        synchronize: true, // Em desenvolvimento, considere false para produção
+      }),
     }),
     AuthModule,
     UserModule,

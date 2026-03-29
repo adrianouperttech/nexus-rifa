@@ -13,6 +13,7 @@ exports.Rifa = void 0;
 const typeorm_1 = require("typeorm");
 let Rifa = class Rifa {
 };
+exports.Rifa = Rifa;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
@@ -37,8 +38,7 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'jsonb', nullable: true }),
     __metadata("design:type", Array)
 ], Rifa.prototype, "availableNumbers", void 0);
-Rifa = __decorate([
+exports.Rifa = Rifa = __decorate([
     (0, typeorm_1.Entity)()
 ], Rifa);
-exports.Rifa = Rifa;
 //# sourceMappingURL=rifa.entity.js.map

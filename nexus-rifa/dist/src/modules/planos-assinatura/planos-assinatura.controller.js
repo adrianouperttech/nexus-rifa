@@ -24,6 +24,7 @@ let PlanosAssinaturaController = class PlanosAssinaturaController {
         return this.planosAssinaturaService.create(createPlanoAssinaturaDto);
     }
 };
+exports.PlanosAssinaturaController = PlanosAssinaturaController;
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
@@ -31,9 +32,8 @@ __decorate([
     __metadata("design:paramtypes", [create_plano_assinatura_dto_1.CreatePlanoAssinaturaDto]),
     __metadata("design:returntype", void 0)
 ], PlanosAssinaturaController.prototype, "create", null);
-PlanosAssinaturaController = __decorate([
+exports.PlanosAssinaturaController = PlanosAssinaturaController = __decorate([
     (0, common_1.Controller)('planos-assinatura'),
     __metadata("design:paramtypes", [planos_assinatura_service_1.PlanosAssinaturaService])
 ], PlanosAssinaturaController);
-exports.PlanosAssinaturaController = PlanosAssinaturaController;
 //# sourceMappingURL=planos-assinatura.controller.js.map

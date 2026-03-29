@@ -83,7 +83,8 @@ let ReservasService = class ReservasService {
         return this.reservaRepository.save(reserva);
     }
 };
-ReservasService = __decorate([
+exports.ReservasService = ReservasService;
+exports.ReservasService = ReservasService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(reserva_entity_1.Reserva)),
     __param(1, (0, common_1.Inject)((0, common_1.forwardRef)(() => rifas_service_1.RifasService))),
@@ -92,5 +93,4 @@ ReservasService = __decorate([
         email_service_1.EmailService,
         whatsapp_service_1.WhatsappService])
 ], ReservasService);
-exports.ReservasService = ReservasService;
 //# sourceMappingURL=reservas.service.js.map

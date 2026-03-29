@@ -15,6 +15,7 @@ const create_rifa_dto_1 = require("./create-rifa.dto");
 const class_validator_1 = require("class-validator");
 class UpdateRifaDto extends (0, mapped_types_1.PartialType)(create_rifa_dto_1.CreateRifaDto) {
 }
+exports.UpdateRifaDto = UpdateRifaDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
@@ -38,5 +39,4 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Number)
 ], UpdateRifaDto.prototype, "limit", void 0);
-exports.UpdateRifaDto = UpdateRifaDto;
 //# sourceMappingURL=update-rifa.dto.js.map
