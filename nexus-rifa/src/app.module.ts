@@ -13,17 +13,20 @@ import { User } from './user/user.entity';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    // Configuração do TypeORM para usar a DATABASE_URL do Render
+    // Configuração do TypeORM para usar a DATABASE_URL do Render e forçar IPv4
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        url: configService.get<string>('DATABASE_URL'), // Usar a URL de conexão direta
+        url: configService.get<string>('DATABASE_URL'),
         entities: [Rifa, User],
-        synchronize: false, // NUNCA usar synchronize: true em produção
+        synchronize: false,
         ssl: {
-          rejectUnauthorized: false, // Necessário para a conexão interna do Render
+          rejectUnauthorized: false,
+        },
+        extra: {
+          family: 4, // Força o driver do node-postgres a usar IPv4
         },
       }),
     }),
