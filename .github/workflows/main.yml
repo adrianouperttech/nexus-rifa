@@ -63,17 +63,15 @@ jobs:
         run: npm install
         working-directory: ./nexus-rifa
 
-      - name: Run Migrations on Blue DB
-        if: steps.get_env.outputs.inactive_env == 'blue'
+      - name: Run migrations
         env:
-          DB_HOST: ${{ secrets.DB_HOST_BLUE }}
-          DB_PORT: ${{ secrets.DB_PORT_BLUE }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME_BLUE }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD_BLUE }}
-          DB_DATABASE: ${{ secrets.DB_DATABASE_BLUE }}
-        run: |
-          echo "Running migrations on the blue database..."
-          npm run migration:run
+        DB_HOST: ${{ secrets.DB_HOST }}
+        DB_PORT: ${{ secrets.DB_PORT }}
+        DB_USERNAME: ${{ secrets.DB_USERNAME }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_DATABASE: ${{ secrets.DB_DATABASE }}
+        run: npm run migration:run
+
         working-directory: ./nexus-rifa
 
       - name: Run Migrations on Green DB
