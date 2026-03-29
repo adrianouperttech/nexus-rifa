@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config'; // Importado ConfigService
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { RifasModule } from './rifas/rifas.module';
@@ -13,19 +13,19 @@ import { User } from './user/user.entity';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    // Configuração do TypeORM modificada para ser assíncrona e usar variáveis de ambiente
+    // Configuração do TypeORM atualizada para usar DATABASE_URL do Supabase
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT'),
-        username: configService.get<string>('DB_USERNAME'),
-        password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_DATABASE'),
+        url: configService.get<string>('DATABASE_URL'),
         entities: [Rifa, User],
-        synchronize: true, // Em desenvolvimento, considere false para produção
+        synchronize: true, // Em desenvolvimento. Mude para false em produção e use migrações.
+        // Supabase requer conexão SSL
+        ssl: {
+          rejectUnauthorized: false, // Em desenvolvimento. Para produção use o certificado CA.
+        },
       }),
     }),
     AuthModule,
