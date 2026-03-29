@@ -23,7 +23,7 @@ jobs:
         cache: 'npm'
 
     - name: Instalar dependências
-      run: npm ci # 'npm ci' é mais rápido e seguro para CI
+      run: npm install # Trocado de 'npm ci' para 'npm install' para evitar erro de package-lock.json ausente
 
     - name: Executar migrações do banco de dados
       env:
