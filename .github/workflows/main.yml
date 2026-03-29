@@ -11,6 +11,10 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    # Adiciona um diretório de trabalho padrão para todos os comandos
+    defaults:
+      run:
+        working-directory: ./nexus-rifa
 
     steps:
     - name: Checkout do código
@@ -19,11 +23,12 @@ jobs:
     - name: Configurar Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '18' # Usando uma versão LTS do Node.js
+        node-version: '18'
         cache: 'npm'
+        cache-dependency-path: nexus-rifa/package-lock.json # Caminho para o cache
 
     - name: Instalar dependências
-      run: npm ci # 'npm ci' é mais rápido e seguro para CI
+      run: npm install # Usando 'npm install' para evitar erro de package-lock.json ausente
 
     - name: Executar migrações do banco de dados
       env:
@@ -36,7 +41,3 @@ jobs:
 
     - name: Construir a aplicação
       run: npm run build
-
-    # Você pode adicionar um passo para testes aqui se tiver testes configurados
-    # - name: Executar testes
-    #   run: npm test
