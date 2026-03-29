@@ -1,4 +1,4 @@
-# Workflow de CI para a Aplicação NestJS
+# Workflow de CI para a Aplicação NestJS - Versão Definitiva
 
 name: NestJS CI
 
@@ -11,10 +11,15 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    # Adiciona um diretório de trabalho padrão para todos os comandos
-    defaults:
-      run:
-        working-directory: ./nexus-rifa
+
+    # Injeta as secrets como variáveis de ambiente para todo o job.
+    # Elas estarão disponíveis para todos os passos abaixo.
+    env:
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_DATABASE: ${{ secrets.DB_DATABASE }}
 
     steps:
     - name: Checkout do código
@@ -25,19 +30,18 @@ jobs:
       with:
         node-version: '18'
         cache: 'npm'
-        cache-dependency-path: nexus-rifa/package-lock.json # Caminho para o cache
+        cache-dependency-path: nexus-rifa/package-lock.json
 
     - name: Instalar dependências
-      run: npm install # Usando 'npm install' para evitar erro de package-lock.json ausente
+      # Executa o comando dentro da pasta especificada
+      working-directory: ./nexus-rifa
+      run: npm install
 
     - name: Executar migrações do banco de dados
-      env:
-        DB_HOST: ${{ secrets.DB_HOST }}
-        DB_PORT: ${{ secrets.DB_PORT }}
-        DB_USERNAME: ${{ secrets.DB_USERNAME }}
-        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        DB_DATABASE: ${{ secrets.DB_DATABASE }}
+      # Este passo agora executa no diretório correto e tem acesso às variáveis do job
+      working-directory: ./nexus-rifa
       run: npm run migration:run
 
     - name: Construir a aplicação
+      working-directory: ./nexus-rifa
       run: npm run build
