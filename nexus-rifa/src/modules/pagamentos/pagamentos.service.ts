@@ -24,9 +24,11 @@ export class PagamentosService {
     @Inject(forwardRef(() => ReservasService))
     private readonly reservasService: ReservasService,
   ) {
-    this.mercadopago = new MercadoPagoConfig({
-      accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN,
-    });
+    const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
+    if (!accessToken) {
+      throw new InternalServerErrorException('Chave de acesso do Mercado Pago não foi configurada (MERCADOPAGO_ACCESS_TOKEN).');
+    }
+    this.mercadopago = new MercadoPagoConfig({ accessToken });
   }
 
   async create(
@@ -61,7 +63,7 @@ export class PagamentosService {
       const paymentResponse = await payment.create({
         body: {
           transaction_amount: reserva.rifa.valor_cota, // CORRIGIDO
-          description: `Pagamento da reserva para a rifa "${reserva.rifa.titulo}"`,
+          description: `Pagamento da reserva para a rifa \"${reserva.rifa.titulo}\"`,
           payment_method_id: 'pix',
           date_of_expiration: expirationDate.toISOString(),
           payer: {
@@ -85,8 +87,14 @@ export class PagamentosService {
       }
 
       const transacao_id = String(paymentResponse.id);
-      const qr_code_data = paymentResponse.point_of_interaction.transaction_data.qr_code;
-      const qr_code_base64 = paymentResponse.point_of_interaction.transaction_data.qr_code_base64;
+      const qr_code_data = paymentResponse.point_of_interaction.transaction_data?.qr_code;
+      const qr_code_base64 = paymentResponse.point_of_interaction.transaction_data?.qr_code_base64;
+
+      if (!qr_code_data || !qr_code_base64) {
+        throw new InternalServerErrorException(
+          'Falha ao obter os dados do QR Code do gateway de pagamento.'
+        );
+      }
 
       const novoPagamento = this.pagamentoRepository.create({
         reserva_id,
@@ -133,7 +141,7 @@ export class PagamentosService {
         });
 
         if (!pagamento) {
-          console.warn(`Pagamento com transacao_id "${transacao_id}" não encontrado.`);
+          console.warn(`Pagamento com transacao_id \"${transacao_id}\" não encontrado.`);
           return;
         }
 
