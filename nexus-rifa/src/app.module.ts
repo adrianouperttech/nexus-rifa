@@ -13,21 +13,17 @@ import { User } from './user/user.entity';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    // Configuração do TypeORM atualizada para usar variáveis de ambiente separadas
+    // Configuração do TypeORM para usar a DATABASE_URL do Render
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT'),
-        username: configService.get<string>('DB_USERNAME'),
-        password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_DATABASE'),
+        url: configService.get<string>('DATABASE_URL'), // Usar a URL de conexão direta
         entities: [Rifa, User],
-        synchronize: true, // Em desenvolvimento. Mude para false em produção.
+        synchronize: false, // NUNCA usar synchronize: true em produção
         ssl: {
-          rejectUnauthorized: false,
+          rejectUnauthorized: false, // Necessário para a conexão interna do Render
         },
       }),
     }),
