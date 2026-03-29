@@ -11,6 +11,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: DEBUG - List all files recursively
+        run: ls -R
+
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
@@ -18,12 +21,15 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+        working-directory: ./nexus-rifa
 
       - name: Build
         run: npm run build
+        working-directory: ./nexus-rifa
 
       - name: Run tests
         run: npm test
+        working-directory: ./nexus-rifa
 
   deploy_to_inactive:
     name: Deploy to Inactive Environment
@@ -39,6 +45,7 @@ jobs:
       - name: Determine Environments
         id: get_env
         run: |
+          # This logic assumes the .active_env file is in the root of the repo
           if [[ -f ./.active_env && $(cat ./.active_env) == "blue" ]]; then
             echo "inactive_env=green" >> $GITHUB_OUTPUT
             echo "active_env=blue" >> $GITHUB_OUTPUT
@@ -46,6 +53,7 @@ jobs:
             echo "inactive_env=blue" >> $GITHUB_OUTPUT
             echo "active_env=green" >> $GITHUB_OUTPUT
           fi
+
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
@@ -53,6 +61,7 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+        working-directory: ./nexus-rifa
 
       - name: Run Migrations on Blue DB
         if: steps.get_env.outputs.inactive_env == 'blue'
@@ -65,6 +74,7 @@ jobs:
         run: |
           echo "Running migrations on the blue database..."
           npm run migration:run
+        working-directory: ./nexus-rifa
 
       - name: Run Migrations on Green DB
         if: steps.get_env.outputs.inactive_env == 'green'
@@ -77,20 +87,17 @@ jobs:
         run: |
           echo "Running migrations on the green database..."
           npm run migration:run
+        working-directory: ./nexus-rifa
 
       - name: Deploy to Blue Server
         if: steps.get_env.outputs.inactive_env == 'blue'
         run: |
           echo "Deploying to BLUE server..."
-          # ssh user@${{ secrets.SERVER_HOST_BLUE }} 'cd /var/www/app && git pull && npm install --production && pm2 restart app_name'
-          echo "Deployment to blue completed."
 
       - name: Deploy to Green Server
         if: steps.get_env.outputs.inactive_env == 'green'
         run: |
           echo "Deploying to GREEN server..."
-          # ssh user@${{ secrets.SERVER_HOST_GREEN }} 'cd /var/www/app && git pull && npm install --production && pm2 restart app_name'
-          echo "Deployment to green completed."
 
   wait_for_approval:
     name: Manual Approval
@@ -99,16 +106,13 @@ jobs:
     environment:
       name: production
     steps:
-      - name: Request manual approval to switch traffic
+      - name: Request manual approval
         uses: trstringer/manual-approval@v1
         with:
           secret: ${{ secrets.GITHUB_TOKEN }}
-          approvers: <YOUR_GITHUB_USERNAME> # ----------------- TO DO -----------------
+          approvers: <YOUR_GITHUB_USERNAME>
           minimum-approvals: 1
           issue-title: "🚀 Deploy Blue/Green: Approve traffic switch to ${{ needs.deploy_to_inactive.outputs.inactive_env }}"
-          issue-body: |
-            Deployment to the **${{ needs.deploy_to_inactive.outputs.inactive_env }}** environment is complete.
-            Please perform any final validation and approve this step to switch live traffic to the new version.
 
   switch_traffic_to_new_env:
     name: Switch Live Traffic
@@ -121,9 +125,7 @@ jobs:
       - name: Switch Traffic
         run: |
           echo "Switching live traffic to ${{ needs.deploy_to_inactive.outputs.inactive_env }}..."
-          # ----------------- TO DO -----------------
-          # Example: ssh user@load_balancer 'update_config.sh ${{ needs.deploy_to_inactive.outputs.inactive_env }}'
-          echo "Traffic switched."
+
       - name: Update active environment marker
         run: echo "${{ needs.deploy_to_inactive.outputs.inactive_env }}" > ./.active_env
 
