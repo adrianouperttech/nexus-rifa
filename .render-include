@@ -1,0 +1,2 @@
+# Força o Render a incluir o diretório de build no deploy final.
+nexus-rifa/dist
