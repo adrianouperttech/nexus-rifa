@@ -13,18 +13,21 @@ import { User } from './user/user.entity';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    // Configuração do TypeORM atualizada para usar DATABASE_URL do Supabase
+    // Configuração do TypeORM atualizada para usar variáveis de ambiente separadas
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        url: configService.get<string>('DATABASE_URL'),
+        host: configService.get<string>('DB_HOST'),
+        port: configService.get<number>('DB_PORT'),
+        username: configService.get<string>('DB_USERNAME'),
+        password: configService.get<string>('DB_PASSWORD'),
+        database: configService.get<string>('DB_DATABASE'),
         entities: [Rifa, User],
-        synchronize: true, // Em desenvolvimento. Mude para false em produção e use migrações.
-        // Supabase requer conexão SSL
+        synchronize: true, // Em desenvolvimento. Mude para false em produção.
         ssl: {
-          rejectUnauthorized: false, // Em desenvolvimento. Para produção use o certificado CA.
+          rejectUnauthorized: false,
         },
       }),
     }),
