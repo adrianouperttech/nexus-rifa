@@ -1,6 +1,6 @@
-# Workflow de CI para a Aplicação NestJS - Versão Definitiva
+# Workflow para Diagnóstico de Estrutura de Arquivos
 
-name: NestJS CI
+name: Diagnostic Workflow
 
 on:
   push:
@@ -9,39 +9,12 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-and-test:
+  diagnose-structure:
     runs-on: ubuntu-latest
-
-    # Injeta as secrets como variáveis de ambiente para todo o job.
-    # Elas estarão disponíveis para todos os passos abaixo.
-    env:
-      DB_HOST: ${{ secrets.DB_HOST }}
-      DB_PORT: ${{ secrets.DB_PORT }}
-      DB_USERNAME: ${{ secrets.DB_USERNAME }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      DB_DATABASE: ${{ secrets.DB_DATABASE }}
 
     steps:
     - name: Checkout do código
       uses: actions/checkout@v3
 
-    - name: Configurar Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        cache: 'npm'
-        cache-dependency-path: nexus-rifa/package-lock.json
-
-    - name: Instalar dependências
-      # Executa o comando dentro da pasta especificada
-      working-directory: ./nexus-rifa
-      run: npm install
-
-    - name: Executar migrações do banco de dados
-      # Este passo agora executa no diretório correto e tem acesso às variáveis do job
-      working-directory: ./nexus-rifa
-      run: npm run migration:run
-
-    - name: Construir a aplicação
-      working-directory: ./nexus-rifa
-      run: npm run build
+    - name: Listar todos os arquivos e pastas recursivamente
+      run: ls -R
