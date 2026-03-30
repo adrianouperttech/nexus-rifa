@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { RifasModule } from './modules/rifas/rifas.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import ormconfig from '../../ormconfig';
 
 @Module({
   imports: [
@@ -16,29 +17,7 @@ import { APP_GUARD } from '@nestjs/core';
       ttl: 60000, // 60 segundos
       limit: 60, // 60 requisições
     }]),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-        const databaseUrl = configService.get<string>('DATABASE_URL');
-        if (!databaseUrl) {
-          throw new Error('A variável de ambiente DATABASE_URL não está definida.');
-        }
-
-        return {
-          type: 'postgres',
-          url: databaseUrl,
-          autoLoadEntities: true,
-          synchronize: false,
-          ssl: {
-            rejectUnauthorized: false,
-          },
-          extra: {
-            family: 4,
-          },
-        };
-      },
-    }),
+    TypeOrmModule.forRoot(ormconfig),
     AuthModule,
     UsersModule,
     RifasModule,
@@ -46,7 +25,7 @@ import { APP_GUARD } from '@nestjs/core';
   providers: [
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard, // Correção: useClass em vez de use
+      useClass: ThrottlerGuard, 
     },
   ],
 })
