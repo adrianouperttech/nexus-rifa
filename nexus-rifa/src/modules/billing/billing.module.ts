@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { BillingService } from './billing.service';
 import { BillingController } from './billing.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -14,7 +14,7 @@ import { WebhookValidationService } from '../../common/security/webhook-validati
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forFeature([Subscription]),
-    PlansModule,
+    forwardRef(() => PlansModule), // Correção: Usar forwardRef
     UsersModule,
     TenantsModule,
   ],
