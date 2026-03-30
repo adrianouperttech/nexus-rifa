@@ -5,12 +5,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Reserva } from './entities/reserva.entity';
 import { TenantsModule } from '../tenants/tenants.module';
 import { RifasModule } from '../rifas/rifas.module';
+import { IntegrationsModule } from '../../integrations/integrations.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Reserva]),
     forwardRef(() => TenantsModule),
     forwardRef(() => RifasModule),
+    IntegrationsModule,
   ],
   controllers: [ReservasController],
   providers: [ReservasService],
