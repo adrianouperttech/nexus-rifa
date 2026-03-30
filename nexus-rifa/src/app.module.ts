@@ -6,7 +6,7 @@ import { UsersModule } from './modules/users/users.module';
 import { RifasModule } from './modules/rifas/rifas.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
-import ormconfig from '../../ormconfig';
+import ormconfig from '../ormconfig';
 
 @Module({
   imports: [
