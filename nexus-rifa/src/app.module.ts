@@ -1,16 +1,16 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
-import { RifasModule } from './rifas/rifas.module';
+import { AuthModule } from '../auth/auth.module';
+import { UserModule } from '../user/user.module';
+import { RifasModule } from '../rifas/rifas.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    // Esta deve ser a ÚNICA configuração do TypeORM em toda a sua aplicação.
+    // Esta é agora a ÚNICA configuração do TypeORM em toda a sua aplicação.
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -24,7 +24,7 @@ import { RifasModule } from './rifas/rifas.module';
           type: 'postgres',
           url: databaseUrl,
           autoLoadEntities: true, // Encontra automaticamente todas as suas entidades
-          synchronize: false, // synchronize: true NUNCA deve ser usado em produção
+          synchronize: false, // NUNCA usar synchronize: true em produção
           ssl: {
             rejectUnauthorized: false, // Necessário para a maioria das conexões de BD em nuvem
           },
@@ -35,7 +35,6 @@ import { RifasModule } from './rifas/rifas.module';
         };
       },
     }),
-    // Seus outros módulos
     AuthModule,
     UserModule,
     RifasModule,
