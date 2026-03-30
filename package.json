@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build api-server",
+    "build": "npm install && nest build api-server",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "node dist/apps/api-server/main",
     "start:dev": "nest start --watch",
