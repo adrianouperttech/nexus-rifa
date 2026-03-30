@@ -1,16 +1,12 @@
 import { seeder } from 'nestjs-seeder';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './user/user.entity'; // Assumindo que o nome da sua entidade de usuário é User e está neste caminho
-import { UserSeeder } from './database/seeders/user.seeder'; // Assumindo que o seeder de usuário é este
-import { AppModule } from './app.module'; // Importa o AppModule que tem a configuração do BD
-
-// Por favor, note que tive que fazer algumas suposições sobre os nomes e localizações 
-// das suas entidades e seeders de usuário. Se o build falhar novamente, por favor,
-// verifique se os caminhos './user/user.entity' e './database/seeders/user.seeder' estão corretos.
+import { AppModule } from './app.module'; // Importa a configuração centralizada
+import { RootUser } from './modules/root-users/entities/root-user.entity'; // O caminho e entidade corretos
+import { RootUserSeeder } from './database/seeders/root-user.seeder'; // O seeder correto
 
 seeder({
   imports: [
-    AppModule, // O AppModule já importa o ConfigModule e o TypeOrmModule.forRootAsync
-    TypeOrmModule.forFeature([User]), // Você ainda precisa especificar qual entidade este seeder usará
+    AppModule, // AppModule já contém toda a configuração de BD necessária.
+    TypeOrmModule.forFeature([RootUser]), // Especifica a entidade para este seeder.
   ],
-}).run([UserSeeder]);
+}).run([RootUserSeeder]);
