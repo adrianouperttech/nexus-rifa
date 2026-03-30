@@ -19,6 +19,12 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@/src/*": ["apps/api-server/src/*"],
+      "@/app/*": ["apps/api-server/src/app/*"],
+      "@/components/*": ["apps/api-server/src/components/*"],
+      "@/lib/*": ["apps/api-server/src/lib/*"]
+    }
   }
 }
