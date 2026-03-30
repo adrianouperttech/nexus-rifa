@@ -13,6 +13,8 @@ import { User } from './modules/users/entities/user.entity';
 import { Premio } from './modules/premios/entities/premio.entity';
 import { Reserva } from './modules/reservas/entities/reserva.entity';
 import { Pagamento } from './modules/pagamentos/entities/pagamento.entity';
+import { Tenant } from './modules/tenants/entities/tenant.entity';
+import { TenantsModule } from './modules/tenants/tenants.module';
 
 @Module({
   imports: [
@@ -35,7 +37,7 @@ import { Pagamento } from './modules/pagamentos/entities/pagamento.entity';
         return {
           type: 'postgres',
           url: databaseUrl,
-          entities: [Cota, Rifa, User, Premio, Reserva, Pagamento],
+          entities: [Cota, Rifa, User, Premio, Reserva, Pagamento, Tenant],
           synchronize: true, // Em produção, considere usar migrações
           ssl: {
             rejectUnauthorized: false,
@@ -46,6 +48,7 @@ import { Pagamento } from './modules/pagamentos/entities/pagamento.entity';
     AuthModule,
     UsersModule,
     RifasModule,
+    TenantsModule,
   ],
   providers: [
     {
