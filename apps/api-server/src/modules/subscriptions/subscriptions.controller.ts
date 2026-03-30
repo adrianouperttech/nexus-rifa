@@ -8,13 +8,14 @@ import {
   Delete,
 } from '@nestjs/common';
 import { SubscriptionsService } from './subscriptions.service';
+import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 
 @Controller('subscriptions')
 export class SubscriptionsController {
   constructor(private readonly subscriptionsService: SubscriptionsService) {}
 
   @Post()
-  create(@Body() createSubscriptionDto: any) {
+  create(@Body() createSubscriptionDto: CreateSubscriptionDto) {
     return this.subscriptionsService.create(createSubscriptionDto);
   }
 
@@ -25,7 +26,7 @@ export class SubscriptionsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.subscriptionsService.findOne(id);
+    return this.subscriptionService.findOne(id);
   }
 
   @Patch(':id')
