@@ -28,7 +28,7 @@ import { APP_GUARD } from '@nestjs/core';
         return {
           type: 'postgres',
           url: databaseUrl,
-          entities: [__dirname + '/modules/**/*.entity{.ts,.js}'],
+          autoLoadEntities: true,
           synchronize: true, // Alterado para true para desenvolvimento
           ssl: {
             rejectUnauthorized: false,
