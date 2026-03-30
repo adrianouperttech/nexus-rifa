@@ -8,7 +8,7 @@ import { Repository } from 'typeorm';
 import { Rifa } from './entities/rifa.entity';
 import { CreateRifaDto } from './dto/create-rifa.dto';
 import { UpdateRifaDto } from './dto/update-rifa.dto';
-import { BillingService } from '../billing/billing.service'; // Correção: Importar BillingService
+import { BillingService } from '../billing/billing.service';
 import { PlansService } from '../plans/plans.service';
 
 @Injectable()
@@ -16,15 +16,13 @@ export class RifasService {
   constructor(
     @InjectRepository(Rifa)
     private readonly rifasRepository: Repository<Rifa>,
-    private readonly billingService: BillingService, // Correção: Usar BillingService
+    private readonly billingService: BillingService,
     private readonly plansService: PlansService,
   ) {}
 
   async create(tenant_id: string, createRifaDto: CreateRifaDto): Promise<Rifa> {
-    // Correção: Usar billingService e o método correto findSubscriptionByTenantId
-    const subscription = await this.billingService.findSubscriptionByTenantId(
-      tenant_id,
-    );
+    // Correção: O método correto é findByTenantId
+    const subscription = await this.billingService.findByTenantId(tenant_id);
 
     if (!subscription || subscription.status !== 'authorized') {
       throw new ForbiddenException('No active subscription found.');
