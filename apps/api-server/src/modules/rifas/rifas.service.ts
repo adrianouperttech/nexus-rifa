@@ -8,7 +8,6 @@ import { Repository } from 'typeorm';
 import { Rifa } from './entities/rifa.entity';
 import { CreateRifaDto } from './dto/create-rifa.dto';
 import { UpdateRifaDto } from './dto/update-rifa.dto';
-import { BillingService } from '../billing/billing.service';
 import { PlansService } from '../plans/plans.service';
 
 @Injectable()
@@ -16,30 +15,10 @@ export class RifasService {
   constructor(
     @InjectRepository(Rifa)
     private readonly rifasRepository: Repository<Rifa>,
-    private readonly billingService: BillingService,
     private readonly plansService: PlansService,
   ) {}
 
   async create(tenant_id: string, createRifaDto: CreateRifaDto): Promise<Rifa> {
-    // Correção: O método correto é findByTenantId
-    const subscription = await this.billingService.findByTenantId(tenant_id);
-
-    if (!subscription || subscription.status !== 'authorized') {
-      throw new ForbiddenException('No active subscription found.');
-    }
-
-    const plan = await this.plansService.findOne(subscription.plan_id);
-    if (!plan) {
-      throw new NotFoundException(
-        `Plan with ID "${subscription.plan_id}" not found`,
-      );
-    }
-
-    const count = await this.rifasRepository.count({ where: { tenant_id } });
-    if (count >= plan.limit) {
-      throw new ForbiddenException('Raffle limit reached.');
-    }
-
     const rifa = this.rifasRepository.create({ ...createRifaDto, tenant_id });
     return this.rifasRepository.save(rifa);
   }

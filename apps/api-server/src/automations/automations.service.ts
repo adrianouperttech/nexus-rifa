@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { ReservasService } from '../modules/reservas/reservas.service';
 import { TenantsService } from '../modules/tenants/tenants.service';
-import { BillingService } from '../modules/billing/billing.service';
 
 @Injectable()
 export class AutomationsService {
@@ -11,7 +10,6 @@ export class AutomationsService {
   constructor(
     private readonly reservasService: ReservasService,
     private readonly tenantsService: TenantsService,
-    private readonly billingService: BillingService,
   ) {}
 
   @Cron(CronExpression.EVERY_HOUR)
@@ -48,21 +46,5 @@ export class AutomationsService {
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async handleSaaSCobrança() {
     this.logger.log('Executando cobrança SaaS...');
-    // const tenants = await this.tenantsService.findAll();
-
-    // for (const tenant of tenants) {
-    //   const subscription = await this.billingService.findByTenantId(tenant.id);
-
-    //   if (subscription && subscription.status === 'active') {
-    //     const now = new Date();
-    //     const dueDate = new Date(subscription.created_at);
-    //     dueDate.setMonth(dueDate.getMonth() + 1);
-
-    //     if (now > dueDate) {
-    //       this.logger.log(`Cobrança para o tenant ${tenant.id}...`);
-    //       // await this.billingService.processPayment(subscription);
-    //     }
-    //   }
-    // }
   }
 }
