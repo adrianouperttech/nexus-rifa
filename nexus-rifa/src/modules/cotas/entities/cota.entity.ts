@@ -21,7 +21,7 @@ export class Cota {
   reservado_em: Date;
   @Column({ type: 'timestamp', nullable: true })
   pago_em: Date;
-  @ManyToOne(() => Rifa, (rifa) => rifa.cotas)
+  @ManyToOne('Rifa', (rifa: Rifa) => rifa.cotas)
   @JoinColumn({ name: 'rifa_id' })
   rifa: Rifa;
   @ManyToOne(() => Tenant, (tenant) => tenant.cotas)

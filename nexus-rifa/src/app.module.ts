@@ -1,3 +1,4 @@
+
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -6,6 +7,12 @@ import { UsersModule } from './modules/users/users.module';
 import { RifasModule } from './modules/rifas/rifas.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { Cota } from './modules/cotas/entities/cota.entity';
+import { Rifa } from './modules/rifas/entities/rifa.entity';
+import { User } from './modules/users/entities/user.entity';
+import { Premio } from './modules/premios/entities/premio.entity';
+import { Reserva } from './modules/reservas/entities/reserva.entity';
+import { Pagamento } from './modules/pagamentos/entities/pagamento.entity';
 
 @Module({
   imports: [
@@ -28,8 +35,8 @@ import { APP_GUARD } from '@nestjs/core';
         return {
           type: 'postgres',
           url: databaseUrl,
-          autoLoadEntities: true,
-          synchronize: true, // Alterado para true para desenvolvimento
+          entities: [Cota, Rifa, User, Premio, Reserva, Pagamento],
+          synchronize: true, // Em produção, considere usar migrações
           ssl: {
             rejectUnauthorized: false,
           },

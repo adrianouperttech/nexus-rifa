@@ -47,7 +47,7 @@ export class Rifa {
   @JoinColumn({ name: 'tenant_id' })
   tenant: Tenant;
 
-  @OneToMany(() => Cota, (cota) => cota.rifa)
+  @OneToMany('Cota', (cota: Cota) => cota.rifa)
   cotas: Cota[];
 
   @OneToMany(() => Reserva, (reserva) => reserva.rifa)
