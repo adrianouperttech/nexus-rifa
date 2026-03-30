@@ -14,14 +14,14 @@ import { WebhookValidationService } from '../../common/security/webhook-validati
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forFeature([Subscription]),
-    forwardRef(() => PlansModule), // Correção: Usar forwardRef
+    forwardRef(() => PlansModule),
     UsersModule,
     TenantsModule,
   ],
   controllers: [BillingController],
   providers: [
     BillingService,
-    WebhookValidationService, // Adiciona o serviço como provider
+    WebhookValidationService,
     {
       provide: 'MERCADOPAGO',
       useFactory: () => {
@@ -31,5 +31,6 @@ import { WebhookValidationService } from '../../common/security/webhook-validati
       },
     },
   ],
+  exports: [BillingService], // Adicionado para exportar o serviço
 })
 export class BillingModule {}
