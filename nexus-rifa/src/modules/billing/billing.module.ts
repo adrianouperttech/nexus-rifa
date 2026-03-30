@@ -8,6 +8,7 @@ import MercadoPago from 'mercadopago';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from '../users/users.module';
 import { TenantsModule } from '../tenants/tenants.module';
+import { WebhookValidationService } from '../../common/security/webhook-validation.service'; // Importa o serviço
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { TenantsModule } from '../tenants/tenants.module';
   controllers: [BillingController],
   providers: [
     BillingService,
+    WebhookValidationService, // Adiciona o serviço como provider
     {
       provide: 'MERCADOPAGO',
       useFactory: () => {

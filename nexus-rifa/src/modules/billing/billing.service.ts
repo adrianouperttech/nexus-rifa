@@ -56,6 +56,8 @@ export class BillingService {
       throw new NotFoundException(`User with ID "${user_id}" not found`);
     }
 
+    const backUrl = `${process.env.APP_URL}/billing/success`;
+
     const preapprovalPlan = await this.preApprovalPlanClient.create({
       body: {
         reason: plan.name,
@@ -65,7 +67,7 @@ export class BillingService {
           transaction_amount: plan.price,
           currency_id: 'BRL',
         },
-        back_url: 'https://nexus-rifa.com/billing/success',
+        back_url: backUrl,
       },
     });
 
@@ -73,7 +75,7 @@ export class BillingService {
       body: {
         preapproval_plan_id: preapprovalPlan.id,
         payer_email: user.email,
-        back_url: 'https://nexus-rifa.com/billing/success',
+        back_url: backUrl,
       },
     });
 

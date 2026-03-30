@@ -6,55 +6,53 @@ import {
   Param,
   Delete,
   Patch,
+  UseGuards,
+  Req,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthGuard } from '@nestjs/passport';
 
-@Controller('tenants/:tenant_id/users')
+@UseGuards(AuthGuard('jwt'))
+@Controller('users') // Rota padronizada e segura
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  create(
-    @Param('tenant_id') tenant_id: string,
-    @Body() createUserDto: CreateUserDto,
-  ) {
+  create(@Req() req, @Body() createUserDto: CreateUserDto) {
+    const tenant_id = req.user.tenant_id; // Extraído do token JWT
     return this.usersService.create(tenant_id, createUserDto);
   }
 
   @Get()
-  findAll(@Param('tenant_id') tenant_id: string) {
+  findAll(@Req() req) {
+    const tenant_id = req.user.tenant_id; // Extraído do token JWT
     return this.usersService.findAll(tenant_id);
   }
 
   @Get(':id')
-  findOne(@Param('tenant_id') tenant_id: string, @Param('id') id: string) {
+  findOne(@Req() req, @Param('id') id: string) {
+    const tenant_id = req.user.tenant_id; // Extraído do token JWT
     return this.usersService.findOne(tenant_id, id);
-  }
-
-  @Get('email/:email')
-  findByEmail(
-    @Param('tenant_id') tenant_id: string,
-    @Param('email') email: string,
-  ) {
-    return this.usersService.findByEmail(tenant_id, email);
   }
 
   @Patch(':id')
   update(
-    @Param('tenant_id') tenant_id: string,
+    @Req() req,
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
+    const tenant_id = req.user.tenant_id; // Extraído do token JWT
     return this.usersService.update(tenant_id, id, updateUserDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('tenant_id') tenant_id: string, @Param('id') id: string) {
+  remove(@Req() req, @Param('id') id: string) {
+    const tenant_id = req.user.tenant_id; // Extraído do token JWT
     return this.usersService.remove(tenant_id, id);
   }
 }
