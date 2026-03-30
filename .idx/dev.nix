@@ -14,7 +14,10 @@
   ];
 
   # Sets environment variables in the workspace
-  env = {};
+  env = {
+    # Replace with your actual database connection string
+    DATABASE_URL = "postgresql://user:password@host:port/database";
+  };
   idx = {
     # Search for the extensions you want on https://open-vsx.org/ and use "publisher.id"
     extensions = [

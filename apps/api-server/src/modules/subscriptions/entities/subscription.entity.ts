@@ -1,37 +1,33 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-import { v4 as uuidV4 } from 'uuid';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
+import { Tenant } from '../../tenants/entities/tenant.entity';
 
-export type SubscriptionDocument = Subscription & Document;
-
-@Schema({
-  timestamps: true,
-})
+@Entity('subscriptions')
 export class Subscription {
-  @Prop({
-    type: String,
-    default: uuidV4,
-  })
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Prop({
-    type: String,
-    required: true,
-  })
-  userId: string;
+  @Column()
+  tenant_id: string;
 
-  @Prop({
-    type: String,
-    required: true,
-  })
-  planId: string;
+  @Column()
+  plan_id: string;
 
-  @Prop({
-    type: String,
-    enum: ['active', 'inactive', 'cancelled'],
-    default: 'active',
-  })
+  @Column()
   status: string;
-}
 
-export const SubscriptionSchema = SchemaFactory.createForClass(Subscription);
+  @Column()
+  payment_gateway_subscription_id: string;
+
+  @ManyToOne(() => Tenant, (tenant) => tenant.subscriptions)
+  @JoinColumn({ name: 'tenant_id' })
+  tenant: Tenant;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  created_at: Date;
+}

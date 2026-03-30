@@ -15,6 +15,7 @@ import { Reserva } from './modules/reservas/entities/reserva.entity';
 import { Pagamento } from './modules/pagamentos/entities/pagamento.entity';
 import { Tenant } from './modules/tenants/entities/tenant.entity';
 import { TenantsModule } from './modules/tenants/tenants.module';
+import { Subscription } from './modules/subscriptions/entities/subscription.entity';
 
 @Module({
   imports: [
@@ -37,7 +38,7 @@ import { TenantsModule } from './modules/tenants/tenants.module';
         return {
           type: 'postgres',
           url: databaseUrl,
-          entities: [Cota, Rifa, User, Premio, Reserva, Pagamento, Tenant],
+          entities: [Cota, Rifa, User, Premio, Reserva, Pagamento, Tenant, Subscription],
           synchronize: true, // Em produção, considere usar migrações
           ssl: {
             rejectUnauthorized: false,

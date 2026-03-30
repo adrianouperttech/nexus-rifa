@@ -1,19 +1,13 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import {
-  Subscription,
-  SubscriptionSchema,
-} from './entities/subscription.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Subscription } from './entities/subscription.entity';
 import { SubscriptionsController } from './subscriptions.controller';
 import { SubscriptionsService } from './subscriptions.service';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      { name: Subscription.name, schema: SubscriptionSchema },
-    ]),
-  ],
+  imports: [TypeOrmModule.forFeature([Subscription])],
   controllers: [SubscriptionsController],
   providers: [SubscriptionsService],
+  exports: [SubscriptionsService],
 })
 export class SubscriptionsModule {}

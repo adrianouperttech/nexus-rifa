@@ -1,42 +1,36 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import {
-  Subscription,
-  SubscriptionDocument,
-} from './entities/subscription.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Subscription } from './entities/subscription.entity';
 
 @Injectable()
 export class SubscriptionsService {
   constructor(
-    @InjectModel(Subscription.name)
-    private subscriptionModel: Model<SubscriptionDocument>,
+    @InjectRepository(Subscription)
+    private subscriptionRepository: Repository<Subscription>,
   ) {}
 
   async create(createSubscriptionDto: any): Promise<Subscription> {
-    const createdSubscription = new this.subscriptionModel(
+    const createdSubscription = this.subscriptionRepository.create(
       createSubscriptionDto,
     );
-    return createdSubscription.save();
+    return this.subscriptionRepository.save(createdSubscription);
   }
 
   async findAll(): Promise<Subscription[]> {
-    return this.subscriptionModel.find().exec();
+    return this.subscriptionRepository.find();
   }
 
   async findOne(id: string): Promise<Subscription | null> {
-    return this.subscriptionModel.findOne({ id }).exec();
+    return this.subscriptionRepository.findOne({ where: { id } });
   }
 
   async update(id: string, updateSubscriptionDto: any): Promise<Subscription | null> {
-    return this.subscriptionModel.findOneAndUpdate(
-      { id },
-      updateSubscriptionDto,
-      { new: true },
-    );
+    await this.subscriptionRepository.update(id, updateSubscriptionDto);
+    return this.subscriptionRepository.findOne({ where: { id } });
   }
 
   async remove(id: string): Promise<any> {
-    return this.subscriptionModel.deleteOne({ id }).exec();
+    return this.subscriptionRepository.delete(id);
   }
 }

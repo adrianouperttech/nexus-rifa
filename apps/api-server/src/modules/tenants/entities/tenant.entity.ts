@@ -10,7 +10,7 @@ import { Rifa } from '../../rifas/entities/rifa.entity';
 import { Cota } from '../../cotas/entities/cota.entity';
 import { Reserva } from '../../reservas/entities/reserva.entity';
 import { Pagamento } from '../../pagamentos/entities/pagamento.entity';
-import { Subscription } from '../../billing/entities/subscription.entity';
+import { Subscription } from '../../subscriptions/entities/subscription.entity';
 @Entity('tenants')
 export class Tenant {
   @PrimaryGeneratedColumn('uuid')
