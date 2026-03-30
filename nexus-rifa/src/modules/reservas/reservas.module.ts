@@ -1,17 +1,13 @@
-import { Module, forwardRef } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { Module } from '@nestjs/common';
 import { ReservasService } from './reservas.service';
 import { ReservasController } from './reservas.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { Reserva } from './entities/reserva.entity';
-import { RifasModule } from '../rifas/rifas.module';
+import { TenantsModule } from '../tenants/tenants.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Reserva]),
-    forwardRef(() => RifasModule),
-  ],
+  imports: [TypeOrmModule.forFeature([Reserva]), TenantsModule],
   controllers: [ReservasController],
   providers: [ReservasService],
-  exports: [ReservasService],
 })
 export class ReservasModule {}
