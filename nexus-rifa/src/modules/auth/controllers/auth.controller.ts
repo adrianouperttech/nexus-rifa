@@ -1,16 +1,18 @@
 import { Controller, Post, Body, Req } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { LoginDto } from '../dto/login.dto';
-import { ThrottlerLimit } from '@nestjs/throttler';
+import { Throttle } from '@nestjs/throttler'; // Correção: Importar Throttle
 
-@Controller('auth') // Rota padronizada
+@Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @ThrottlerLimit({ ttl: 60000, limit: 10 }) // 10 requisições por minuto
+  // Correção: Usar @Throttle e ajustar a sintaxe do limite
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Post('login')
   async login(@Body() loginDto: LoginDto, @Req() req) {
-    // O tenant_id será determinado pelo subdomínio ou outro método no AuthService
-    return this.authService.login(loginDto, req);
+    // A lógica de extração do tenant (ex: do subdomínio via req)
+    // deve estar implementada no AuthService
+    return this.authService.login(req, loginDto);
   }
 }

@@ -4,7 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { RifasModule } from './modules/rifas/rifas.module';
-import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler'; // Importa o Throttler
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 
 @Module({
@@ -12,7 +12,6 @@ import { APP_GUARD } from '@nestjs/core';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    // Configuração do Rate Limiter
     ThrottlerModule.forRoot([{
       ttl: 60000, // 60 segundos
       limit: 60, // 60 requisições
@@ -45,10 +44,9 @@ import { APP_GUARD } from '@nestjs/core';
     RifasModule,
   ],
   providers: [
-    // Aplica o Rate Limiter globalmente em todas as rotas
     {
       provide: APP_GUARD,
-      use: ThrottlerGuard,
+      useClass: ThrottlerGuard, // Correção: useClass em vez de use
     },
   ],
 })
