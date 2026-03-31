@@ -8,16 +8,19 @@ import {
   UseGuards,
   Req,
   UnauthorizedException,
+  Inject,
 } from '@nestjs/common';
 import { PagamentosService } from './pagamentos.service';
 import { CreatePagamentoDto } from './dto/create-pagamento.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { WebhookValidationService } from '../../common/security/webhook-validation.service';
 import { SkipThrottle } from '@nestjs/throttler';
+import { Logger } from 'winston';
 
 @Controller('pagamentos')
 export class PagamentosController {
   constructor(
+    @Inject('winston') private readonly logger: Logger,
     private readonly pagamentosService: PagamentosService,
     private readonly webhookValidationService: WebhookValidationService,
   ) {}
@@ -38,7 +41,7 @@ export class PagamentosController {
   ) {
     const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
     if (!secret) {
-      console.error('MERCADOPAGO_WEBHOOK_SECRET não está configurado.');
+      this.logger.error('MERCADOPAGO_WEBHOOK_SECRET não está configurado.');
       // Não lance um erro que o Mercado Pago possa ver, apenas logue.
       return;
     }
@@ -50,16 +53,16 @@ export class PagamentosController {
     );
 
     if (!isValid) {
-      console.warn('Assinatura de webhook do Mercado Pago inválida.');
+      this.logger.warn('Assinatura de webhook do Mercado Pago inválida.');
       // Responda 200 OK para não ser inundado com retentativas, mas não processe.
       return;
     }
 
-    console.log('Webhook do Mercado Pago recebido e validado:', notification);
+    this.logger.info('Webhook do Mercado Pago recebido e validado:', { notification });
     try {
       await this.pagamentosService.handlePagamentoWebhook(notification);
     } catch (error) {
-      console.error('Erro ao processar webhook validado:', error);
+      this.logger.error('Erro ao processar webhook validado:', { error });
     }
   }
 }

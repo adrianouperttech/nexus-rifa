@@ -6,10 +6,10 @@ import { Tenant } from './entities/tenant.entity';
 import { UsersModule } from '../users/users.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { ReservasModule } from '../reservas/reservas.module';
-import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
+import { BillingModule } from '../billing/billing.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Tenant]), UsersModule, MulterModule, forwardRef(() => ReservasModule), SubscriptionsModule],
+  imports: [TypeOrmModule.forFeature([Tenant]), UsersModule, MulterModule, forwardRef(() => ReservasModule), BillingModule],
   controllers: [TenantsController],
   providers: [TenantsService],
   exports: [TenantsService],

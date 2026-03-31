@@ -1,4 +1,9 @@
-import { Injectable, HttpException } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  Inject,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateAssinaturaDto } from './dto/create-assinatura.dto';
@@ -6,6 +11,7 @@ import { Assinatura } from './entities/assinatura.entity';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
+import { Logger } from 'winston';
 
 @Injectable()
 export class AssinaturasService {
@@ -13,6 +19,7 @@ export class AssinaturasService {
   private readonly mercadoPagoAccessToken: string;
 
   constructor(
+    @Inject('winston') private readonly logger: Logger,
     @InjectRepository(Assinatura)
     private readonly assinaturaRepository: Repository<Assinatura>,
     private readonly httpService: HttpService,
@@ -24,7 +31,7 @@ export class AssinaturasService {
     );
     this.mercadoPagoAccessToken = this.configService.get<string>(
       'MERCADO_PAGO_ACCESS_TOKEN',
-      ''
+      '',
     );
   }
 
@@ -68,7 +75,10 @@ export class AssinaturasService {
 
       return await this.assinaturaRepository.save(newAssinatura);
     } catch (error) {
-      throw new HttpException(error.response.data, error.response.status);
+      this.logger.error('Erro ao criar assinatura no Mercado Pago:', { error });
+      throw new InternalServerErrorException(
+        'Falha ao se comunicar com o gateway de pagamento.',
+      );
     }
   }
 
@@ -97,9 +107,19 @@ export class AssinaturasService {
         if (assinatura) {
           assinatura.status = preapprovalData.status;
           await this.assinaturaRepository.save(assinatura);
+        } else {
+          this.logger.warn(
+            `Assinatura com preapprovalId "${preapprovalId}" não encontrada.`,
+          );
         }
       } catch (error) {
-        throw new HttpException(error.response.data, error.response.status);
+        this.logger.error(
+          `Erro ao processar webhook de preapproval: ${preapprovalId}`,
+          { error },
+        );
+        throw new InternalServerErrorException(
+          'Erro ao consultar status da assinatura no gateway.',
+        );
       }
     }
     return { message: 'Webhook received' };

@@ -4,11 +4,13 @@ import { ValidationPipe } from '@nestjs/common';
 import { config } from 'dotenv';
 import { resolve } from 'path';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import helmet from 'helmet';
 
 config({ path: resolve(__dirname, `../.env.${process.env.NODE_ENV || 'development'}`) });
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bodyParser: true });
+  app.use(helmet());
   app.useGlobalPipes(new ValidationPipe());
 
   const config = new DocumentBuilder()

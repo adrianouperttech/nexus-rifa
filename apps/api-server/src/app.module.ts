@@ -15,7 +15,9 @@ import { Reserva } from './modules/reservas/entities/reserva.entity';
 import { Pagamento } from './modules/pagamentos/entities/pagamento.entity';
 import { Tenant } from './modules/tenants/entities/tenant.entity';
 import { TenantsModule } from './modules/tenants/tenants.module';
-import { Subscription } from './modules/subscriptions/entities/subscription.entity';
+import { Subscription } from './modules/billing/entities/subscription.entity';
+import { BillingModule } from './modules/billing/billing.module';
+import { LoggerModule } from './common/logger/logger.module';
 
 @Module({
   imports: [
@@ -50,6 +52,8 @@ import { Subscription } from './modules/subscriptions/entities/subscription.enti
     UsersModule,
     RifasModule,
     TenantsModule,
+    BillingModule,
+    LoggerModule,
   ],
   providers: [
     {

@@ -1,7 +1,6 @@
-import { IsString, IsNotEmpty } from 'class-validator';
-
 export class CreateSubscriptionDto {
-  @IsString()
-  @IsNotEmpty()
-  planId: string;
+  tenant_id: string;
+  payer_email: string;
+  reason: string;
+  price: number;
 }

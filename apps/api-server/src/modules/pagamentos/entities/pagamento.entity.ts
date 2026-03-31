@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { Reserva } from '../../reservas/entities/reserva.entity';
 
-@Entity()
+@Entity('pagamentos')
 export class Pagamento {
   @PrimaryGeneratedColumn('uuid')
   id: string;
