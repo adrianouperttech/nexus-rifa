@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, Inject } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Plan } from './entities/plan.entity';
@@ -9,7 +9,7 @@ import { LoggerService } from '../../common/logger/logger.service';
 @Injectable()
 export class PlansService {
   constructor(
-    @Inject('LoggerService') private readonly logger: LoggerService,
+    private readonly logger: LoggerService,
     @InjectRepository(Plan)
     private readonly planRepository: Repository<Plan>,
   ) {}
