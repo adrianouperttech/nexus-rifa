@@ -50,7 +50,7 @@ export class BillingService {
 
       return response;
     } catch (error) {
-      this.logger.error('Erro ao criar assinatura no Mercado Pago:', { error });
+      this.logger.error(`Erro ao criar assinatura no Mercado Pago: ${JSON.stringify(error)}`);
       throw new InternalServerErrorException(
         'Falha ao se comunicar com o gateway de pagamento.',
       );
@@ -71,13 +71,12 @@ export class BillingService {
           await this.subscriptionRepository.save(subscription);
         } else {
           this.logger.warn(
-            `Assinatura com id "${preapproval.id}" não encontrada.`,
+            `Assinatura com id \"${preapproval.id}\" não encontrada.`,
           );
         }
       } catch (error) {
         this.logger.error(
-          `Erro ao processar webhook de preapproval: ${body.data.id}`,
-          { error },
+          `Erro ao processar webhook de preapproval: ${body.data.id}: ${JSON.stringify(error)}`,
         );
         throw new InternalServerErrorException(
           'Erro ao consultar status da assinatura no gateway.',
