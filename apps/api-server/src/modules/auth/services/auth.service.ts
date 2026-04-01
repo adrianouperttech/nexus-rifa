@@ -1,4 +1,10 @@
-import { Injectable, UnauthorizedException, Req } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  NotFoundException,
+  InternalServerErrorException,
+  Req,
+} from '@nestjs/common';
 import { UsersService } from '../../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -32,43 +38,48 @@ export class AuthService {
     }
 
     const { email, password } = loginDto;
-    const user = await this.usersService.findByEmail(tenant_id, email);
-
-    if (!user) {
-      this.logger.warn(
-        `Login failed for email \"${email}\" in tenant \"${tenant_id}\" - User not found`,
-      );
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    const isPasswordMatching = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordMatching) {
-      this.logger.warn(
-        `Login failed for email \"${email}\" in tenant \"${tenant_id}\" - Invalid password`,
-      );
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    const payload = {
-      sub: user.id,
-      email: user.email,
-      tenant_id: user.tenant_id, // tenant_id já está no usuário
-    };
-
-    this.logger.log(
-      `Login successful for user ${user.id} in tenant ${tenant_id}`,
-    );
 
     try {
-      return {
-        access_token: this.jwtService.sign(payload),
+      const user = await this.usersService.findByEmail(tenant_id, email);
+
+      const isPasswordMatching = await bcrypt.compare(password, user.password);
+
+      if (!isPasswordMatching) {
+        this.logger.warn(
+          `Login failed for email \"${email}\" in tenant \"${tenant_id}\" - Invalid password`,
+        );
+        throw new UnauthorizedException('Invalid credentials');
+      }
+
+      const payload = {
+        sub: user.id,
+        email: user.email,
+        tenant_id: user.tenant_id,
       };
-    } catch (error) {
-      this.logger.error('Falha ao assinar token JWT:', error);
-      throw new Error(
-        'Erro interno de autenticação - token JWT not configured',
+
+      this.logger.log(
+        `Login successful for user ${user.id} in tenant ${tenant_id}`,
       );
+
+      try {
+        return {
+          access_token: this.jwtService.sign(payload),
+        };
+      } catch (error) {
+        this.logger.error('Falha ao assinar token JWT:', error);
+        throw new InternalServerErrorException('Erro interno de autenticação');
+      }
+    } catch (error) {
+      this.logger.error('Login error:', error);
+
+      if (
+        error instanceof NotFoundException ||
+        error instanceof UnauthorizedException
+      ) {
+        throw new UnauthorizedException('Invalid credentials');
+      }
+
+      throw new InternalServerErrorException('Erro interno de autenticação');
     }
   }
 }
