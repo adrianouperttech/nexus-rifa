@@ -10,7 +10,7 @@ export class AuthController {
 
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Post('login')
-  async login(@Body() loginDto: LoginDto, @Req() req: Request) {
+  async login(@Req() req: Request, @Body() loginDto: LoginDto) {
     return this.authService.login(req, loginDto);
   }
 }

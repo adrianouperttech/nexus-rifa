@@ -2903,10 +2903,10 @@ let AuthService = class AuthService {
     }
     async login(req, loginDto) {
         const suppliedTenant = req.headers['x-tenant-id'] ||
+            loginDto.tenant_id ||
             ((req === null || req === void 0 ? void 0 : req.subdomains) && req.subdomains.length > 0
                 ? req.subdomains[0]
-                : null) ||
-            loginDto.tenant_id;
+                : null);
         this.logger.log(`Login attempt for tenant ${suppliedTenant}`);
         if (!suppliedTenant) {
             this.logger.warn('Login attempt without tenant');
@@ -3043,17 +3043,17 @@ let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
     }
-    async login(loginDto, req) {
+    async login(req, loginDto) {
         return this.authService.login(req, loginDto);
     }
 };
 __decorate([
     (0, throttler_1.Throttle)({ default: { limit: 10, ttl: 60000 } }),
     (0, common_1.Post)('login'),
-    __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Req)()),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof login_dto_1.LoginDto !== "undefined" && login_dto_1.LoginDto) === "function" ? _b : Object, typeof (_c = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _c : Object]),
+    __metadata("design:paramtypes", [typeof (_b = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _b : Object, typeof (_c = typeof login_dto_1.LoginDto !== "undefined" && login_dto_1.LoginDto) === "function" ? _c : Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 AuthController = __decorate([

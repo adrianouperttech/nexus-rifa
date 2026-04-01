@@ -29,10 +29,10 @@ export class AuthService {
   ): Promise<{ access_token: string }> {
     const suppliedTenant =
       (req.headers['x-tenant-id'] as string) ||
+      loginDto.tenant_id ||
       (req?.subdomains && req.subdomains.length > 0
         ? req.subdomains[0]
-        : null) ||
-      loginDto.tenant_id;
+        : null);
 
     this.logger.log(`Login attempt for tenant ${suppliedTenant}`);
 
