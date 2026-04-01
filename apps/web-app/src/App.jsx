@@ -26,8 +26,11 @@ async function apiFetch(path, options = {}) {
     headers.Authorization = `Bearer ${token}`
   }
 
-  const normalizedPath = path.replace(/^\/+/, '')
-  const response = await fetch(`${API_BASE_URL}/${normalizedPath}`, {
+  const isAbsolute = /^https?:\/\//i.test(path)
+  const normalizedPath = isAbsolute ? path : path.replace(/^\/+/, '')
+  const url = isAbsolute ? normalizedPath : `${API_BASE_URL}/${normalizedPath}`
+
+  const response = await fetch(url, {
     ...options,
     headers,
   })
