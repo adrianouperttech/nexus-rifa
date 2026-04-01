@@ -1,18 +1,18 @@
 
-import { Injectable, Inject, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Subscription } from './entities/subscription.entity';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { MercadoPagoConfig, PreApproval } from 'mercadopago';
-import { Logger } from 'winston';
+import { LoggerService } from '../../common/logger/logger.service';
 
 @Injectable()
 export class BillingService {
   private client: MercadoPagoConfig;
 
   constructor(
-    @Inject('winston') private readonly logger: Logger,
+    private readonly logger: LoggerService,
     @InjectRepository(Subscription)
     private readonly subscriptionRepository: Repository<Subscription>,
   ) {
