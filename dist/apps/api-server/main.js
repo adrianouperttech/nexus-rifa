@@ -43,6 +43,7 @@ const subscription_entity_1 = __webpack_require__(16);
 const billing_module_1 = __webpack_require__(58);
 const logger_module_1 = __webpack_require__(56);
 const plan_entity_1 = __webpack_require__(17);
+const root_module_1 = __webpack_require__(76);
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -95,6 +96,7 @@ AppModule = __decorate([
             tenants_module_1.TenantsModule,
             billing_module_1.BillingModule,
             logger_module_1.LoggerModule,
+            root_module_1.RootModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [
@@ -3413,24 +3415,116 @@ exports.Pagamento = Pagamento;
 
 /***/ }),
 /* 76 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RootModule = void 0;
+const common_1 = __webpack_require__(3);
+const root_controller_1 = __webpack_require__(77);
+const root_service_1 = __webpack_require__(78);
+let RootModule = class RootModule {
+};
+RootModule = __decorate([
+    (0, common_1.Module)({
+        controllers: [root_controller_1.RootController],
+        providers: [root_service_1.RootService],
+    })
+], RootModule);
+exports.RootModule = RootModule;
+
+
+/***/ }),
+/* 77 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RootController = void 0;
+const common_1 = __webpack_require__(3);
+const root_service_1 = __webpack_require__(78);
+let RootController = class RootController {
+    constructor(rootService) {
+        this.rootService = rootService;
+    }
+    getHello() {
+        return this.rootService.getHello();
+    }
+};
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", String)
+], RootController.prototype, "getHello", null);
+RootController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof root_service_1.RootService !== "undefined" && root_service_1.RootService) === "function" ? _a : Object])
+], RootController);
+exports.RootController = RootController;
+
+
+/***/ }),
+/* 78 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RootService = void 0;
+const common_1 = __webpack_require__(3);
+let RootService = class RootService {
+    getHello() {
+        return 'Hello World!';
+    }
+};
+RootService = __decorate([
+    (0, common_1.Injectable)()
+], RootService);
+exports.RootService = RootService;
+
+
+/***/ }),
+/* 79 */
 /***/ ((module) => {
 
 module.exports = require("dotenv");
 
 /***/ }),
-/* 77 */
+/* 80 */
 /***/ ((module) => {
 
 module.exports = require("path");
 
 /***/ }),
-/* 78 */
+/* 81 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/swagger");
 
 /***/ }),
-/* 79 */
+/* 82 */
 /***/ ((module) => {
 
 module.exports = require("helmet");
@@ -3472,10 +3566,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __webpack_require__(1);
 const app_module_1 = __webpack_require__(2);
 const common_1 = __webpack_require__(3);
-const dotenv_1 = __webpack_require__(76);
-const path_1 = __webpack_require__(77);
-const swagger_1 = __webpack_require__(78);
-const helmet_1 = __webpack_require__(79);
+const dotenv_1 = __webpack_require__(79);
+const path_1 = __webpack_require__(80);
+const swagger_1 = __webpack_require__(81);
+const helmet_1 = __webpack_require__(82);
 (0, dotenv_1.config)({
     path: (0, path_1.resolve)(__dirname, `../.env.${process.env.NODE_ENV || 'development'}`),
 });

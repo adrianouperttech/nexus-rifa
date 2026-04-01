@@ -21,6 +21,7 @@ import { Subscription } from './modules/billing/entities/subscription.entity';
 import { BillingModule } from './modules/billing/billing.module';
 import { LoggerModule } from './common/logger/logger.module';
 import { Plan } from './modules/plans/entities/plan.entity';
+import { RootModule } from './modules/root/root.module';
 
 @Module({
   imports: [
@@ -74,6 +75,7 @@ import { Plan } from './modules/plans/entities/plan.entity';
     TenantsModule,
     BillingModule,
     LoggerModule,
+    RootModule,
   ],
   controllers: [AppController],
   providers: [
