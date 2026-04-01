@@ -5,11 +5,7 @@ import { ReservasModule } from '../modules/reservas/reservas.module';
 import { TenantsModule } from '../modules/tenants/tenants.module';
 
 @Module({
-  imports: [
-    ScheduleModule.forRoot(),
-    ReservasModule,
-    TenantsModule,
-  ],
+  imports: [ScheduleModule.forRoot(), ReservasModule, TenantsModule],
   providers: [AutomationsService],
 })
 export class AutomationsModule {}

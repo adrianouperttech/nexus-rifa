@@ -2,8 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BillingService } from './billing.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Subscription } from './entities/subscription.entity';
-import { Logger } from 'winston';
-import { PreApproval } from 'mercadopago';
+import { LoggerService } from '../../common/logger/logger.service';
 
 // Mocking MercadoPago PreApproval
 const mockPreApprovalCreate = jest.fn();
@@ -32,8 +31,24 @@ describe('BillingService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BillingService,
-        { provide: getRepositoryToken(Subscription), useFactory: () => ({ save: jest.fn(), findOne: jest.fn(), create: jest.fn() }) },
-        { provide: 'winston', useValue: { error: jest.fn(), log: jest.fn(), warn: jest.fn() } },
+        {
+          provide: getRepositoryToken(Subscription),
+          useFactory: () => ({
+            save: jest.fn(),
+            findOne: jest.fn(),
+            create: jest.fn(),
+          }),
+        },
+        {
+          provide: LoggerService,
+          useValue: {
+            error: jest.fn(),
+            warn: jest.fn(),
+            log: jest.fn(),
+            debug: jest.fn(),
+            verbose: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
@@ -85,13 +100,22 @@ describe('BillingService', () => {
       const subscription = { id: 'mp-sub-id', status: 'pending' };
 
       mockPreApprovalGet.mockResolvedValue(preapprovalData);
-      jest.spyOn(subscriptionRepository, 'findOne').mockResolvedValue(subscription);
+      jest
+        .spyOn(subscriptionRepository, 'findOne')
+        .mockResolvedValue(subscription);
 
       await service.webhook(webhookBody);
 
-      expect(mockPreApprovalGet).toHaveBeenCalledWith({ id: webhookBody.data.id });
-      expect(subscriptionRepository.findOne).toHaveBeenCalledWith({ where: { id: preapprovalData.id } });
-      expect(subscriptionRepository.save).toHaveBeenCalledWith({ ...subscription, status: preapprovalData.status });
+      expect(mockPreApprovalGet).toHaveBeenCalledWith({
+        id: webhookBody.data.id,
+      });
+      expect(subscriptionRepository.findOne).toHaveBeenCalledWith({
+        where: { id: preapprovalData.id },
+      });
+      expect(subscriptionRepository.save).toHaveBeenCalledWith({
+        ...subscription,
+        status: preapprovalData.status,
+      });
     });
   });
 });

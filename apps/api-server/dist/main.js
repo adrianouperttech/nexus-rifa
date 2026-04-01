@@ -1,0 +1,57 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const core_1 = require("@nestjs/core");
+const app_module_1 = require("./app.module");
+const common_1 = require("@nestjs/common");
+const dotenv_1 = require("dotenv");
+const path_1 = require("path");
+const swagger_1 = require("@nestjs/swagger");
+const helmet_1 = require("helmet");
+(0, dotenv_1.config)({
+    path: (0, path_1.resolve)(__dirname, `../.env.${process.env.NODE_ENV || 'development'}`),
+});
+async function bootstrap() {
+    const app = await core_1.NestFactory.create(app_module_1.AppModule, { bodyParser: true });
+    const allowedOrigins = process.env.CORS_ORIGIN
+        ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim())
+        : [
+            'https://nexus-rifa.onrender.com',
+            'https://nexus-rifa-jwi51tf00-adrianoisrael7s-projects.vercel.app',
+            'https://nexus-rifa-sigma.vercel.app',
+        ];
+    app.enableCors({
+        origin: (origin, callback) => {
+            if (!origin) {
+                callback(null, true);
+                return;
+            }
+            if (process.env.CORS_ORIGIN) {
+                const allowed = allowedOrigins;
+                if (allowed.includes(origin)) {
+                    callback(null, true);
+                }
+                else {
+                    callback(new Error(`Origin ${origin} not allowed by CORS`));
+                }
+                return;
+            }
+            callback(null, true);
+        },
+        methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+        credentials: true,
+    });
+    app.use((0, helmet_1.default)());
+    app.useGlobalPipes(new common_1.ValidationPipe());
+    const config = new swagger_1.DocumentBuilder()
+        .setTitle('Nexus Rifa API')
+        .setDescription('API for Nexus Rifa application')
+        .setVersion('1.0')
+        .build();
+    const document = swagger_1.SwaggerModule.createDocument(app, config);
+    swagger_1.SwaggerModule.setup('docs', app, document);
+    const port = Number(process.env.PORT || 3000);
+    await app.listen(port, '0.0.0.0');
+}
+bootstrap();
+//# sourceMappingURL=main.js.map

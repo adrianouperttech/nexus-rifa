@@ -9,7 +9,13 @@ import { ReservasModule } from '../reservas/reservas.module';
 import { BillingModule } from '../billing/billing.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Tenant]), UsersModule, MulterModule, forwardRef(() => ReservasModule), BillingModule],
+  imports: [
+    TypeOrmModule.forFeature([Tenant]),
+    UsersModule,
+    MulterModule,
+    forwardRef(() => ReservasModule),
+    BillingModule,
+  ],
   controllers: [TenantsController],
   providers: [TenantsService],
   exports: [TenantsService],

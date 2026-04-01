@@ -39,7 +39,9 @@ export class UsersService {
       tenant_id,
     });
     if (!user) {
-      this.logger.warn(`User with ID "${id}" not found for tenant "${tenant_id}"`);
+      this.logger.warn(
+        `User with ID "${id}" not found for tenant "${tenant_id}"`,
+      );
       throw new NotFoundException(`User with ID \"${id}\" not found`);
     }
     return user;
@@ -52,7 +54,9 @@ export class UsersService {
       tenant_id,
     });
     if (!user) {
-      this.logger.warn(`User with email "${email}" not found for tenant "${tenant_id}"`);
+      this.logger.warn(
+        `User with email "${email}" not found for tenant "${tenant_id}"`,
+      );
       throw new NotFoundException(`User with email \"${email}\" not found`);
     }
     return user;
@@ -72,7 +76,9 @@ export class UsersService {
       ...updateUserDto,
     });
     if (!user) {
-      this.logger.warn(`User with ID "${id}" not found for tenant "${tenant_id}" to update`);
+      this.logger.warn(
+        `User with ID "${id}" not found for tenant "${tenant_id}" to update`,
+      );
       throw new NotFoundException(`User with ID \"${id}\" not found`);
     }
     return this.userRepository.save(user);
@@ -82,7 +88,9 @@ export class UsersService {
     this.logger.log(`Removing user with id ${id} for tenant ${tenant_id}`);
     const result = await this.userRepository.delete({ id, tenant_id });
     if (result.affected === 0) {
-      this.logger.warn(`User with ID "${id}" not found for tenant "${tenant_id}" to remove`);
+      this.logger.warn(
+        `User with ID "${id}" not found for tenant "${tenant_id}" to remove`,
+      );
       throw new NotFoundException(`User with ID \"${id}\" not found`);
     }
   }

@@ -38,7 +38,7 @@ export class Reserva {
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 
-  @ManyToOne(() => Tenant, tenant => tenant.reservas)
+  @ManyToOne(() => Tenant, (tenant) => tenant.reservas)
   @JoinColumn({ name: 'tenant_id' })
   tenant: Tenant;
 
