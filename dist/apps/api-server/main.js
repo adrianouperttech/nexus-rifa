@@ -42,6 +42,7 @@ const tenants_module_1 = __webpack_require__(28);
 const subscription_entity_1 = __webpack_require__(16);
 const billing_module_1 = __webpack_require__(58);
 const logger_module_1 = __webpack_require__(56);
+const plan_entity_1 = __webpack_require__(17);
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -79,6 +80,7 @@ AppModule = __decorate([
                             pagamento_entity_1.Pagamento,
                             tenant_entity_1.Tenant,
                             subscription_entity_1.Subscription,
+                            plan_entity_1.Plan,
                         ],
                         synchronize: false,
                         ssl: {

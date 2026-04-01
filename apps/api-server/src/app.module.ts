@@ -20,6 +20,7 @@ import { TenantsModule } from './modules/tenants/tenants.module';
 import { Subscription } from './modules/billing/entities/subscription.entity';
 import { BillingModule } from './modules/billing/billing.module';
 import { LoggerModule } from './common/logger/logger.module';
+import { Plan } from './modules/plans/entities/plan.entity';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { LoggerModule } from './common/logger/logger.module';
             Pagamento,
             Tenant,
             Subscription,
+            Plan,
           ],
           synchronize: false,
           ssl: {
