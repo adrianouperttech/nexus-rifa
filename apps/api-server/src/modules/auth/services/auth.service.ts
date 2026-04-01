@@ -1,3 +1,4 @@
+
 import { Injectable, UnauthorizedException, Req, Inject } from '@nestjs/common';
 import { UsersService } from '../../users/users.service';
 import { JwtService } from '@nestjs/jwt';
@@ -18,11 +19,14 @@ export class AuthService {
     @Req() req: Request, // Recebe a requisição completa
     loginDto: LoginDto,
   ): Promise<{ access_token: string }> {
-    const tenant_id = req.subdomains.length > 0 ? req.subdomains[0] : null;
+    const headerTenantId = req.headers['x-tenant-id'] as string;
+    const subdomainTenantId = req.subdomains.length > 0 ? req.subdomains[0] : null;
+    const tenant_id = headerTenantId || subdomainTenantId;
+
     this.logger.log(`Login attempt for tenant ${tenant_id}`);
     if (!tenant_id) {
       this.logger.warn('Login attempt without tenant');
-      throw new UnauthorizedException('Tenant não identificado.');
+      throw new UnauthorizedException('Tenant inválido');
     }
 
     const { email, password } = loginDto;
