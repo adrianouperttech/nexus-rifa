@@ -17,9 +17,26 @@ async function bootstrap() {
         : [
             'https://nexus-rifa.onrender.com',
             'https://nexus-rifa-jwi51tf00-adrianoisrael7s-projects.vercel.app',
+            'https://nexus-rifa-sigma.vercel.app',
         ];
     app.enableCors({
-        origin: allowedOrigins,
+        origin: (origin, callback) => {
+            if (!origin) {
+                callback(null, true);
+                return;
+            }
+            if (process.env.CORS_ORIGIN) {
+                const allowed = allowedOrigins;
+                if (allowed.includes(origin)) {
+                    callback(null, true);
+                }
+                else {
+                    callback(new Error(`Origin ${origin} not allowed by CORS`));
+                }
+                return;
+            }
+            callback(null, true);
+        },
         methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization'],
         credentials: true,
