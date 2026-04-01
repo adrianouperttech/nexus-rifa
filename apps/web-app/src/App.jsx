@@ -210,6 +210,9 @@ function App() {
   const loginForm = (
     <main className="container small">
       <div className="brand">Nexus Rifa</div>
+      <a href="/">Root</a>
+      <br />
+      <a href="/subscriptions/new">Assinar</a>
       <h1>Entrar</h1>
       <form onSubmit={handleLogin}>
         <label>
@@ -226,6 +229,7 @@ function App() {
         </label>
         <button className="btn primary" type="submit" disabled={loading}>Entrar</button>
       </form>
+      <a href="#">Esqueci minha senha</a>
       {error && <p className="error">{error}</p>}
       <p className="help">Use um usuário existente (admin/test) e o mesmo tenant do backend.</p>
     </main>
