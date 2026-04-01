@@ -4,6 +4,7 @@ const testing_1 = require("@nestjs/testing");
 const billing_service_1 = require("./billing.service");
 const typeorm_1 = require("@nestjs/typeorm");
 const subscription_entity_1 = require("./entities/subscription.entity");
+const logger_service_1 = require("../../common/logger/logger.service");
 const mockPreApprovalCreate = jest.fn();
 const mockPreApprovalGet = jest.fn();
 jest.mock('mercadopago', () => (Object.assign(Object.assign({}, jest.requireActual('mercadopago')), { PreApproval: jest.fn().mockImplementation(() => ({
@@ -24,7 +25,7 @@ describe('BillingService', () => {
             providers: [
                 billing_service_1.BillingService,
                 { provide: (0, typeorm_1.getRepositoryToken)(subscription_entity_1.Subscription), useFactory: () => ({ save: jest.fn(), findOne: jest.fn(), create: jest.fn() }) },
-                { provide: 'winston', useValue: { error: jest.fn(), log: jest.fn(), warn: jest.fn() } },
+                { provide: logger_service_1.LoggerService, useValue: { error: jest.fn(), warn: jest.fn(), log: jest.fn(), debug: jest.fn(), verbose: jest.fn() } },
             ],
         }).compile();
         service = module.get(billing_service_1.BillingService);
