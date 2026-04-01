@@ -1,12 +1,12 @@
-import { Controller, Post, Body, Get, Param, Inject } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param } from '@nestjs/common';
 import { BillingService } from './billing.service';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
-import { Logger } from 'winston';
+import { LoggerService } from '../../common/logger/logger.service';
 
 @Controller('billing')
 export class BillingController {
   constructor(
-    @Inject('winston') private readonly logger: Logger,
+    private readonly logger: LoggerService,
     private readonly billingService: BillingService,
   ) {}
 
@@ -17,7 +17,7 @@ export class BillingController {
 
   @Post('webhook')
   webhook(@Body() body: any) {
-    this.logger.info('Webhook de billing recebido:', { body });
+    this.logger.log(`Webhook de billing recebido: ${JSON.stringify(body)}`);
     return this.billingService.webhook(body);
   }
 
