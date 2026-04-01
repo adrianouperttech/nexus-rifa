@@ -2047,11 +2047,17 @@ const rifas_service_1 = __webpack_require__(36);
 const rifa_entity_1 = __webpack_require__(12);
 const cotas_module_1 = __webpack_require__(48);
 const plans_module_1 = __webpack_require__(49);
+const logger_module_1 = __webpack_require__(56);
 let RifasModule = class RifasModule {
 };
 RifasModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([rifa_entity_1.Rifa]), cotas_module_1.CotasModule, plans_module_1.PlansModule],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([rifa_entity_1.Rifa]),
+            cotas_module_1.CotasModule,
+            plans_module_1.PlansModule,
+            logger_module_1.LoggerModule,
+        ],
         controllers: [rifas_controller_1.RifasController],
         providers: [rifas_service_1.RifasService],
         exports: [rifas_service_1.RifasService],

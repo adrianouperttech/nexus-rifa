@@ -5,9 +5,15 @@ import { RifasService } from './rifas.service';
 import { Rifa } from './entities/rifa.entity';
 import { CotasModule } from '../cotas/cotas.module';
 import { PlansModule } from '../plans/plans.module';
+import { LoggerModule } from '../../common/logger/logger.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Rifa]), CotasModule, PlansModule],
+  imports: [
+    TypeOrmModule.forFeature([Rifa]),
+    CotasModule,
+    PlansModule,
+    LoggerModule,
+  ],
   controllers: [RifasController],
   providers: [RifasService],
   exports: [RifasService],
