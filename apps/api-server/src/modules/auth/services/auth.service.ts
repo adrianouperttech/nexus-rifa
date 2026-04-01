@@ -60,8 +60,15 @@ export class AuthService {
       `Login successful for user ${user.id} in tenant ${tenant_id}`,
     );
 
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+    try {
+      return {
+        access_token: this.jwtService.sign(payload),
+      };
+    } catch (error) {
+      this.logger.error('Falha ao assinar token JWT:', error);
+      throw new Error(
+        'Erro interno de autenticação - token JWT not configured',
+      );
+    }
   }
 }
