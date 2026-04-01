@@ -4,6 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 import { RifasModule } from './modules/rifas/rifas.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
@@ -29,6 +31,9 @@ import { LoggerModule } from './common/logger/logger.module';
       ttl: 60000, // 60 segundos
       limit: 60, // 60 requisições
     }]),
+  ],
+  controllers: [AppController],
+  providers: [AppService,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
