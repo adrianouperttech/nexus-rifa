@@ -28,7 +28,12 @@ async function apiFetch(path, options = {}) {
 
   const isAbsolute = /^https?:\/\//i.test(path)
   const normalizedPath = isAbsolute ? path : path.replace(/^\/+/, '')
-  const url = isAbsolute ? normalizedPath : `${API_BASE_URL}/${normalizedPath}`
+
+  const url = isAbsolute
+    ? normalizedPath
+    : new URL(normalizedPath, `${API_BASE_URL}/`).toString()
+
+  console.log('[apiFetch]', { API_BASE_URL, path, url })
 
   const response = await fetch(url, {
     ...options,
