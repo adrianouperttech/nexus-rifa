@@ -9,7 +9,7 @@ import { LoggerService } from '../../common/logger/logger.service';
 @Injectable()
 export class PlansService {
   constructor(
-    @Inject(LoggerService) private readonly logger: LoggerService,
+    @Inject('LoggerService') private readonly logger: LoggerService,
     @InjectRepository(Plan)
     private readonly planRepository: Repository<Plan>,
   ) {}
