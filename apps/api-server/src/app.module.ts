@@ -41,7 +41,7 @@ import { LoggerModule } from './common/logger/logger.module';
           type: 'postgres',
           url: databaseUrl,
           entities: [Cota, Rifa, User, Premio, Reserva, Pagamento, Tenant, Subscription],
-          synchronize: true, // Em produção, considere usar migrações
+          synchronize: false,
           ssl: {
             rejectUnauthorized: false,
           },
