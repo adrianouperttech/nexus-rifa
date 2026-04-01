@@ -30,7 +30,9 @@ let TestDataSeeder = class TestDataSeeder {
     }
     async seed() {
         const tenantEmail = 'teste@tenant.com';
-        let tenant = await this.tenantRepository.findOne({ where: { email: tenantEmail } });
+        let tenant = await this.tenantRepository.findOne({
+            where: { email: tenantEmail },
+        });
         if (!tenant) {
             tenant = this.tenantRepository.create({
                 nome: 'Tenant de Teste',
@@ -44,7 +46,9 @@ let TestDataSeeder = class TestDataSeeder {
             console.log('Tenant de teste já existe:', tenant.id);
         }
         const userEmail = 'admin@teste.com';
-        const existingUser = await this.userRepository.findOne({ where: { email: userEmail, tenant_id: tenant.id } });
+        const existingUser = await this.userRepository.findOne({
+            where: { email: userEmail, tenant_id: tenant.id },
+        });
         if (!existingUser) {
             const salt = await bcrypt.genSalt();
             const hashedPassword = await bcrypt.hash('Pa$$w0rd', salt);
@@ -63,7 +67,9 @@ let TestDataSeeder = class TestDataSeeder {
             console.log('Usuário de teste já existe:', userEmail);
         }
         const rifaTitulo = 'Rifa de Teste';
-        let rifa = await this.rifaRepository.findOne({ where: { tenant_id: tenant.id, titulo: rifaTitulo } });
+        let rifa = await this.rifaRepository.findOne({
+            where: { tenant_id: tenant.id, titulo: rifaTitulo },
+        });
         if (!rifa) {
             rifa = this.rifaRepository.create({
                 tenant_id: tenant.id,
@@ -83,7 +89,9 @@ let TestDataSeeder = class TestDataSeeder {
         else {
             console.log('Rifa de teste já existe:', rifa.id);
         }
-        const existsCotas = await this.cotaRepository.findOne({ where: { rifa_id: rifa.id } });
+        const existsCotas = await this.cotaRepository.findOne({
+            where: { rifa_id: rifa.id },
+        });
         if (!existsCotas) {
             const cotas = [];
             for (let i = 1; i <= 20; i++) {
@@ -103,7 +111,9 @@ let TestDataSeeder = class TestDataSeeder {
         return true;
     }
     async drop() {
-        const tenant = await this.tenantRepository.findOne({ where: { email: 'teste@tenant.com' } });
+        const tenant = await this.tenantRepository.findOne({
+            where: { email: 'teste@tenant.com' },
+        });
         if (!tenant)
             return;
         await this.cotaRepository.delete({ tenant_id: tenant.id });

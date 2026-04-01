@@ -53,7 +53,7 @@ __decorate([
     __metadata("design:type", Date)
 ], Reserva.prototype, "created_at", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => tenant_entity_1.Tenant, tenant => tenant.reservas),
+    (0, typeorm_1.ManyToOne)(() => tenant_entity_1.Tenant, (tenant) => tenant.reservas),
     (0, typeorm_1.JoinColumn)({ name: 'tenant_id' }),
     __metadata("design:type", tenant_entity_1.Tenant)
 ], Reserva.prototype, "tenant", void 0);

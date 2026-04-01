@@ -26,9 +26,22 @@ describe('PagamentosService', () => {
         const module = await testing_1.Test.createTestingModule({
             providers: [
                 pagamentos_service_1.PagamentosService,
-                { provide: (0, typeorm_1.getRepositoryToken)(pagamento_entity_1.Pagamento), useFactory: () => ({ save: jest.fn(), findOne: jest.fn(), create: jest.fn() }) },
-                { provide: reservas_service_1.ReservasService, useFactory: () => ({ findOne: jest.fn(), updateStatus: jest.fn() }) },
-                { provide: logger_service_1.LoggerService, useValue: { error: jest.fn(), warn: jest.fn(), log: jest.fn() } },
+                {
+                    provide: (0, typeorm_1.getRepositoryToken)(pagamento_entity_1.Pagamento),
+                    useFactory: () => ({
+                        save: jest.fn(),
+                        findOne: jest.fn(),
+                        create: jest.fn(),
+                    }),
+                },
+                {
+                    provide: reservas_service_1.ReservasService,
+                    useFactory: () => ({ findOne: jest.fn(), updateStatus: jest.fn() }),
+                },
+                {
+                    provide: logger_service_1.LoggerService,
+                    useValue: { error: jest.fn(), warn: jest.fn(), log: jest.fn() },
+                },
             ],
         }).compile();
         service = module.get(pagamentos_service_1.PagamentosService);
@@ -42,11 +55,20 @@ describe('PagamentosService', () => {
         const createPagamentoDto = { reserva_id: '1' };
         const tenant_id = '1';
         it('should throw ConflictException if reserva is not disponivel', async () => {
-            jest.spyOn(reservasService, 'findOne').mockResolvedValue({ status: 'paga' });
+            jest
+                .spyOn(reservasService, 'findOne')
+                .mockResolvedValue({ status: 'paga' });
             await expect(service.create(tenant_id, createPagamentoDto)).rejects.toThrow(common_1.ConflictException);
         });
         it('should create a payment successfully', async () => {
-            const reserva = { id: '1', tenant_id, status: 'disponivel', rifa: { valor_cota: 10, titulo: 'test rifa' }, email: 'test@test.com', nome: 'Test User' };
+            const reserva = {
+                id: '1',
+                tenant_id,
+                status: 'disponivel',
+                rifa: { valor_cota: 10, titulo: 'test rifa' },
+                email: 'test@test.com',
+                nome: 'Test User',
+            };
             jest.spyOn(reservasService, 'findOne').mockResolvedValue(reserva);
             jest.spyOn(pagamentoRepository, 'findOne').mockResolvedValue(null);
             const paymentResponse = {
@@ -72,22 +94,38 @@ describe('PagamentosService', () => {
         it('should update reserva to confirmada if payment is approved', async () => {
             const notification = { type: 'payment', data: { id: '12345' } };
             const paymentInfo = { id: 12345, status: 'approved' };
-            const pagamento = { id: '1', status: 'pendente', reserva_id: '1', reserva: { id: '1', tenant_id: 'tenant-1' } };
+            const pagamento = {
+                id: '1',
+                status: 'pendente',
+                reserva_id: '1',
+                reserva: { id: '1', tenant_id: 'tenant-1' },
+            };
             mockPaymentGet.mockResolvedValue(paymentInfo);
             jest.spyOn(pagamentoRepository, 'findOne').mockResolvedValue(pagamento);
             await service.handlePagamentoWebhook(notification);
-            expect(pagamentoRepository.findOne).toHaveBeenCalledWith({ where: { transacao_id: '12345' }, relations: ['reserva'] });
+            expect(pagamentoRepository.findOne).toHaveBeenCalledWith({
+                where: { transacao_id: '12345' },
+                relations: ['reserva'],
+            });
             expect(pagamentoRepository.save).toHaveBeenCalledWith(Object.assign(Object.assign({}, pagamento), { status: 'pago' }));
             expect(reservasService.updateStatus).toHaveBeenCalledWith('tenant-1', '1', 'confirmada');
         });
         it('should update reserva to disponivel if payment is cancelled', async () => {
             const notification = { type: 'payment', data: { id: '12345' } };
             const paymentInfo = { id: 12345, status: 'cancelled' };
-            const pagamento = { id: '1', status: 'pendente', reserva_id: '1', reserva: { id: '1', tenant_id: 'tenant-1' } };
+            const pagamento = {
+                id: '1',
+                status: 'pendente',
+                reserva_id: '1',
+                reserva: { id: '1', tenant_id: 'tenant-1' },
+            };
             mockPaymentGet.mockResolvedValue(paymentInfo);
             jest.spyOn(pagamentoRepository, 'findOne').mockResolvedValue(pagamento);
             await service.handlePagamentoWebhook(notification);
-            expect(pagamentoRepository.findOne).toHaveBeenCalledWith({ where: { transacao_id: '12345' }, relations: ['reserva'] });
+            expect(pagamentoRepository.findOne).toHaveBeenCalledWith({
+                where: { transacao_id: '12345' },
+                relations: ['reserva'],
+            });
             expect(pagamentoRepository.save).toHaveBeenCalledWith(Object.assign(Object.assign({}, pagamento), { status: 'cancelado' }));
             expect(reservasService.updateStatus).toHaveBeenCalledWith('tenant-1', '1', 'disponivel');
         });

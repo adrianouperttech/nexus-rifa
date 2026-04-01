@@ -13,6 +13,7 @@ const billing_controller_1 = require("./billing.controller");
 const billing_service_1 = require("./billing.service");
 const subscription_entity_1 = require("./entities/subscription.entity");
 const logger_module_1 = require("../../common/logger/logger.module");
+const webhook_validation_service_1 = require("../../common/security/webhook-validation.service");
 let BillingModule = class BillingModule {
 };
 exports.BillingModule = BillingModule;
@@ -20,7 +21,7 @@ exports.BillingModule = BillingModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([subscription_entity_1.Subscription]), logger_module_1.LoggerModule],
         controllers: [billing_controller_1.BillingController],
-        providers: [billing_service_1.BillingService],
+        providers: [billing_service_1.BillingService, webhook_validation_service_1.WebhookValidationService],
         exports: [billing_service_1.BillingService],
     })
 ], BillingModule);

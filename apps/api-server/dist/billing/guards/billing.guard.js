@@ -9,7 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BillingGuard = void 0;
 const common_1 = require("@nestjs/common");
 let BillingGuard = class BillingGuard {
-    canActivate(context) {
+    canActivate() {
         return true;
     }
 };

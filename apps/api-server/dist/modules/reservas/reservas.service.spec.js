@@ -31,12 +31,25 @@ describe('ReservasService', () => {
         const module = await testing_1.Test.createTestingModule({
             providers: [
                 reservas_service_1.ReservasService,
-                { provide: (0, typeorm_1.getRepositoryToken)(reserva_entity_1.Reserva), useFactory: () => ({ create: jest.fn().mockImplementation((dto) => dto) }) },
+                {
+                    provide: (0, typeorm_1.getRepositoryToken)(reserva_entity_1.Reserva),
+                    useFactory: () => ({
+                        create: jest.fn().mockImplementation((dto) => dto),
+                    }),
+                },
                 { provide: rifas_service_1.RifasService, useFactory: () => ({ findOne: jest.fn() }) },
                 { provide: email_service_1.EmailService, useValue: { send: jest.fn() } },
                 { provide: whatsapp_service_1.WhatsappService, useValue: { send: jest.fn() } },
-                { provide: logger_service_1.LoggerService, useValue: { log: jest.fn(), error: jest.fn() } },
-                { provide: typeorm_2.Connection, useFactory: () => ({ createQueryRunner: jest.fn(() => mockQueryRunner) }) },
+                {
+                    provide: logger_service_1.LoggerService,
+                    useValue: { log: jest.fn(), error: jest.fn() },
+                },
+                {
+                    provide: typeorm_2.Connection,
+                    useFactory: () => ({
+                        createQueryRunner: jest.fn(() => mockQueryRunner),
+                    }),
+                },
             ],
         }).compile();
         service = module.get(reservas_service_1.ReservasService);
@@ -46,7 +59,13 @@ describe('ReservasService', () => {
         expect(service).toBeDefined();
     });
     describe('create', () => {
-        const createReservaDto = { rifa_id: '1', numero: 1, nome: 'test', email: 'test@example.com', whatsapp: '12345' };
+        const createReservaDto = {
+            rifa_id: '1',
+            numero: 1,
+            nome: 'test',
+            email: 'test@example.com',
+            whatsapp: '12345',
+        };
         const rifa = { id: '1', limite: 100, nome: 'Test Rifa' };
         it('should throw ConflictException if reserva already exists', async () => {
             jest.spyOn(rifasService, 'findOne').mockResolvedValue(rifa);

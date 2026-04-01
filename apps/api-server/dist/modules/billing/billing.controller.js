@@ -18,16 +18,32 @@ const billing_service_1 = require("./billing.service");
 const create_subscription_dto_1 = require("./dto/create-subscription.dto");
 const logger_service_1 = require("../../common/logger/logger.service");
 const passport_1 = require("@nestjs/passport");
+const webhook_validation_service_1 = require("../../common/security/webhook-validation.service");
 let BillingController = class BillingController {
-    constructor(logger, billingService) {
+    constructor(logger, billingService, webhookValidationService) {
         this.logger = logger;
         this.billingService = billingService;
+        this.webhookValidationService = webhookValidationService;
     }
     createSubscription(createSubscriptionDto) {
         return this.billingService.createSubscription(createSubscriptionDto);
     }
-    webhook(body) {
-        this.logger.log(`Webhook de billing recebido: ${JSON.stringify(body)}`);
+    async webhook(signature, body) {
+        const secret = process.env.MP_WEBHOOK_SECRET;
+        if (!secret) {
+            this.logger.error('MP_WEBHOOK_SECRET não está configurado. Webhook não pode ser validado.');
+            throw new common_1.BadRequestException('Webhook secret não configurado');
+        }
+        if (!signature) {
+            this.logger.warn('Assinatura de webhook ausente ao chamar /billing/webhook');
+            throw new common_1.UnauthorizedException('Assinatura de webhook ausente');
+        }
+        const valid = this.webhookValidationService.validate(signature, body, secret);
+        if (!valid) {
+            this.logger.warn('Assinatura de webhook inválida');
+            throw new common_1.UnauthorizedException('Assinatura de webhook inválida');
+        }
+        this.logger.log(`Webhook de billing recebido e validado: ${JSON.stringify(body)}`);
         return this.billingService.webhook(body);
     }
     getSubscription(id) {
@@ -45,10 +61,11 @@ __decorate([
 ], BillingController.prototype, "createSubscription", null);
 __decorate([
     (0, common_1.Post)('webhook'),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Headers)('x-signature')),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
 ], BillingController.prototype, "webhook", null);
 __decorate([
     (0, common_1.Get)('subscription/:id'),
@@ -61,6 +78,7 @@ __decorate([
 exports.BillingController = BillingController = __decorate([
     (0, common_1.Controller)('billing'),
     __metadata("design:paramtypes", [logger_service_1.LoggerService,
-        billing_service_1.BillingService])
+        billing_service_1.BillingService,
+        webhook_validation_service_1.WebhookValidationService])
 ], BillingController);
 //# sourceMappingURL=billing.controller.js.map

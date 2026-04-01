@@ -14,9 +14,23 @@ describe('RifasService', () => {
         const module = await testing_1.Test.createTestingModule({
             providers: [
                 rifas_service_1.RifasService,
-                { provide: (0, typeorm_1.getRepositoryToken)(rifa_entity_1.Rifa), useFactory: () => ({ find: jest.fn(), findOne: jest.fn(), create: jest.fn(), save: jest.fn(), remove: jest.fn(), count: jest.fn(), delete: jest.fn() }) },
+                {
+                    provide: (0, typeorm_1.getRepositoryToken)(rifa_entity_1.Rifa),
+                    useFactory: () => ({
+                        find: jest.fn(),
+                        findOne: jest.fn(),
+                        create: jest.fn(),
+                        save: jest.fn(),
+                        remove: jest.fn(),
+                        count: jest.fn(),
+                        delete: jest.fn(),
+                    }),
+                },
                 { provide: plans_service_1.PlansService, useFactory: () => ({ findOne: jest.fn() }) },
-                { provide: logger_service_1.LoggerService, useValue: { error: jest.fn(), warn: jest.fn(), log: jest.fn() } },
+                {
+                    provide: logger_service_1.LoggerService,
+                    useValue: { error: jest.fn(), warn: jest.fn(), log: jest.fn() },
+                },
             ],
         }).compile();
         service = module.get(rifas_service_1.RifasService);
@@ -60,7 +74,10 @@ describe('RifasService', () => {
         it('should remove a rifa', async () => {
             jest.spyOn(repository, 'delete').mockResolvedValue({ affected: 1 });
             await service.remove('1', '1');
-            expect(repository.delete).toHaveBeenCalledWith({ id: '1', tenant_id: '1' });
+            expect(repository.delete).toHaveBeenCalledWith({
+                id: '1',
+                tenant_id: '1',
+            });
         });
         it('should throw NotFoundException if rifa is not found', async () => {
             jest.spyOn(repository, 'delete').mockResolvedValue({ affected: 0 });

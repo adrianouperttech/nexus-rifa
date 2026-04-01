@@ -14,7 +14,16 @@ dotenv.config();
 exports.default = new typeorm_1.DataSource({
     type: 'postgres',
     url: process.env.DATABASE_URL,
-    entities: [cota_entity_1.Cota, rifa_entity_1.Rifa, user_entity_1.User, premio_entity_1.Premio, reserva_entity_1.Reserva, pagamento_entity_1.Pagamento, tenant_entity_1.Tenant, subscription_entity_1.Subscription],
+    entities: [
+        cota_entity_1.Cota,
+        rifa_entity_1.Rifa,
+        user_entity_1.User,
+        premio_entity_1.Premio,
+        reserva_entity_1.Reserva,
+        pagamento_entity_1.Pagamento,
+        tenant_entity_1.Tenant,
+        subscription_entity_1.Subscription,
+    ],
     migrations: ['apps/api-server/src/migrations/*.ts'],
     ssl: {
         rejectUnauthorized: false,

@@ -28,6 +28,11 @@ let BillingService = class BillingService {
         });
     }
     async createSubscription(createSubscriptionDto) {
+        const appUrl = process.env.APP_URL;
+        if (!appUrl) {
+            this.logger.error('APP_URL não está configurado. Não é possível criar assinatura.');
+            throw new common_1.InternalServerErrorException('Configuração incompleta do serviço de pagamentos.');
+        }
         const subscriptionRequest = {
             reason: createSubscriptionDto.reason,
             auto_recurring: {
@@ -36,13 +41,15 @@ let BillingService = class BillingService {
                 transaction_amount: createSubscriptionDto.price,
                 currency_id: 'BRL',
             },
-            back_url: 'https://www.google.com',
+            back_url: `${appUrl}/billing/return`,
             payer_email: createSubscriptionDto.payer_email,
             preapproval_plan_id: process.env.MP_PLAN_ID,
         };
         try {
             const preApprovalClient = new mercadopago_1.PreApproval(this.client);
-            const response = await preApprovalClient.create({ body: subscriptionRequest });
+            const response = await preApprovalClient.create({
+                body: subscriptionRequest,
+            });
             const subscription = this.subscriptionRepository.create({
                 id: response.id,
                 tenant_id: createSubscriptionDto.tenant_id,

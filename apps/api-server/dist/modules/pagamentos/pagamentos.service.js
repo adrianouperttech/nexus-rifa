@@ -93,7 +93,9 @@ let PagamentosService = class PagamentosService {
         }
     }
     async handlePagamentoWebhook(notification) {
-        if (notification.type === 'payment' && notification.data && notification.data.id) {
+        if (notification.type === 'payment' &&
+            notification.data &&
+            notification.data.id) {
             const paymentId = notification.data.id;
             const payment = new mercadopago_1.Payment(this.mercadopago);
             try {

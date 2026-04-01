@@ -23,7 +23,15 @@ let RolesGuard = class RolesGuard {
             return true;
         }
         const { user } = context.switchToHttp().getRequest();
-        return requiredRoles.some((role) => { var _a; return (_a = user.roles) === null || _a === void 0 ? void 0 : _a.includes(role); });
+        if (!user) {
+            return false;
+        }
+        const userRoles = Array.isArray(user.roles)
+            ? user.roles
+            : user.role
+                ? [user.role]
+                : [];
+        return requiredRoles.some((role) => userRoles.includes(role));
     }
 };
 exports.RolesGuard = RolesGuard;

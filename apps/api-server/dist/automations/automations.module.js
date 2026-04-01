@@ -17,11 +17,7 @@ let AutomationsModule = class AutomationsModule {
 exports.AutomationsModule = AutomationsModule;
 exports.AutomationsModule = AutomationsModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            schedule_1.ScheduleModule.forRoot(),
-            reservas_module_1.ReservasModule,
-            tenants_module_1.TenantsModule,
-        ],
+        imports: [schedule_1.ScheduleModule.forRoot(), reservas_module_1.ReservasModule, tenants_module_1.TenantsModule],
         providers: [automations_service_1.AutomationsService],
     })
 ], AutomationsModule);
