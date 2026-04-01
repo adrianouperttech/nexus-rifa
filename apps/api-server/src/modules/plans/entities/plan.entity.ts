@@ -3,7 +3,9 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Tenant } from '../../tenants/entities/tenant.entity';
 
 @Entity('plans')
 export class Plan {
@@ -17,11 +19,14 @@ export class Plan {
   price: number;
 
   @Column({ type: 'integer' })
-  limit: number;
+  maxRifas: number;
 
   @Column({ type: 'text', nullable: true })
   mercadopago_plan_id: string;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
+
+  @OneToMany(() => Tenant, (tenant) => tenant.plan)
+  tenants: Tenant[];
 }

@@ -4,12 +4,15 @@ import {
   Column,
   CreateDateColumn,
   OneToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Rifa } from '../../rifas/entities/rifa.entity';
 import { Cota } from '../../cotas/entities/cota.entity';
 import { Reserva } from '../../reservas/entities/reserva.entity';
 import { Subscription } from '../../billing/entities/subscription.entity';
+import { Plan } from '../../plans/entities/plan.entity';
 
 @Entity('tenants')
 export class Tenant {
@@ -27,6 +30,10 @@ export class Tenant {
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
+
+  @ManyToOne(() => Plan, (plan) => plan.tenants)
+  @JoinColumn({ name: 'plan_id' })
+  plan: Plan;
 
   @OneToMany(() => User, (user) => user.tenant)
   users: User[];

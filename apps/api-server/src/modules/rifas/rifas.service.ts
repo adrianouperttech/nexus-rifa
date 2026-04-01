@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, Inject } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  Inject,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Rifa } from './entities/rifa.entity';
@@ -18,6 +23,16 @@ export class RifasService {
 
   async create(tenant_id: string, createRifaDto: CreateRifaDto): Promise<Rifa> {
     this.logger.log(`Creating Rifa for tenant ${tenant_id}`);
+
+    const plan = await this.plansService.getTenantPlan(tenant_id);
+    const userRifas = await this.rifasRepository.count({ where: { tenant_id } });
+
+    if (userRifas >= plan.maxRifas) {
+      throw new ForbiddenException(
+        'You have reached the maximum number of rifas for your plan.',
+      );
+    }
+
     const rifa = this.rifasRepository.create({ ...createRifaDto, tenant_id });
     return this.rifasRepository.save(rifa);
   }

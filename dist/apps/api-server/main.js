@@ -38,7 +38,7 @@ const premio_entity_1 = __webpack_require__(14);
 const reserva_entity_1 = __webpack_require__(13);
 const pagamento_entity_1 = __webpack_require__(75);
 const tenant_entity_1 = __webpack_require__(11);
-const tenants_module_1 = __webpack_require__(27);
+const tenants_module_1 = __webpack_require__(28);
 const subscription_entity_1 = __webpack_require__(16);
 const billing_module_1 = __webpack_require__(58);
 const logger_module_1 = __webpack_require__(56);
@@ -140,8 +140,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthModule = void 0;
 const common_1 = __webpack_require__(3);
 const users_module_1 = __webpack_require__(7);
-const tenants_module_1 = __webpack_require__(27);
-const passport_1 = __webpack_require__(26);
+const tenants_module_1 = __webpack_require__(28);
+const passport_1 = __webpack_require__(27);
 const jwt_1 = __webpack_require__(65);
 const auth_service_1 = __webpack_require__(66);
 const auth_controller_1 = __webpack_require__(67);
@@ -189,7 +189,7 @@ exports.UsersModule = void 0;
 const common_1 = __webpack_require__(3);
 const typeorm_1 = __webpack_require__(4);
 const users_service_1 = __webpack_require__(8);
-const users_controller_1 = __webpack_require__(21);
+const users_controller_1 = __webpack_require__(22);
 const user_entity_1 = __webpack_require__(10);
 let UsersModule = class UsersModule {
 };
@@ -239,8 +239,8 @@ const common_1 = __webpack_require__(3);
 const typeorm_1 = __webpack_require__(4);
 const typeorm_2 = __webpack_require__(9);
 const user_entity_1 = __webpack_require__(10);
-const bcrypt = __webpack_require__(17);
-const logger_service_1 = __webpack_require__(18);
+const bcrypt = __webpack_require__(18);
+const logger_service_1 = __webpack_require__(19);
 let UsersService = class UsersService {
     constructor(logger, userRepository) {
         this.logger = logger;
@@ -396,7 +396,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Tenant = void 0;
 const typeorm_1 = __webpack_require__(9);
@@ -405,6 +405,7 @@ const rifa_entity_1 = __webpack_require__(12);
 const cota_entity_1 = __webpack_require__(15);
 const reserva_entity_1 = __webpack_require__(13);
 const subscription_entity_1 = __webpack_require__(16);
+const plan_entity_1 = __webpack_require__(17);
 let Tenant = class Tenant {
 };
 __decorate([
@@ -427,6 +428,11 @@ __decorate([
     (0, typeorm_1.CreateDateColumn)({ type: 'timestamp' }),
     __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
 ], Tenant.prototype, "created_at", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => plan_entity_1.Plan, (plan) => plan.tenants),
+    (0, typeorm_1.JoinColumn)({ name: 'plan_id' }),
+    __metadata("design:type", typeof (_b = typeof plan_entity_1.Plan !== "undefined" && plan_entity_1.Plan) === "function" ? _b : Object)
+], Tenant.prototype, "plan", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => user_entity_1.User, (user) => user.tenant),
     __metadata("design:type", Array)
@@ -793,12 +799,67 @@ exports.Subscription = Subscription;
 
 /***/ }),
 /* 17 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Plan = void 0;
+const typeorm_1 = __webpack_require__(9);
+const tenant_entity_1 = __webpack_require__(11);
+let Plan = class Plan {
+};
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], Plan.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'text' }),
+    __metadata("design:type", String)
+], Plan.prototype, "name", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'numeric' }),
+    __metadata("design:type", Number)
+], Plan.prototype, "price", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'integer' }),
+    __metadata("design:type", Number)
+], Plan.prototype, "maxRifas", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'text', nullable: true }),
+    __metadata("design:type", String)
+], Plan.prototype, "mercadopago_plan_id", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ type: 'timestamp' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], Plan.prototype, "created_at", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => tenant_entity_1.Tenant, (tenant) => tenant.plan),
+    __metadata("design:type", Array)
+], Plan.prototype, "tenants", void 0);
+Plan = __decorate([
+    (0, typeorm_1.Entity)('plans')
+], Plan);
+exports.Plan = Plan;
+
+
+/***/ }),
+/* 18 */
 /***/ ((module) => {
 
 module.exports = require("bcrypt");
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -818,8 +879,8 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LoggerService = void 0;
 const common_1 = __webpack_require__(3);
-const winston_1 = __webpack_require__(19);
-const express_1 = __webpack_require__(20);
+const winston_1 = __webpack_require__(20);
+const express_1 = __webpack_require__(21);
 const winstonLogger = (0, winston_1.createLogger)({
     level: 'info',
     format: winston_1.format.combine(winston_1.format.timestamp(), winston_1.format.json()),
@@ -861,19 +922,19 @@ exports.LoggerService = LoggerService;
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ ((module) => {
 
 module.exports = require("winston");
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ ((module) => {
 
 module.exports = require("express");
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -894,9 +955,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UsersController = void 0;
 const common_1 = __webpack_require__(3);
 const users_service_1 = __webpack_require__(8);
-const create_user_dto_1 = __webpack_require__(22);
-const update_user_dto_1 = __webpack_require__(24);
-const passport_1 = __webpack_require__(26);
+const create_user_dto_1 = __webpack_require__(23);
+const update_user_dto_1 = __webpack_require__(25);
+const passport_1 = __webpack_require__(27);
 let UsersController = class UsersController {
     constructor(usersService) {
         this.usersService = usersService;
@@ -972,7 +1033,7 @@ exports.UsersController = UsersController;
 
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -987,7 +1048,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CreateUserDto = void 0;
-const class_validator_1 = __webpack_require__(23);
+const class_validator_1 = __webpack_require__(24);
 class CreateUserDto {
 }
 __decorate([
@@ -1019,13 +1080,13 @@ exports.CreateUserDto = CreateUserDto;
 
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ ((module) => {
 
 module.exports = require("class-validator");
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1040,9 +1101,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateUserDto = void 0;
-const mapped_types_1 = __webpack_require__(25);
-const create_user_dto_1 = __webpack_require__(22);
-const class_validator_1 = __webpack_require__(23);
+const mapped_types_1 = __webpack_require__(26);
+const create_user_dto_1 = __webpack_require__(23);
+const class_validator_1 = __webpack_require__(24);
 class UpdateUserDto extends (0, mapped_types_1.PartialType)(create_user_dto_1.CreateUserDto) {
 }
 __decorate([
@@ -1074,19 +1135,19 @@ exports.UpdateUserDto = UpdateUserDto;
 
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/mapped-types");
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/passport");
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1099,13 +1160,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TenantsModule = void 0;
 const common_1 = __webpack_require__(3);
-const tenants_service_1 = __webpack_require__(28);
-const tenants_controller_1 = __webpack_require__(29);
+const tenants_service_1 = __webpack_require__(29);
+const tenants_controller_1 = __webpack_require__(30);
 const typeorm_1 = __webpack_require__(4);
 const tenant_entity_1 = __webpack_require__(11);
 const users_module_1 = __webpack_require__(7);
-const platform_express_1 = __webpack_require__(32);
-const reservas_module_1 = __webpack_require__(33);
+const platform_express_1 = __webpack_require__(33);
+const reservas_module_1 = __webpack_require__(34);
 const billing_module_1 = __webpack_require__(58);
 let TenantsModule = class TenantsModule {
 };
@@ -1127,7 +1188,7 @@ exports.TenantsModule = TenantsModule;
 
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1150,7 +1211,7 @@ const common_1 = __webpack_require__(3);
 const typeorm_1 = __webpack_require__(4);
 const typeorm_2 = __webpack_require__(9);
 const tenant_entity_1 = __webpack_require__(11);
-const logger_service_1 = __webpack_require__(18);
+const logger_service_1 = __webpack_require__(19);
 let TenantsService = class TenantsService {
     constructor(logger, tenantRepository) {
         this.logger = logger;
@@ -1213,7 +1274,7 @@ exports.TenantsService = TenantsService;
 
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1233,9 +1294,9 @@ var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TenantsController = void 0;
 const common_1 = __webpack_require__(3);
-const tenants_service_1 = __webpack_require__(28);
-const create_tenant_dto_1 = __webpack_require__(30);
-const update_tenant_dto_1 = __webpack_require__(31);
+const tenants_service_1 = __webpack_require__(29);
+const create_tenant_dto_1 = __webpack_require__(31);
+const update_tenant_dto_1 = __webpack_require__(32);
 let TenantsController = class TenantsController {
     constructor(tenantsService) {
         this.tenantsService = tenantsService;
@@ -1310,7 +1371,7 @@ exports.TenantsController = TenantsController;
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1325,7 +1386,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CreateTenantDto = void 0;
-const class_validator_1 = __webpack_require__(23);
+const class_validator_1 = __webpack_require__(24);
 class CreateTenantDto {
 }
 __decorate([
@@ -1342,7 +1403,7 @@ exports.CreateTenantDto = CreateTenantDto;
 
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1357,9 +1418,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateTenantDto = void 0;
-const mapped_types_1 = __webpack_require__(25);
-const create_tenant_dto_1 = __webpack_require__(30);
-const class_validator_1 = __webpack_require__(23);
+const mapped_types_1 = __webpack_require__(26);
+const create_tenant_dto_1 = __webpack_require__(31);
+const class_validator_1 = __webpack_require__(24);
 class UpdateTenantDto extends (0, mapped_types_1.PartialType)(create_tenant_dto_1.CreateTenantDto) {
 }
 __decorate([
@@ -1376,13 +1437,13 @@ exports.UpdateTenantDto = UpdateTenantDto;
 
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/platform-express");
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1395,11 +1456,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ReservasModule = void 0;
 const common_1 = __webpack_require__(3);
-const reservas_service_1 = __webpack_require__(34);
+const reservas_service_1 = __webpack_require__(35);
 const reservas_controller_1 = __webpack_require__(40);
 const typeorm_1 = __webpack_require__(4);
 const reserva_entity_1 = __webpack_require__(13);
-const tenants_module_1 = __webpack_require__(27);
+const tenants_module_1 = __webpack_require__(28);
 const rifas_module_1 = __webpack_require__(43);
 const integrations_module_1 = __webpack_require__(57);
 let ReservasModule = class ReservasModule {
@@ -1421,7 +1482,7 @@ exports.ReservasModule = ReservasModule;
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1444,10 +1505,10 @@ const common_1 = __webpack_require__(3);
 const typeorm_1 = __webpack_require__(4);
 const typeorm_2 = __webpack_require__(9);
 const reserva_entity_1 = __webpack_require__(13);
-const rifas_service_1 = __webpack_require__(35);
+const rifas_service_1 = __webpack_require__(36);
 const email_service_1 = __webpack_require__(38);
 const whatsapp_service_1 = __webpack_require__(39);
-const logger_service_1 = __webpack_require__(18);
+const logger_service_1 = __webpack_require__(19);
 let ReservasService = class ReservasService {
     constructor(logger, reservaRepository, connection, rifasService, emailService, whatsappService) {
         this.logger = logger;
@@ -1550,7 +1611,7 @@ exports.ReservasService = ReservasService;
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1573,8 +1634,8 @@ const common_1 = __webpack_require__(3);
 const typeorm_1 = __webpack_require__(4);
 const typeorm_2 = __webpack_require__(9);
 const rifa_entity_1 = __webpack_require__(12);
-const plans_service_1 = __webpack_require__(36);
-const logger_service_1 = __webpack_require__(18);
+const plans_service_1 = __webpack_require__(37);
+const logger_service_1 = __webpack_require__(19);
 let RifasService = class RifasService {
     constructor(logger, rifasRepository, plansService) {
         this.logger = logger;
@@ -1583,6 +1644,11 @@ let RifasService = class RifasService {
     }
     async create(tenant_id, createRifaDto) {
         this.logger.log(`Creating Rifa for tenant ${tenant_id}`);
+        const plan = await this.plansService.getTenantPlan(tenant_id);
+        const userRifas = await this.rifasRepository.count({ where: { tenant_id } });
+        if (userRifas >= plan.maxRifas) {
+            throw new common_1.ForbiddenException('You have reached the maximum number of rifas for your plan.');
+        }
         const rifa = this.rifasRepository.create(Object.assign(Object.assign({}, createRifaDto), { tenant_id }));
         return this.rifasRepository.save(rifa);
     }
@@ -1629,7 +1695,7 @@ exports.RifasService = RifasService;
 
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1645,18 +1711,20 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PlansService = void 0;
 const common_1 = __webpack_require__(3);
 const typeorm_1 = __webpack_require__(4);
 const typeorm_2 = __webpack_require__(9);
-const plan_entity_1 = __webpack_require__(37);
-const logger_service_1 = __webpack_require__(18);
+const plan_entity_1 = __webpack_require__(17);
+const logger_service_1 = __webpack_require__(19);
+const tenant_entity_1 = __webpack_require__(11);
 let PlansService = class PlansService {
-    constructor(logger, planRepository) {
+    constructor(logger, planRepository, tenantRepository) {
         this.logger = logger;
         this.planRepository = planRepository;
+        this.tenantRepository = tenantRepository;
     }
     async create(createPlanDto) {
         this.logger.log('Creating a new plan');
@@ -1693,63 +1761,26 @@ let PlansService = class PlansService {
             throw new common_1.NotFoundException(`Plan with ID \"${id}\" not found`);
         }
     }
+    async getTenantPlan(tenantId) {
+        this.logger.log(`Getting plan for tenant with id ${tenantId}`);
+        const tenant = await this.tenantRepository.findOne({
+            where: { id: tenantId },
+            relations: ['plan'],
+        });
+        if (!tenant || !tenant.plan) {
+            this.logger.warn(`Plan not found for tenant with id ${tenantId}`);
+            throw new common_1.NotFoundException(`Plan not found for tenant with id ${tenantId}`);
+        }
+        return tenant.plan;
+    }
 };
 PlansService = __decorate([
     (0, common_1.Injectable)(),
     __param(1, (0, typeorm_1.InjectRepository)(plan_entity_1.Plan)),
-    __metadata("design:paramtypes", [typeof (_a = typeof logger_service_1.LoggerService !== "undefined" && logger_service_1.LoggerService) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object])
+    __param(2, (0, typeorm_1.InjectRepository)(tenant_entity_1.Tenant)),
+    __metadata("design:paramtypes", [typeof (_a = typeof logger_service_1.LoggerService !== "undefined" && logger_service_1.LoggerService) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object, typeof (_c = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _c : Object])
 ], PlansService);
 exports.PlansService = PlansService;
-
-
-/***/ }),
-/* 37 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Plan = void 0;
-const typeorm_1 = __webpack_require__(9);
-let Plan = class Plan {
-};
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], Plan.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'text' }),
-    __metadata("design:type", String)
-], Plan.prototype, "name", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'numeric' }),
-    __metadata("design:type", Number)
-], Plan.prototype, "price", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'integer' }),
-    __metadata("design:type", Number)
-], Plan.prototype, "limit", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'text', nullable: true }),
-    __metadata("design:type", String)
-], Plan.prototype, "mercadopago_plan_id", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)({ type: 'timestamp' }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], Plan.prototype, "created_at", void 0);
-Plan = __decorate([
-    (0, typeorm_1.Entity)('plans')
-], Plan);
-exports.Plan = Plan;
 
 
 /***/ }),
@@ -1823,10 +1854,10 @@ var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ReservasController = void 0;
 const common_1 = __webpack_require__(3);
-const reservas_service_1 = __webpack_require__(34);
+const reservas_service_1 = __webpack_require__(35);
 const create_reserva_dto_1 = __webpack_require__(41);
 const update_reserva_dto_1 = __webpack_require__(42);
-const passport_1 = __webpack_require__(26);
+const passport_1 = __webpack_require__(27);
 let ReservasController = class ReservasController {
     constructor(reservasService) {
         this.reservasService = reservasService;
@@ -1916,7 +1947,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CreateReservaDto = void 0;
-const class_validator_1 = __webpack_require__(23);
+const class_validator_1 = __webpack_require__(24);
 class CreateReservaDto {
 }
 __decorate([
@@ -1963,9 +1994,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateReservaDto = void 0;
-const mapped_types_1 = __webpack_require__(25);
+const mapped_types_1 = __webpack_require__(26);
 const create_reserva_dto_1 = __webpack_require__(41);
-const class_validator_1 = __webpack_require__(23);
+const class_validator_1 = __webpack_require__(24);
 class UpdateReservaDto extends (0, mapped_types_1.PartialType)(create_reserva_dto_1.CreateReservaDto) {
 }
 __decorate([
@@ -2010,7 +2041,7 @@ exports.RifasModule = void 0;
 const common_1 = __webpack_require__(3);
 const typeorm_1 = __webpack_require__(4);
 const rifas_controller_1 = __webpack_require__(44);
-const rifas_service_1 = __webpack_require__(35);
+const rifas_service_1 = __webpack_require__(36);
 const rifa_entity_1 = __webpack_require__(12);
 const cotas_module_1 = __webpack_require__(48);
 const plans_module_1 = __webpack_require__(49);
@@ -2048,10 +2079,10 @@ var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RifasController = void 0;
 const common_1 = __webpack_require__(3);
-const rifas_service_1 = __webpack_require__(35);
+const rifas_service_1 = __webpack_require__(36);
 const create_rifa_dto_1 = __webpack_require__(45);
 const update_rifa_dto_1 = __webpack_require__(46);
-const passport_1 = __webpack_require__(26);
+const passport_1 = __webpack_require__(27);
 const tenant_id_decorator_1 = __webpack_require__(47);
 let RifasController = class RifasController {
     constructor(rifasService) {
@@ -2137,7 +2168,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CreateRifaDto = void 0;
-const class_validator_1 = __webpack_require__(23);
+const class_validator_1 = __webpack_require__(24);
 class CreateRifaDto {
 }
 __decorate([
@@ -2178,9 +2209,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateRifaDto = void 0;
-const mapped_types_1 = __webpack_require__(25);
+const mapped_types_1 = __webpack_require__(26);
 const create_rifa_dto_1 = __webpack_require__(45);
-const class_validator_1 = __webpack_require__(23);
+const class_validator_1 = __webpack_require__(24);
 class UpdateRifaDto extends (0, mapped_types_1.PartialType)(create_rifa_dto_1.CreateRifaDto) {
 }
 __decorate([
@@ -2271,15 +2302,16 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PlansModule = void 0;
 const common_1 = __webpack_require__(3);
 const typeorm_1 = __webpack_require__(4);
-const plan_entity_1 = __webpack_require__(37);
-const plans_service_1 = __webpack_require__(36);
+const plan_entity_1 = __webpack_require__(17);
+const plans_service_1 = __webpack_require__(37);
 const plans_controller_1 = __webpack_require__(50);
 const logger_module_1 = __webpack_require__(56);
+const tenant_entity_1 = __webpack_require__(11);
 let PlansModule = class PlansModule {
 };
 PlansModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([plan_entity_1.Plan]), logger_module_1.LoggerModule],
+        imports: [typeorm_1.TypeOrmModule.forFeature([plan_entity_1.Plan, tenant_entity_1.Tenant]), logger_module_1.LoggerModule],
         providers: [plans_service_1.PlansService],
         controllers: [plans_controller_1.PlansController],
         exports: [plans_service_1.PlansService],
@@ -2309,10 +2341,10 @@ var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PlansController = void 0;
 const common_1 = __webpack_require__(3);
-const plans_service_1 = __webpack_require__(36);
+const plans_service_1 = __webpack_require__(37);
 const create_plan_dto_1 = __webpack_require__(51);
 const update_plan_dto_1 = __webpack_require__(52);
-const passport_1 = __webpack_require__(26);
+const passport_1 = __webpack_require__(27);
 const roles_decorator_1 = __webpack_require__(53);
 const role_enum_1 = __webpack_require__(54);
 const roles_guard_1 = __webpack_require__(55);
@@ -2400,7 +2432,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CreatePlanDto = void 0;
-const class_validator_1 = __webpack_require__(23);
+const class_validator_1 = __webpack_require__(24);
 class CreatePlanDto {
 }
 __decorate([
@@ -2436,7 +2468,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdatePlanDto = void 0;
-const class_validator_1 = __webpack_require__(23);
+const class_validator_1 = __webpack_require__(24);
 class UpdatePlanDto {
 }
 __decorate([
@@ -2548,7 +2580,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LoggerModule = void 0;
 const common_1 = __webpack_require__(3);
-const logger_service_1 = __webpack_require__(18);
+const logger_service_1 = __webpack_require__(19);
 let LoggerModule = class LoggerModule {
 };
 LoggerModule = __decorate([
@@ -2644,8 +2676,8 @@ exports.BillingController = void 0;
 const common_1 = __webpack_require__(3);
 const billing_service_1 = __webpack_require__(60);
 const create_subscription_dto_1 = __webpack_require__(62);
-const logger_service_1 = __webpack_require__(18);
-const passport_1 = __webpack_require__(26);
+const logger_service_1 = __webpack_require__(19);
+const passport_1 = __webpack_require__(27);
 const webhook_validation_service_1 = __webpack_require__(63);
 let BillingController = class BillingController {
     constructor(logger, billingService, webhookValidationService) {
@@ -2734,7 +2766,7 @@ const typeorm_1 = __webpack_require__(4);
 const typeorm_2 = __webpack_require__(9);
 const subscription_entity_1 = __webpack_require__(16);
 const mercadopago_1 = __webpack_require__(61);
-const logger_service_1 = __webpack_require__(18);
+const logger_service_1 = __webpack_require__(19);
 let BillingService = class BillingService {
     constructor(logger, subscriptionRepository) {
         this.logger = logger;
@@ -2893,10 +2925,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthService = void 0;
 const common_1 = __webpack_require__(3);
 const users_service_1 = __webpack_require__(8);
-const tenants_service_1 = __webpack_require__(28);
+const tenants_service_1 = __webpack_require__(29);
 const jwt_1 = __webpack_require__(65);
-const bcrypt = __webpack_require__(17);
-const logger_service_1 = __webpack_require__(18);
+const bcrypt = __webpack_require__(18);
+const logger_service_1 = __webpack_require__(19);
 let AuthService = class AuthService {
     constructor(logger, usersService, tenantsService, jwtService) {
         this.logger = logger;
@@ -3027,7 +3059,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LoginDto = void 0;
-const class_validator_1 = __webpack_require__(23);
+const class_validator_1 = __webpack_require__(24);
 class LoginDto {
 }
 __decorate([
@@ -3071,7 +3103,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.JwtStrategy = void 0;
 const common_1 = __webpack_require__(3);
-const passport_1 = __webpack_require__(26);
+const passport_1 = __webpack_require__(27);
 const passport_jwt_1 = __webpack_require__(71);
 const users_service_1 = __webpack_require__(8);
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
@@ -3129,7 +3161,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppController = void 0;
 const common_1 = __webpack_require__(3);
 const app_service_1 = __webpack_require__(73);
-const express_1 = __webpack_require__(20);
+const express_1 = __webpack_require__(21);
 let AppController = class AppController {
     constructor(appService) {
         this.appService = appService;

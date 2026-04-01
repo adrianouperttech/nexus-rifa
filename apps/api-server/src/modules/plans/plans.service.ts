@@ -5,6 +5,7 @@ import { Plan } from './entities/plan.entity';
 import { CreatePlanDto } from './dto/create-plan.dto';
 import { UpdatePlanDto } from './dto/update-plan.dto';
 import { LoggerService } from '../../common/logger/logger.service';
+import { Tenant } from '../tenants/entities/tenant.entity';
 
 @Injectable()
 export class PlansService {
@@ -12,6 +13,8 @@ export class PlansService {
     private readonly logger: LoggerService,
     @InjectRepository(Plan)
     private readonly planRepository: Repository<Plan>,
+    @InjectRepository(Tenant)
+    private readonly tenantRepository: Repository<Tenant>,
   ) {}
 
   async create(createPlanDto: CreatePlanDto): Promise<Plan> {
@@ -55,5 +58,20 @@ export class PlansService {
       this.logger.warn(`Plan with ID "${id}" not found for removal`);
       throw new NotFoundException(`Plan with ID \"${id}\" not found`);
     }
+  }
+
+  async getTenantPlan(tenantId: string): Promise<Plan> {
+    this.logger.log(`Getting plan for tenant with id ${tenantId}`);
+    const tenant = await this.tenantRepository.findOne({
+      where: { id: tenantId },
+      relations: ['plan'],
+    });
+    if (!tenant || !tenant.plan) {
+      this.logger.warn(`Plan not found for tenant with id ${tenantId}`);
+      throw new NotFoundException(
+        `Plan not found for tenant with id ${tenantId}`,
+      );
+    }
+    return tenant.plan;
   }
 }
