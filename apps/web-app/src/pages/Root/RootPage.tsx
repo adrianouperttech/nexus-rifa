@@ -5,9 +5,11 @@ const RootPage: React.FC = () => {
   return (
     <div>
       <h1>Root Page</h1>
+      <Link to="/">Root</Link>
+      <br />
       <Link to="/login">Login</Link>
       <br />
-      <Link to="/subscriptions/new">Create Subscription</Link>
+      <Link to="/subscriptions/new">Assinar</Link>
     </div>
   );
 };
