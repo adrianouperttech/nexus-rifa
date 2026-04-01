@@ -3,7 +3,6 @@ import { BillingService } from './billing.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Subscription } from './entities/subscription.entity';
 import { LoggerService } from '../../common/logger/logger.service';
-import { PreApproval } from 'mercadopago';
 
 // Mocking MercadoPago PreApproval
 const mockPreApprovalCreate = jest.fn();

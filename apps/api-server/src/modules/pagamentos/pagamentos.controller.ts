@@ -7,7 +7,6 @@ import {
   Headers,
   UseGuards,
   Req,
-  UnauthorizedException,
   Inject,
 } from '@nestjs/common';
 import { PagamentosService } from './pagamentos.service';

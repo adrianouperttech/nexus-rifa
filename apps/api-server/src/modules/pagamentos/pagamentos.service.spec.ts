@@ -6,7 +6,6 @@ import { ReservasService } from '../reservas/reservas.service';
 import { LoggerService } from '../../common/logger/logger.service';
 import { CreatePagamentoDto } from './dto/create-pagamento.dto';
 import { ConflictException } from '@nestjs/common';
-import { Payment } from 'mercadopago';
 
 // Mocking MercadoPago Payment
 const mockPaymentCreate = jest.fn();

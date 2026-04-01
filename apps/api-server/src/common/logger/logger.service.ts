@@ -1,5 +1,5 @@
 import { Injectable, Scope, Inject } from '@nestjs/common';
-import { createLogger, format, transports, Logger } from 'winston';
+import { createLogger, format, transports } from 'winston';
 import { Request } from 'express';
 
 const winstonLogger = createLogger({

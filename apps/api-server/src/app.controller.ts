@@ -64,14 +64,11 @@ export class AppController {
 
       <div class="card">
         <h2>Como testar</h2>
-        <p>Use as credenciais seeded:</p>
-        <ul>
-          <li><code>admin@teste.com</code> / <code>Pa$$w0rd</code></li>
-          <li><code>root@example.com</code> / <code>root</code></li>
-        </ul>
+        <p>Use suas credenciais de usuário reais ou crie um usuário no banco de dados de teste.</p>
+        <p>Não exiba credenciais de contas reais ou de seeds em ambientes públicos.</p>
         <p>Exemplo:</p>
         <code>POST /auth/login</code> com JSON:
-        <pre>{"email":"admin@teste.com","password":"Pa$$w0rd","tenant_id":"<tenant-id>"}</pre>
+        <pre>{"email":"seu-email@example.com","password":"sua-senha","tenant_id":"<tenant-id>"}</pre>
       </div>
 
       <div class="card">

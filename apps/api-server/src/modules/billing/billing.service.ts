@@ -23,6 +23,16 @@ export class BillingService {
   async createSubscription(
     createSubscriptionDto: CreateSubscriptionDto,
   ): Promise<any> {
+    const appUrl = process.env.APP_URL;
+    if (!appUrl) {
+      this.logger.error(
+        'APP_URL não está configurado. Não é possível criar assinatura.',
+      );
+      throw new InternalServerErrorException(
+        'Configuração incompleta do serviço de pagamentos.',
+      );
+    }
+
     const subscriptionRequest = {
       reason: createSubscriptionDto.reason,
       auto_recurring: {
@@ -31,7 +41,7 @@ export class BillingService {
         transaction_amount: createSubscriptionDto.price,
         currency_id: 'BRL',
       },
-      back_url: 'https://www.google.com',
+      back_url: `${appUrl}/billing/return`,
       payer_email: createSubscriptionDto.payer_email,
       preapproval_plan_id: process.env.MP_PLAN_ID,
     };
