@@ -7,6 +7,11 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
+  getIndex(): { status: string } {
+    return { status: 'ok' };
+  }
+
+  @Get('status-page')
   getHello(@Res() res: Response): void {
     const html = `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -40,7 +45,7 @@ export class AppController {
         <h2>Endpoints disponíveis</h2>
         <div class="grid">
           <div>
-            <strong>/</strong>
+            <strong>/status-page</strong>
             <p>Página de status</p>
           </div>
           <div>

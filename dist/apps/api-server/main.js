@@ -25,23 +25,23 @@ const typeorm_1 = __webpack_require__(4);
 const config_1 = __webpack_require__(5);
 const auth_module_1 = __webpack_require__(6);
 const users_module_1 = __webpack_require__(7);
-const app_controller_1 = __webpack_require__(36);
-const app_service_1 = __webpack_require__(37);
-const rifas_module_1 = __webpack_require__(38);
-const throttler_1 = __webpack_require__(31);
+const app_controller_1 = __webpack_require__(71);
+const app_service_1 = __webpack_require__(72);
+const rifas_module_1 = __webpack_require__(43);
+const throttler_1 = __webpack_require__(68);
 const core_1 = __webpack_require__(1);
 const cota_entity_1 = __webpack_require__(15);
 const rifa_entity_1 = __webpack_require__(12);
 const user_entity_1 = __webpack_require__(10);
-const root_user_entity_1 = __webpack_require__(52);
+const root_user_entity_1 = __webpack_require__(73);
 const premio_entity_1 = __webpack_require__(14);
 const reserva_entity_1 = __webpack_require__(13);
-const pagamento_entity_1 = __webpack_require__(53);
+const pagamento_entity_1 = __webpack_require__(74);
 const tenant_entity_1 = __webpack_require__(11);
-const tenants_module_1 = __webpack_require__(54);
+const tenants_module_1 = __webpack_require__(27);
 const subscription_entity_1 = __webpack_require__(16);
-const billing_module_1 = __webpack_require__(68);
-const logger_module_1 = __webpack_require__(51);
+const billing_module_1 = __webpack_require__(57);
+const logger_module_1 = __webpack_require__(55);
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -69,7 +69,17 @@ AppModule = __decorate([
                     return {
                         type: 'postgres',
                         url: databaseUrl,
-                        entities: [cota_entity_1.Cota, rifa_entity_1.Rifa, user_entity_1.User, root_user_entity_1.RootUser, premio_entity_1.Premio, reserva_entity_1.Reserva, pagamento_entity_1.Pagamento, tenant_entity_1.Tenant, subscription_entity_1.Subscription],
+                        entities: [
+                            cota_entity_1.Cota,
+                            rifa_entity_1.Rifa,
+                            user_entity_1.User,
+                            root_user_entity_1.RootUser,
+                            premio_entity_1.Premio,
+                            reserva_entity_1.Reserva,
+                            pagamento_entity_1.Pagamento,
+                            tenant_entity_1.Tenant,
+                            subscription_entity_1.Subscription,
+                        ],
                         synchronize: false,
                         ssl: {
                             rejectUnauthorized: false,
@@ -130,22 +140,29 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthModule = void 0;
 const common_1 = __webpack_require__(3);
 const users_module_1 = __webpack_require__(7);
+const tenants_module_1 = __webpack_require__(27);
 const passport_1 = __webpack_require__(26);
-const jwt_1 = __webpack_require__(27);
-const auth_service_1 = __webpack_require__(28);
-const auth_controller_1 = __webpack_require__(30);
-const jwt_strategy_1 = __webpack_require__(32);
-const roles_guard_1 = __webpack_require__(34);
+const jwt_1 = __webpack_require__(64);
+const auth_service_1 = __webpack_require__(65);
+const auth_controller_1 = __webpack_require__(67);
+const jwt_strategy_1 = __webpack_require__(69);
+const roles_guard_1 = __webpack_require__(54);
 let AuthModule = class AuthModule {
 };
 AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [
             users_module_1.UsersModule,
+            tenants_module_1.TenantsModule,
             passport_1.PassportModule,
             jwt_1.JwtModule.register({
-                secret: process.env.JWT_SECRET,
-                signOptions: { expiresIn: '60s' },
+                secret: process.env.JWT_SECRET ||
+                    (() => {
+                        throw new Error('JWT_SECRET não configurado');
+                    })(),
+                signOptions: {
+                    expiresIn: process.env.JWT_EXPIRES_IN || '1h',
+                },
             }),
         ],
         providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy, roles_guard_1.RolesGuard],
@@ -589,7 +606,7 @@ __decorate([
     __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
 ], Reserva.prototype, "created_at", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => tenant_entity_1.Tenant, tenant => tenant.reservas),
+    (0, typeorm_1.ManyToOne)(() => tenant_entity_1.Tenant, (tenant) => tenant.reservas),
     (0, typeorm_1.JoinColumn)({ name: 'tenant_id' }),
     __metadata("design:type", typeof (_b = typeof tenant_entity_1.Tenant !== "undefined" && tenant_entity_1.Tenant) === "function" ? _b : Object)
 ], Reserva.prototype, "tenant", void 0);
@@ -1070,1238 +1087,6 @@ module.exports = require("@nestjs/passport");
 
 /***/ }),
 /* 27 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/jwt");
-
-/***/ }),
-/* 28 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c, _d, _e, _f;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AuthService = void 0;
-const common_1 = __webpack_require__(3);
-const users_service_1 = __webpack_require__(8);
-const jwt_1 = __webpack_require__(27);
-const bcrypt = __webpack_require__(17);
-const login_dto_1 = __webpack_require__(29);
-const express_1 = __webpack_require__(20);
-const logger_service_1 = __webpack_require__(18);
-let AuthService = class AuthService {
-    constructor(logger, usersService, jwtService) {
-        this.logger = logger;
-        this.usersService = usersService;
-        this.jwtService = jwtService;
-    }
-    async login(req, loginDto) {
-        const tenant_id = req.subdomains && req.subdomains.length > 0
-            ? req.subdomains[0]
-            : loginDto.tenant_id;
-        this.logger.log(`Login attempt for tenant ${tenant_id}`);
-        if (!tenant_id) {
-            this.logger.warn('Login attempt without tenant');
-            throw new common_1.UnauthorizedException('Tenant não identificado. Informe tenant_id.');
-        }
-        const { email, password } = loginDto;
-        const user = await this.usersService.findByEmail(tenant_id, email);
-        if (!user) {
-            this.logger.warn(`Login failed for email \"${email}\" in tenant \"${tenant_id}\" - User not found`);
-            throw new common_1.UnauthorizedException('Invalid credentials');
-        }
-        const isPasswordMatching = await bcrypt.compare(password, user.password);
-        if (!isPasswordMatching) {
-            this.logger.warn(`Login failed for email \"${email}\" in tenant \"${tenant_id}\" - Invalid password`);
-            throw new common_1.UnauthorizedException('Invalid credentials');
-        }
-        const payload = {
-            sub: user.id,
-            email: user.email,
-            tenant_id: user.tenant_id,
-        };
-        this.logger.log(`Login successful for user ${user.id} in tenant ${tenant_id}`);
-        return {
-            access_token: this.jwtService.sign(payload),
-        };
-    }
-};
-__decorate([
-    __param(0, (0, common_1.Req)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _d : Object, typeof (_e = typeof login_dto_1.LoginDto !== "undefined" && login_dto_1.LoginDto) === "function" ? _e : Object]),
-    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
-], AuthService.prototype, "login", null);
-AuthService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof logger_service_1.LoggerService !== "undefined" && logger_service_1.LoggerService) === "function" ? _a : Object, typeof (_b = typeof users_service_1.UsersService !== "undefined" && users_service_1.UsersService) === "function" ? _b : Object, typeof (_c = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _c : Object])
-], AuthService);
-exports.AuthService = AuthService;
-
-
-/***/ }),
-/* 29 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LoginDto = void 0;
-const class_validator_1 = __webpack_require__(23);
-class LoginDto {
-}
-__decorate([
-    (0, class_validator_1.IsEmail)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], LoginDto.prototype, "email", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], LoginDto.prototype, "password", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], LoginDto.prototype, "tenant_id", void 0);
-exports.LoginDto = LoginDto;
-
-
-/***/ }),
-/* 30 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AuthController = void 0;
-const common_1 = __webpack_require__(3);
-const auth_service_1 = __webpack_require__(28);
-const login_dto_1 = __webpack_require__(29);
-const throttler_1 = __webpack_require__(31);
-let AuthController = class AuthController {
-    constructor(authService) {
-        this.authService = authService;
-    }
-    async login(loginDto, req) {
-        return this.authService.login(req, loginDto);
-    }
-};
-__decorate([
-    (0, throttler_1.Throttle)({ default: { limit: 10, ttl: 60000 } }),
-    (0, common_1.Post)('login'),
-    __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Req)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof login_dto_1.LoginDto !== "undefined" && login_dto_1.LoginDto) === "function" ? _b : Object, Object]),
-    __metadata("design:returntype", Promise)
-], AuthController.prototype, "login", null);
-AuthController = __decorate([
-    (0, common_1.Controller)('auth'),
-    __metadata("design:paramtypes", [typeof (_a = typeof auth_service_1.AuthService !== "undefined" && auth_service_1.AuthService) === "function" ? _a : Object])
-], AuthController);
-exports.AuthController = AuthController;
-
-
-/***/ }),
-/* 31 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/throttler");
-
-/***/ }),
-/* 32 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.JwtStrategy = void 0;
-const common_1 = __webpack_require__(3);
-const passport_1 = __webpack_require__(26);
-const passport_jwt_1 = __webpack_require__(33);
-const users_service_1 = __webpack_require__(8);
-let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
-    constructor(usersService) {
-        super({
-            jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
-            ignoreExpiration: false,
-            secretOrKey: process.env.JWT_SECRET,
-        });
-        this.usersService = usersService;
-    }
-    async validate(payload) {
-        if (!payload.sub || !payload.tenant_id) {
-            throw new common_1.UnauthorizedException('Token inválido ou malformado');
-        }
-        const user = await this.usersService.findOne(payload.tenant_id, payload.sub);
-        if (!user) {
-            throw new common_1.UnauthorizedException('Usuário não encontrado ou token inválido');
-        }
-        return user;
-    }
-};
-JwtStrategy = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof users_service_1.UsersService !== "undefined" && users_service_1.UsersService) === "function" ? _a : Object])
-], JwtStrategy);
-exports.JwtStrategy = JwtStrategy;
-
-
-/***/ }),
-/* 33 */
-/***/ ((module) => {
-
-module.exports = require("passport-jwt");
-
-/***/ }),
-/* 34 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.RolesGuard = void 0;
-const common_1 = __webpack_require__(3);
-const core_1 = __webpack_require__(1);
-const roles_decorator_1 = __webpack_require__(35);
-let RolesGuard = class RolesGuard {
-    constructor(reflector) {
-        this.reflector = reflector;
-    }
-    canActivate(context) {
-        const requiredRoles = this.reflector.getAllAndOverride(roles_decorator_1.ROLES_KEY, [context.getHandler(), context.getClass()]);
-        if (!requiredRoles) {
-            return true;
-        }
-        const { user } = context.switchToHttp().getRequest();
-        return requiredRoles.some((role) => { var _a; return (_a = user.roles) === null || _a === void 0 ? void 0 : _a.includes(role); });
-    }
-};
-RolesGuard = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof core_1.Reflector !== "undefined" && core_1.Reflector) === "function" ? _a : Object])
-], RolesGuard);
-exports.RolesGuard = RolesGuard;
-
-
-/***/ }),
-/* 35 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Roles = exports.ROLES_KEY = void 0;
-const common_1 = __webpack_require__(3);
-exports.ROLES_KEY = 'roles';
-const Roles = (...roles) => (0, common_1.SetMetadata)(exports.ROLES_KEY, roles);
-exports.Roles = Roles;
-
-
-/***/ }),
-/* 36 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AppController = void 0;
-const common_1 = __webpack_require__(3);
-const app_service_1 = __webpack_require__(37);
-const express_1 = __webpack_require__(20);
-let AppController = class AppController {
-    constructor(appService) {
-        this.appService = appService;
-    }
-    getHello(res) {
-        const html = `<!DOCTYPE html>
-<html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nexus Rifa API</title>
-    <style>
-      body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background: #f4f6fb; color: #1f2937; }
-      .hero { background: linear-gradient(135deg, #2a61ff, #001f70); color: white; padding: 38px 20px; text-align: center; }
-      .container { max-width: 960px; margin: 24px auto; padding: 0 16px; }
-      .card { background: white; border-radius: 12px; box-shadow: 0 10px 28px rgba(15, 23, 42, 0.12); padding: 20px; margin-bottom: 16px; }
-      .grid { display: grid; grid-gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
-      h1, h2 { margin: 0; }
-      p { color: #475569; }
-      a { color: #1d4ed8; text-decoration: none; }
-      a:hover { text-decoration: underline; }
-      .badge { display: inline-block; background: #e0e7ff; color: #1e3a8a; padding: 4px 10px; border-radius: 999px; font-weight: 600; font-size: 12px; }
-      code { background: #e2e8f0; padding: 3px 6px; border-radius: 5px; }
-      .footer { text-align: center; padding: 16px; color: #94a3b8; font-size: 13px; }
-    </style>
-  </head>
-  <body>
-    <div class="hero">
-      <h1>Nexus Rifa API</h1>
-      <p>Backend em funcionamento</p>
-      <div class="badge">Status: Online</div>
-    </div>
-    <div class="container">
-      <div class="card">
-        <h2>Endpoints disponíveis</h2>
-        <div class="grid">
-          <div>
-            <strong>/</strong>
-            <p>Página de status</p>
-          </div>
-          <div>
-            <strong>/health</strong>
-            <p>Verificação de saúde (JSON)</p>
-          </div>
-          <div>
-            <strong>/status</strong>
-            <p>Informações do app (uptime)</p>
-          </div>
-          <div>
-            <strong>/docs</strong>
-            <p>Swagger UI para API</p>
-          </div>
-          <div>
-            <strong>/auth/login</strong>
-            <p>Login JWT</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Como testar</h2>
-        <p>Use as credenciais seeded:</p>
-        <ul>
-          <li><code>admin@teste.com</code> / <code>Pa$$w0rd</code></li>
-          <li><code>root@example.com</code> / <code>root</code></li>
-        </ul>
-        <p>Exemplo:</p>
-        <code>POST /auth/login</code> com JSON:
-        <pre>{"email":"admin@teste.com","password":"Pa$$w0rd","tenant_id":"<tenant-id>"}</pre>
-      </div>
-
-      <div class="card">
-        <h2>Configuração do frontend</h2>
-        <p>Em produção, aponte para a URL do backend real:</p>
-        <code>VITE_API_BASE_URL=https://seu-backend.onrender.com</code>
-      </div>
-    </div>
-    <div class="footer">Nexus Rifa &copy; 2026 | backend powered by NestJS</div>
-  </body>
-</html>`;
-        res.contentType('text/html');
-        res.send(html);
-    }
-    getHealth() {
-        return { status: 'ok' };
-    }
-    getStatus() {
-        return { app: 'nexus-rifa', uptime: process.uptime() };
-    }
-};
-__decorate([
-    (0, common_1.Get)(),
-    __param(0, (0, common_1.Res)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _b : Object]),
-    __metadata("design:returntype", void 0)
-], AppController.prototype, "getHello", null);
-__decorate([
-    (0, common_1.Get)('health'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Object)
-], AppController.prototype, "getHealth", null);
-__decorate([
-    (0, common_1.Get)('status'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Object)
-], AppController.prototype, "getStatus", null);
-AppController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof app_service_1.AppService !== "undefined" && app_service_1.AppService) === "function" ? _a : Object])
-], AppController);
-exports.AppController = AppController;
-
-
-/***/ }),
-/* 37 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AppService = void 0;
-const common_1 = __webpack_require__(3);
-let AppService = class AppService {
-    getHello() {
-        return 'Hello World!';
-    }
-};
-AppService = __decorate([
-    (0, common_1.Injectable)()
-], AppService);
-exports.AppService = AppService;
-
-
-/***/ }),
-/* 38 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.RifasModule = void 0;
-const common_1 = __webpack_require__(3);
-const typeorm_1 = __webpack_require__(4);
-const rifas_controller_1 = __webpack_require__(39);
-const rifas_service_1 = __webpack_require__(40);
-const rifa_entity_1 = __webpack_require__(12);
-const cotas_module_1 = __webpack_require__(45);
-const plans_module_1 = __webpack_require__(46);
-let RifasModule = class RifasModule {
-};
-RifasModule = __decorate([
-    (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([rifa_entity_1.Rifa]), cotas_module_1.CotasModule, plans_module_1.PlansModule],
-        controllers: [rifas_controller_1.RifasController],
-        providers: [rifas_service_1.RifasService],
-        exports: [rifas_service_1.RifasService],
-    })
-], RifasModule);
-exports.RifasModule = RifasModule;
-
-
-/***/ }),
-/* 39 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.RifasController = void 0;
-const common_1 = __webpack_require__(3);
-const rifas_service_1 = __webpack_require__(40);
-const create_rifa_dto_1 = __webpack_require__(43);
-const update_rifa_dto_1 = __webpack_require__(44);
-const passport_1 = __webpack_require__(26);
-let RifasController = class RifasController {
-    constructor(rifasService) {
-        this.rifasService = rifasService;
-    }
-    create(req, createRifaDto) {
-        const tenant_id = req.user.tenant_id;
-        return this.rifasService.create(tenant_id, createRifaDto);
-    }
-    findAll(req) {
-        const tenant_id = req.user.tenant_id;
-        return this.rifasService.findAll(tenant_id);
-    }
-    findOne(req, id) {
-        const tenant_id = req.user.tenant_id;
-        return this.rifasService.findOne(tenant_id, id);
-    }
-    update(req, id, updateRifaDto) {
-        const tenant_id = req.user.tenant_id;
-        return this.rifasService.update(tenant_id, id, updateRifaDto);
-    }
-    remove(req, id) {
-        const tenant_id = req.user.tenant_id;
-        return this.rifasService.remove(tenant_id, id);
-    }
-};
-__decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, typeof (_b = typeof create_rifa_dto_1.CreateRifaDto !== "undefined" && create_rifa_dto_1.CreateRifaDto) === "function" ? _b : Object]),
-    __metadata("design:returntype", void 0)
-], RifasController.prototype, "create", null);
-__decorate([
-    (0, common_1.Get)(),
-    __param(0, (0, common_1.Req)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
-], RifasController.prototype, "findAll", null);
-__decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
-    __metadata("design:returntype", void 0)
-], RifasController.prototype, "findOne", null);
-__decorate([
-    (0, common_1.Put)(':id'),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Param)('id')),
-    __param(2, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, typeof (_c = typeof update_rifa_dto_1.UpdateRifaDto !== "undefined" && update_rifa_dto_1.UpdateRifaDto) === "function" ? _c : Object]),
-    __metadata("design:returntype", void 0)
-], RifasController.prototype, "update", null);
-__decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
-    __metadata("design:returntype", void 0)
-], RifasController.prototype, "remove", null);
-RifasController = __decorate([
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
-    (0, common_1.Controller)('rifas'),
-    __metadata("design:paramtypes", [typeof (_a = typeof rifas_service_1.RifasService !== "undefined" && rifas_service_1.RifasService) === "function" ? _a : Object])
-], RifasController);
-exports.RifasController = RifasController;
-
-
-/***/ }),
-/* 40 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.RifasService = void 0;
-const common_1 = __webpack_require__(3);
-const typeorm_1 = __webpack_require__(4);
-const typeorm_2 = __webpack_require__(9);
-const rifa_entity_1 = __webpack_require__(12);
-const plans_service_1 = __webpack_require__(41);
-const logger_service_1 = __webpack_require__(18);
-let RifasService = class RifasService {
-    constructor(logger, rifasRepository, plansService) {
-        this.logger = logger;
-        this.rifasRepository = rifasRepository;
-        this.plansService = plansService;
-    }
-    async create(tenant_id, createRifaDto) {
-        this.logger.log(`Creating Rifa for tenant ${tenant_id}`);
-        const rifa = this.rifasRepository.create(Object.assign(Object.assign({}, createRifaDto), { tenant_id }));
-        return this.rifasRepository.save(rifa);
-    }
-    async findAll(tenant_id) {
-        this.logger.log(`Finding all Rifas for tenant ${tenant_id}`);
-        return this.rifasRepository.find({ where: { tenant_id } });
-    }
-    async findOne(tenant_id, id) {
-        this.logger.log(`Finding Rifa with id ${id} for tenant ${tenant_id}`);
-        const rifa = await this.rifasRepository.findOne({
-            where: { id, tenant_id },
-        });
-        if (!rifa) {
-            this.logger.warn(`Rifa with ID "${id}" not found for tenant "${tenant_id}"`);
-            throw new common_1.NotFoundException(`Rifa with ID \"${id}\" not found`);
-        }
-        return rifa;
-    }
-    async update(tenant_id, id, updateRifaDto) {
-        this.logger.log(`Updating Rifa with id ${id} for tenant ${tenant_id}`);
-        const rifa = await this.rifasRepository.preload(Object.assign({ id: id, tenant_id: tenant_id }, updateRifaDto));
-        if (!rifa) {
-            this.logger.warn(`Rifa with ID "${id}" not found for tenant "${tenant_id}" to update`);
-            throw new common_1.NotFoundException(`Rifa with ID \"${id}\" not found`);
-        }
-        return this.rifasRepository.save(rifa);
-    }
-    async remove(tenant_id, id) {
-        this.logger.log(`Removing Rifa with id ${id} for tenant ${tenant_id}`);
-        const result = await this.rifasRepository.delete({ id, tenant_id });
-        if (result.affected === 0) {
-            this.logger.warn(`Rifa with ID "${id}" not found for tenant "${tenant_id}" to remove`);
-            throw new common_1.NotFoundException(`Rifa with ID \"${id}\" not found`);
-        }
-    }
-};
-RifasService = __decorate([
-    (0, common_1.Injectable)(),
-    __param(0, (0, common_1.Inject)(logger_service_1.LoggerService)),
-    __param(1, (0, typeorm_1.InjectRepository)(rifa_entity_1.Rifa)),
-    __metadata("design:paramtypes", [typeof (_a = typeof logger_service_1.LoggerService !== "undefined" && logger_service_1.LoggerService) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object, typeof (_c = typeof plans_service_1.PlansService !== "undefined" && plans_service_1.PlansService) === "function" ? _c : Object])
-], RifasService);
-exports.RifasService = RifasService;
-
-
-/***/ }),
-/* 41 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PlansService = void 0;
-const common_1 = __webpack_require__(3);
-const typeorm_1 = __webpack_require__(4);
-const typeorm_2 = __webpack_require__(9);
-const plan_entity_1 = __webpack_require__(42);
-const logger_service_1 = __webpack_require__(18);
-let PlansService = class PlansService {
-    constructor(logger, planRepository) {
-        this.logger = logger;
-        this.planRepository = planRepository;
-    }
-    async create(createPlanDto) {
-        this.logger.log('Creating a new plan');
-        const plan = this.planRepository.create(createPlanDto);
-        return this.planRepository.save(plan);
-    }
-    async findAll() {
-        this.logger.log('Finding all plans');
-        return this.planRepository.find();
-    }
-    async findOne(id) {
-        this.logger.log(`Finding plan with id ${id}`);
-        const plan = await this.planRepository.findOne({ where: { id } });
-        if (!plan) {
-            this.logger.warn(`Plan with ID "${id}" not found`);
-            throw new common_1.NotFoundException(`Plan with ID \"${id}\" not found`);
-        }
-        return plan;
-    }
-    async update(id, updatePlanDto) {
-        this.logger.log(`Updating plan with id ${id}`);
-        const plan = await this.planRepository.preload(Object.assign({ id: id }, updatePlanDto));
-        if (!plan) {
-            this.logger.warn(`Plan with ID "${id}" not found for update`);
-            throw new common_1.NotFoundException(`Plan with ID \"${id}\" not found`);
-        }
-        return this.planRepository.save(plan);
-    }
-    async remove(id) {
-        this.logger.log(`Removing plan with id ${id}`);
-        const result = await this.planRepository.delete(id);
-        if (result.affected === 0) {
-            this.logger.warn(`Plan with ID "${id}" not found for removal`);
-            throw new common_1.NotFoundException(`Plan with ID \"${id}\" not found`);
-        }
-    }
-};
-PlansService = __decorate([
-    (0, common_1.Injectable)(),
-    __param(1, (0, typeorm_1.InjectRepository)(plan_entity_1.Plan)),
-    __metadata("design:paramtypes", [typeof (_a = typeof logger_service_1.LoggerService !== "undefined" && logger_service_1.LoggerService) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object])
-], PlansService);
-exports.PlansService = PlansService;
-
-
-/***/ }),
-/* 42 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Plan = void 0;
-const typeorm_1 = __webpack_require__(9);
-let Plan = class Plan {
-};
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], Plan.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'text' }),
-    __metadata("design:type", String)
-], Plan.prototype, "name", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'numeric' }),
-    __metadata("design:type", Number)
-], Plan.prototype, "price", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'integer' }),
-    __metadata("design:type", Number)
-], Plan.prototype, "limit", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'text', nullable: true }),
-    __metadata("design:type", String)
-], Plan.prototype, "mercadopago_plan_id", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)({ type: 'timestamp' }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], Plan.prototype, "created_at", void 0);
-Plan = __decorate([
-    (0, typeorm_1.Entity)('plans')
-], Plan);
-exports.Plan = Plan;
-
-
-/***/ }),
-/* 43 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CreateRifaDto = void 0;
-const class_validator_1 = __webpack_require__(23);
-class CreateRifaDto {
-}
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], CreateRifaDto.prototype, "name", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], CreateRifaDto.prototype, "description", void 0);
-__decorate([
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsPositive)(),
-    __metadata("design:type", Number)
-], CreateRifaDto.prototype, "price", void 0);
-__decorate([
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsPositive)(),
-    __metadata("design:type", Number)
-], CreateRifaDto.prototype, "limit", void 0);
-exports.CreateRifaDto = CreateRifaDto;
-
-
-/***/ }),
-/* 44 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UpdateRifaDto = void 0;
-const mapped_types_1 = __webpack_require__(25);
-const create_rifa_dto_1 = __webpack_require__(43);
-const class_validator_1 = __webpack_require__(23);
-class UpdateRifaDto extends (0, mapped_types_1.PartialType)(create_rifa_dto_1.CreateRifaDto) {
-}
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], UpdateRifaDto.prototype, "name", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], UpdateRifaDto.prototype, "description", void 0);
-__decorate([
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsPositive)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Number)
-], UpdateRifaDto.prototype, "price", void 0);
-__decorate([
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsPositive)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Number)
-], UpdateRifaDto.prototype, "limit", void 0);
-exports.UpdateRifaDto = UpdateRifaDto;
-
-
-/***/ }),
-/* 45 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CotasModule = void 0;
-const common_1 = __webpack_require__(3);
-const typeorm_1 = __webpack_require__(4);
-const cota_entity_1 = __webpack_require__(15);
-let CotasModule = class CotasModule {
-};
-CotasModule = __decorate([
-    (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([cota_entity_1.Cota])],
-        controllers: [],
-        providers: [],
-    })
-], CotasModule);
-exports.CotasModule = CotasModule;
-
-
-/***/ }),
-/* 46 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PlansModule = void 0;
-const common_1 = __webpack_require__(3);
-const typeorm_1 = __webpack_require__(4);
-const plan_entity_1 = __webpack_require__(42);
-const plans_service_1 = __webpack_require__(41);
-const plans_controller_1 = __webpack_require__(47);
-const logger_module_1 = __webpack_require__(51);
-let PlansModule = class PlansModule {
-};
-PlansModule = __decorate([
-    (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([plan_entity_1.Plan]), logger_module_1.LoggerModule],
-        providers: [plans_service_1.PlansService],
-        controllers: [plans_controller_1.PlansController],
-        exports: [plans_service_1.PlansService],
-    })
-], PlansModule);
-exports.PlansModule = PlansModule;
-
-
-/***/ }),
-/* 47 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PlansController = void 0;
-const common_1 = __webpack_require__(3);
-const plans_service_1 = __webpack_require__(41);
-const create_plan_dto_1 = __webpack_require__(48);
-const update_plan_dto_1 = __webpack_require__(49);
-const passport_1 = __webpack_require__(26);
-const roles_decorator_1 = __webpack_require__(35);
-const role_enum_1 = __webpack_require__(50);
-const roles_guard_1 = __webpack_require__(34);
-let PlansController = class PlansController {
-    constructor(plansService) {
-        this.plansService = plansService;
-    }
-    create(createPlanDto) {
-        return this.plansService.create(createPlanDto);
-    }
-    findAll() {
-        return this.plansService.findAll();
-    }
-    findOne(id) {
-        return this.plansService.findOne(id);
-    }
-    update(id, updatePlanDto) {
-        return this.plansService.update(id, updatePlanDto);
-    }
-    remove(id) {
-        return this.plansService.remove(id);
-    }
-};
-__decorate([
-    (0, common_1.Post)(),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof create_plan_dto_1.CreatePlanDto !== "undefined" && create_plan_dto_1.CreatePlanDto) === "function" ? _b : Object]),
-    __metadata("design:returntype", void 0)
-], PlansController.prototype, "create", null);
-__decorate([
-    (0, common_1.Get)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], PlansController.prototype, "findAll", null);
-__decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], PlansController.prototype, "findOne", null);
-__decorate([
-    (0, common_1.Patch)(':id'),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_c = typeof update_plan_dto_1.UpdatePlanDto !== "undefined" && update_plan_dto_1.UpdatePlanDto) === "function" ? _c : Object]),
-    __metadata("design:returntype", void 0)
-], PlansController.prototype, "update", null);
-__decorate([
-    (0, common_1.Delete)(':id'),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], PlansController.prototype, "remove", null);
-PlansController = __decorate([
-    (0, common_1.Controller)('plans'),
-    __metadata("design:paramtypes", [typeof (_a = typeof plans_service_1.PlansService !== "undefined" && plans_service_1.PlansService) === "function" ? _a : Object])
-], PlansController);
-exports.PlansController = PlansController;
-
-
-/***/ }),
-/* 48 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CreatePlanDto = void 0;
-const class_validator_1 = __webpack_require__(23);
-class CreatePlanDto {
-}
-__decorate([
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], CreatePlanDto.prototype, "name", void 0);
-__decorate([
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsPositive)(),
-    __metadata("design:type", Number)
-], CreatePlanDto.prototype, "price", void 0);
-__decorate([
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.IsPositive)(),
-    __metadata("design:type", Number)
-], CreatePlanDto.prototype, "limit", void 0);
-exports.CreatePlanDto = CreatePlanDto;
-
-
-/***/ }),
-/* 49 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UpdatePlanDto = void 0;
-const class_validator_1 = __webpack_require__(23);
-class UpdatePlanDto {
-}
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], UpdatePlanDto.prototype, "name", void 0);
-__decorate([
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsPositive)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Number)
-], UpdatePlanDto.prototype, "price", void 0);
-__decorate([
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.IsPositive)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Number)
-], UpdatePlanDto.prototype, "limit", void 0);
-exports.UpdatePlanDto = UpdatePlanDto;
-
-
-/***/ }),
-/* 50 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Role = void 0;
-var Role;
-(function (Role) {
-    Role["User"] = "user";
-    Role["Admin"] = "admin";
-})(Role = exports.Role || (exports.Role = {}));
-
-
-/***/ }),
-/* 51 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LoggerModule = void 0;
-const common_1 = __webpack_require__(3);
-const logger_service_1 = __webpack_require__(18);
-let LoggerModule = class LoggerModule {
-};
-LoggerModule = __decorate([
-    (0, common_1.Global)(),
-    (0, common_1.Module)({
-        providers: [logger_service_1.LoggerService],
-        exports: [logger_service_1.LoggerService],
-    })
-], LoggerModule);
-exports.LoggerModule = LoggerModule;
-
-
-/***/ }),
-/* 52 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.RootUser = void 0;
-const typeorm_1 = __webpack_require__(9);
-let RootUser = class RootUser {
-};
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], RootUser.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'text', unique: true }),
-    __metadata("design:type", String)
-], RootUser.prototype, "email", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'text' }),
-    __metadata("design:type", String)
-], RootUser.prototype, "password", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)({ type: 'timestamp' }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], RootUser.prototype, "created_at", void 0);
-RootUser = __decorate([
-    (0, typeorm_1.Entity)('root_users')
-], RootUser);
-exports.RootUser = RootUser;
-
-
-/***/ }),
-/* 53 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Pagamento = void 0;
-const typeorm_1 = __webpack_require__(9);
-const reserva_entity_1 = __webpack_require__(13);
-let Pagamento = class Pagamento {
-};
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], Pagamento.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Pagamento.prototype, "reserva_id", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => reserva_entity_1.Reserva),
-    (0, typeorm_1.JoinColumn)({ name: 'reserva_id' }),
-    __metadata("design:type", typeof (_a = typeof reserva_entity_1.Reserva !== "undefined" && reserva_entity_1.Reserva) === "function" ? _a : Object)
-], Pagamento.prototype, "reserva", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Pagamento.prototype, "status", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], Pagamento.prototype, "gateway_pagamento", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], Pagamento.prototype, "transacao_id", void 0);
-Pagamento = __decorate([
-    (0, typeorm_1.Entity)('pagamentos')
-], Pagamento);
-exports.Pagamento = Pagamento;
-
-
-/***/ }),
-/* 54 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2314,19 +1099,25 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TenantsModule = void 0;
 const common_1 = __webpack_require__(3);
-const tenants_service_1 = __webpack_require__(55);
-const tenants_controller_1 = __webpack_require__(56);
+const tenants_service_1 = __webpack_require__(28);
+const tenants_controller_1 = __webpack_require__(29);
 const typeorm_1 = __webpack_require__(4);
 const tenant_entity_1 = __webpack_require__(11);
 const users_module_1 = __webpack_require__(7);
-const platform_express_1 = __webpack_require__(59);
-const reservas_module_1 = __webpack_require__(60);
-const billing_module_1 = __webpack_require__(68);
+const platform_express_1 = __webpack_require__(32);
+const reservas_module_1 = __webpack_require__(33);
+const billing_module_1 = __webpack_require__(57);
 let TenantsModule = class TenantsModule {
 };
 TenantsModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([tenant_entity_1.Tenant]), users_module_1.UsersModule, platform_express_1.MulterModule, (0, common_1.forwardRef)(() => reservas_module_1.ReservasModule), billing_module_1.BillingModule],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([tenant_entity_1.Tenant]),
+            users_module_1.UsersModule,
+            platform_express_1.MulterModule,
+            (0, common_1.forwardRef)(() => reservas_module_1.ReservasModule),
+            billing_module_1.BillingModule,
+        ],
         controllers: [tenants_controller_1.TenantsController],
         providers: [tenants_service_1.TenantsService],
         exports: [tenants_service_1.TenantsService],
@@ -2336,7 +1127,7 @@ exports.TenantsModule = TenantsModule;
 
 
 /***/ }),
-/* 55 */
+/* 28 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2392,6 +1183,15 @@ let TenantsService = class TenantsService {
         }
         return tenant;
     }
+    async findByName(nome) {
+        this.logger.log(`Finding tenant with nome ${nome}`);
+        const tenant = await this.tenantRepository.findOne({ where: { nome } });
+        if (!tenant) {
+            this.logger.warn(`Tenant with nome "${nome}" not found`);
+            throw new common_1.NotFoundException(`Tenant with nome "${nome}" not found`);
+        }
+        return tenant;
+    }
     async update(id, updateTenantDto) {
         this.logger.log(`Updating tenant with id ${id}`);
         const tenant = await this.tenantRepository.preload(Object.assign({ id: id }, updateTenantDto));
@@ -2420,7 +1220,7 @@ exports.TenantsService = TenantsService;
 
 
 /***/ }),
-/* 56 */
+/* 29 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2440,9 +1240,9 @@ var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TenantsController = void 0;
 const common_1 = __webpack_require__(3);
-const tenants_service_1 = __webpack_require__(55);
-const create_tenant_dto_1 = __webpack_require__(57);
-const update_tenant_dto_1 = __webpack_require__(58);
+const tenants_service_1 = __webpack_require__(28);
+const create_tenant_dto_1 = __webpack_require__(30);
+const update_tenant_dto_1 = __webpack_require__(31);
 let TenantsController = class TenantsController {
     constructor(tenantsService) {
         this.tenantsService = tenantsService;
@@ -2517,7 +1317,7 @@ exports.TenantsController = TenantsController;
 
 
 /***/ }),
-/* 57 */
+/* 30 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2549,7 +1349,7 @@ exports.CreateTenantDto = CreateTenantDto;
 
 
 /***/ }),
-/* 58 */
+/* 31 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2565,7 +1365,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateTenantDto = void 0;
 const mapped_types_1 = __webpack_require__(25);
-const create_tenant_dto_1 = __webpack_require__(57);
+const create_tenant_dto_1 = __webpack_require__(30);
 const class_validator_1 = __webpack_require__(23);
 class UpdateTenantDto extends (0, mapped_types_1.PartialType)(create_tenant_dto_1.CreateTenantDto) {
 }
@@ -2583,13 +1383,13 @@ exports.UpdateTenantDto = UpdateTenantDto;
 
 
 /***/ }),
-/* 59 */
+/* 32 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/platform-express");
 
 /***/ }),
-/* 60 */
+/* 33 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2602,13 +1402,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ReservasModule = void 0;
 const common_1 = __webpack_require__(3);
-const reservas_service_1 = __webpack_require__(61);
-const reservas_controller_1 = __webpack_require__(64);
+const reservas_service_1 = __webpack_require__(34);
+const reservas_controller_1 = __webpack_require__(40);
 const typeorm_1 = __webpack_require__(4);
 const reserva_entity_1 = __webpack_require__(13);
-const tenants_module_1 = __webpack_require__(54);
-const rifas_module_1 = __webpack_require__(38);
-const integrations_module_1 = __webpack_require__(67);
+const tenants_module_1 = __webpack_require__(27);
+const rifas_module_1 = __webpack_require__(43);
+const integrations_module_1 = __webpack_require__(56);
 let ReservasModule = class ReservasModule {
 };
 ReservasModule = __decorate([
@@ -2628,7 +1428,7 @@ exports.ReservasModule = ReservasModule;
 
 
 /***/ }),
-/* 61 */
+/* 34 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2651,9 +1451,9 @@ const common_1 = __webpack_require__(3);
 const typeorm_1 = __webpack_require__(4);
 const typeorm_2 = __webpack_require__(9);
 const reserva_entity_1 = __webpack_require__(13);
-const rifas_service_1 = __webpack_require__(40);
-const email_service_1 = __webpack_require__(62);
-const whatsapp_service_1 = __webpack_require__(63);
+const rifas_service_1 = __webpack_require__(35);
+const email_service_1 = __webpack_require__(38);
+const whatsapp_service_1 = __webpack_require__(39);
 const logger_service_1 = __webpack_require__(18);
 let ReservasService = class ReservasService {
     constructor(logger, reservaRepository, connection, rifasService, emailService, whatsappService) {
@@ -2757,7 +1557,210 @@ exports.ReservasService = ReservasService;
 
 
 /***/ }),
-/* 62 */
+/* 35 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RifasService = void 0;
+const common_1 = __webpack_require__(3);
+const typeorm_1 = __webpack_require__(4);
+const typeorm_2 = __webpack_require__(9);
+const rifa_entity_1 = __webpack_require__(12);
+const plans_service_1 = __webpack_require__(36);
+const logger_service_1 = __webpack_require__(18);
+let RifasService = class RifasService {
+    constructor(logger, rifasRepository, plansService) {
+        this.logger = logger;
+        this.rifasRepository = rifasRepository;
+        this.plansService = plansService;
+    }
+    async create(tenant_id, createRifaDto) {
+        this.logger.log(`Creating Rifa for tenant ${tenant_id}`);
+        const rifa = this.rifasRepository.create(Object.assign(Object.assign({}, createRifaDto), { tenant_id }));
+        return this.rifasRepository.save(rifa);
+    }
+    async findAll(tenant_id) {
+        this.logger.log(`Finding all Rifas for tenant ${tenant_id}`);
+        return this.rifasRepository.find({ where: { tenant_id } });
+    }
+    async findOne(tenant_id, id) {
+        this.logger.log(`Finding Rifa with id ${id} for tenant ${tenant_id}`);
+        const rifa = await this.rifasRepository.findOne({
+            where: { id, tenant_id },
+        });
+        if (!rifa) {
+            this.logger.warn(`Rifa with ID "${id}" not found for tenant "${tenant_id}"`);
+            throw new common_1.NotFoundException(`Rifa with ID \"${id}\" not found`);
+        }
+        return rifa;
+    }
+    async update(tenant_id, id, updateRifaDto) {
+        this.logger.log(`Updating Rifa with id ${id} for tenant ${tenant_id}`);
+        const rifa = await this.rifasRepository.preload(Object.assign({ id: id, tenant_id: tenant_id }, updateRifaDto));
+        if (!rifa) {
+            this.logger.warn(`Rifa with ID "${id}" not found for tenant "${tenant_id}" to update`);
+            throw new common_1.NotFoundException(`Rifa with ID \"${id}\" not found`);
+        }
+        return this.rifasRepository.save(rifa);
+    }
+    async remove(tenant_id, id) {
+        this.logger.log(`Removing Rifa with id ${id} for tenant ${tenant_id}`);
+        const result = await this.rifasRepository.delete({ id, tenant_id });
+        if (result.affected === 0) {
+            this.logger.warn(`Rifa with ID "${id}" not found for tenant "${tenant_id}" to remove`);
+            throw new common_1.NotFoundException(`Rifa with ID \"${id}\" not found`);
+        }
+    }
+};
+RifasService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, common_1.Inject)(logger_service_1.LoggerService)),
+    __param(1, (0, typeorm_1.InjectRepository)(rifa_entity_1.Rifa)),
+    __metadata("design:paramtypes", [typeof (_a = typeof logger_service_1.LoggerService !== "undefined" && logger_service_1.LoggerService) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object, typeof (_c = typeof plans_service_1.PlansService !== "undefined" && plans_service_1.PlansService) === "function" ? _c : Object])
+], RifasService);
+exports.RifasService = RifasService;
+
+
+/***/ }),
+/* 36 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PlansService = void 0;
+const common_1 = __webpack_require__(3);
+const typeorm_1 = __webpack_require__(4);
+const typeorm_2 = __webpack_require__(9);
+const plan_entity_1 = __webpack_require__(37);
+const logger_service_1 = __webpack_require__(18);
+let PlansService = class PlansService {
+    constructor(logger, planRepository) {
+        this.logger = logger;
+        this.planRepository = planRepository;
+    }
+    async create(createPlanDto) {
+        this.logger.log('Creating a new plan');
+        const plan = this.planRepository.create(createPlanDto);
+        return this.planRepository.save(plan);
+    }
+    async findAll() {
+        this.logger.log('Finding all plans');
+        return this.planRepository.find();
+    }
+    async findOne(id) {
+        this.logger.log(`Finding plan with id ${id}`);
+        const plan = await this.planRepository.findOne({ where: { id } });
+        if (!plan) {
+            this.logger.warn(`Plan with ID "${id}" not found`);
+            throw new common_1.NotFoundException(`Plan with ID \"${id}\" not found`);
+        }
+        return plan;
+    }
+    async update(id, updatePlanDto) {
+        this.logger.log(`Updating plan with id ${id}`);
+        const plan = await this.planRepository.preload(Object.assign({ id: id }, updatePlanDto));
+        if (!plan) {
+            this.logger.warn(`Plan with ID "${id}" not found for update`);
+            throw new common_1.NotFoundException(`Plan with ID \"${id}\" not found`);
+        }
+        return this.planRepository.save(plan);
+    }
+    async remove(id) {
+        this.logger.log(`Removing plan with id ${id}`);
+        const result = await this.planRepository.delete(id);
+        if (result.affected === 0) {
+            this.logger.warn(`Plan with ID "${id}" not found for removal`);
+            throw new common_1.NotFoundException(`Plan with ID \"${id}\" not found`);
+        }
+    }
+};
+PlansService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(1, (0, typeorm_1.InjectRepository)(plan_entity_1.Plan)),
+    __metadata("design:paramtypes", [typeof (_a = typeof logger_service_1.LoggerService !== "undefined" && logger_service_1.LoggerService) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object])
+], PlansService);
+exports.PlansService = PlansService;
+
+
+/***/ }),
+/* 37 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Plan = void 0;
+const typeorm_1 = __webpack_require__(9);
+let Plan = class Plan {
+};
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], Plan.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'text' }),
+    __metadata("design:type", String)
+], Plan.prototype, "name", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'numeric' }),
+    __metadata("design:type", Number)
+], Plan.prototype, "price", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'integer' }),
+    __metadata("design:type", Number)
+], Plan.prototype, "limit", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'text', nullable: true }),
+    __metadata("design:type", String)
+], Plan.prototype, "mercadopago_plan_id", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ type: 'timestamp' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], Plan.prototype, "created_at", void 0);
+Plan = __decorate([
+    (0, typeorm_1.Entity)('plans')
+], Plan);
+exports.Plan = Plan;
+
+
+/***/ }),
+/* 38 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2782,7 +1785,7 @@ exports.EmailService = EmailService;
 
 
 /***/ }),
-/* 63 */
+/* 39 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2807,7 +1810,7 @@ exports.WhatsappService = WhatsappService;
 
 
 /***/ }),
-/* 64 */
+/* 40 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2827,9 +1830,9 @@ var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ReservasController = void 0;
 const common_1 = __webpack_require__(3);
-const reservas_service_1 = __webpack_require__(61);
-const create_reserva_dto_1 = __webpack_require__(65);
-const update_reserva_dto_1 = __webpack_require__(66);
+const reservas_service_1 = __webpack_require__(34);
+const create_reserva_dto_1 = __webpack_require__(41);
+const update_reserva_dto_1 = __webpack_require__(42);
 const passport_1 = __webpack_require__(26);
 let ReservasController = class ReservasController {
     constructor(reservasService) {
@@ -2905,7 +1908,7 @@ exports.ReservasController = ReservasController;
 
 
 /***/ }),
-/* 65 */
+/* 41 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2952,7 +1955,7 @@ exports.CreateReservaDto = CreateReservaDto;
 
 
 /***/ }),
-/* 66 */
+/* 42 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2968,7 +1971,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateReservaDto = void 0;
 const mapped_types_1 = __webpack_require__(25);
-const create_reserva_dto_1 = __webpack_require__(65);
+const create_reserva_dto_1 = __webpack_require__(41);
 const class_validator_1 = __webpack_require__(23);
 class UpdateReservaDto extends (0, mapped_types_1.PartialType)(create_reserva_dto_1.CreateReservaDto) {
 }
@@ -2999,7 +2002,7 @@ exports.UpdateReservaDto = UpdateReservaDto;
 
 
 /***/ }),
-/* 67 */
+/* 43 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3010,55 +2013,29 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.IntegrationsModule = void 0;
-const common_1 = __webpack_require__(3);
-const email_service_1 = __webpack_require__(62);
-const whatsapp_service_1 = __webpack_require__(63);
-let IntegrationsModule = class IntegrationsModule {
-};
-IntegrationsModule = __decorate([
-    (0, common_1.Module)({
-        providers: [email_service_1.EmailService, whatsapp_service_1.WhatsappService],
-        exports: [email_service_1.EmailService, whatsapp_service_1.WhatsappService],
-    })
-], IntegrationsModule);
-exports.IntegrationsModule = IntegrationsModule;
-
-
-/***/ }),
-/* 68 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.BillingModule = void 0;
+exports.RifasModule = void 0;
 const common_1 = __webpack_require__(3);
 const typeorm_1 = __webpack_require__(4);
-const billing_controller_1 = __webpack_require__(69);
-const billing_service_1 = __webpack_require__(70);
-const subscription_entity_1 = __webpack_require__(16);
-const logger_module_1 = __webpack_require__(51);
-let BillingModule = class BillingModule {
+const rifas_controller_1 = __webpack_require__(44);
+const rifas_service_1 = __webpack_require__(35);
+const rifa_entity_1 = __webpack_require__(12);
+const cotas_module_1 = __webpack_require__(47);
+const plans_module_1 = __webpack_require__(48);
+let RifasModule = class RifasModule {
 };
-BillingModule = __decorate([
+RifasModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([subscription_entity_1.Subscription]), logger_module_1.LoggerModule],
-        controllers: [billing_controller_1.BillingController],
-        providers: [billing_service_1.BillingService],
-        exports: [billing_service_1.BillingService],
+        imports: [typeorm_1.TypeOrmModule.forFeature([rifa_entity_1.Rifa]), cotas_module_1.CotasModule, plans_module_1.PlansModule],
+        controllers: [rifas_controller_1.RifasController],
+        providers: [rifas_service_1.RifasService],
+        exports: [rifas_service_1.RifasService],
     })
-], BillingModule);
-exports.BillingModule = BillingModule;
+], RifasModule);
+exports.RifasModule = RifasModule;
 
 
 /***/ }),
-/* 69 */
+/* 44 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3076,22 +2053,617 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RifasController = void 0;
+const common_1 = __webpack_require__(3);
+const rifas_service_1 = __webpack_require__(35);
+const create_rifa_dto_1 = __webpack_require__(45);
+const update_rifa_dto_1 = __webpack_require__(46);
+const passport_1 = __webpack_require__(26);
+let RifasController = class RifasController {
+    constructor(rifasService) {
+        this.rifasService = rifasService;
+    }
+    create(req, createRifaDto) {
+        const tenant_id = req.user.tenant_id;
+        return this.rifasService.create(tenant_id, createRifaDto);
+    }
+    findAll(req) {
+        const tenant_id = req.user.tenant_id;
+        return this.rifasService.findAll(tenant_id);
+    }
+    findOne(req, id) {
+        const tenant_id = req.user.tenant_id;
+        return this.rifasService.findOne(tenant_id, id);
+    }
+    update(req, id, updateRifaDto) {
+        const tenant_id = req.user.tenant_id;
+        return this.rifasService.update(tenant_id, id, updateRifaDto);
+    }
+    remove(req, id) {
+        const tenant_id = req.user.tenant_id;
+        return this.rifasService.remove(tenant_id, id);
+    }
+};
+__decorate([
+    (0, common_1.Post)(),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, typeof (_b = typeof create_rifa_dto_1.CreateRifaDto !== "undefined" && create_rifa_dto_1.CreateRifaDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", void 0)
+], RifasController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], RifasController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", void 0)
+], RifasController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Put)(':id'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, typeof (_c = typeof update_rifa_dto_1.UpdateRifaDto !== "undefined" && update_rifa_dto_1.UpdateRifaDto) === "function" ? _c : Object]),
+    __metadata("design:returntype", void 0)
+], RifasController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", void 0)
+], RifasController.prototype, "remove", null);
+RifasController = __decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    (0, common_1.Controller)('rifas'),
+    __metadata("design:paramtypes", [typeof (_a = typeof rifas_service_1.RifasService !== "undefined" && rifas_service_1.RifasService) === "function" ? _a : Object])
+], RifasController);
+exports.RifasController = RifasController;
+
+
+/***/ }),
+/* 45 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateRifaDto = void 0;
+const class_validator_1 = __webpack_require__(23);
+class CreateRifaDto {
+}
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateRifaDto.prototype, "name", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateRifaDto.prototype, "description", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsPositive)(),
+    __metadata("design:type", Number)
+], CreateRifaDto.prototype, "price", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsPositive)(),
+    __metadata("design:type", Number)
+], CreateRifaDto.prototype, "limit", void 0);
+exports.CreateRifaDto = CreateRifaDto;
+
+
+/***/ }),
+/* 46 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateRifaDto = void 0;
+const mapped_types_1 = __webpack_require__(25);
+const create_rifa_dto_1 = __webpack_require__(45);
+const class_validator_1 = __webpack_require__(23);
+class UpdateRifaDto extends (0, mapped_types_1.PartialType)(create_rifa_dto_1.CreateRifaDto) {
+}
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateRifaDto.prototype, "name", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateRifaDto.prototype, "description", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsPositive)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], UpdateRifaDto.prototype, "price", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsPositive)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], UpdateRifaDto.prototype, "limit", void 0);
+exports.UpdateRifaDto = UpdateRifaDto;
+
+
+/***/ }),
+/* 47 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CotasModule = void 0;
+const common_1 = __webpack_require__(3);
+const typeorm_1 = __webpack_require__(4);
+const cota_entity_1 = __webpack_require__(15);
+let CotasModule = class CotasModule {
+};
+CotasModule = __decorate([
+    (0, common_1.Module)({
+        imports: [typeorm_1.TypeOrmModule.forFeature([cota_entity_1.Cota])],
+        controllers: [],
+        providers: [],
+    })
+], CotasModule);
+exports.CotasModule = CotasModule;
+
+
+/***/ }),
+/* 48 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PlansModule = void 0;
+const common_1 = __webpack_require__(3);
+const typeorm_1 = __webpack_require__(4);
+const plan_entity_1 = __webpack_require__(37);
+const plans_service_1 = __webpack_require__(36);
+const plans_controller_1 = __webpack_require__(49);
+const logger_module_1 = __webpack_require__(55);
+let PlansModule = class PlansModule {
+};
+PlansModule = __decorate([
+    (0, common_1.Module)({
+        imports: [typeorm_1.TypeOrmModule.forFeature([plan_entity_1.Plan]), logger_module_1.LoggerModule],
+        providers: [plans_service_1.PlansService],
+        controllers: [plans_controller_1.PlansController],
+        exports: [plans_service_1.PlansService],
+    })
+], PlansModule);
+exports.PlansModule = PlansModule;
+
+
+/***/ }),
+/* 49 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PlansController = void 0;
+const common_1 = __webpack_require__(3);
+const plans_service_1 = __webpack_require__(36);
+const create_plan_dto_1 = __webpack_require__(50);
+const update_plan_dto_1 = __webpack_require__(51);
+const passport_1 = __webpack_require__(26);
+const roles_decorator_1 = __webpack_require__(52);
+const role_enum_1 = __webpack_require__(53);
+const roles_guard_1 = __webpack_require__(54);
+let PlansController = class PlansController {
+    constructor(plansService) {
+        this.plansService = plansService;
+    }
+    create(createPlanDto) {
+        return this.plansService.create(createPlanDto);
+    }
+    findAll() {
+        return this.plansService.findAll();
+    }
+    findOne(id) {
+        return this.plansService.findOne(id);
+    }
+    update(id, updatePlanDto) {
+        return this.plansService.update(id, updatePlanDto);
+    }
+    remove(id) {
+        return this.plansService.remove(id);
+    }
+};
+__decorate([
+    (0, common_1.Post)(),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof create_plan_dto_1.CreatePlanDto !== "undefined" && create_plan_dto_1.CreatePlanDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", void 0)
+], PlansController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], PlansController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], PlansController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, typeof (_c = typeof update_plan_dto_1.UpdatePlanDto !== "undefined" && update_plan_dto_1.UpdatePlanDto) === "function" ? _c : Object]),
+    __metadata("design:returntype", void 0)
+], PlansController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], PlansController.prototype, "remove", null);
+PlansController = __decorate([
+    (0, common_1.Controller)('plans'),
+    __metadata("design:paramtypes", [typeof (_a = typeof plans_service_1.PlansService !== "undefined" && plans_service_1.PlansService) === "function" ? _a : Object])
+], PlansController);
+exports.PlansController = PlansController;
+
+
+/***/ }),
+/* 50 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreatePlanDto = void 0;
+const class_validator_1 = __webpack_require__(23);
+class CreatePlanDto {
+}
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreatePlanDto.prototype, "name", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsPositive)(),
+    __metadata("design:type", Number)
+], CreatePlanDto.prototype, "price", void 0);
+__decorate([
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsPositive)(),
+    __metadata("design:type", Number)
+], CreatePlanDto.prototype, "limit", void 0);
+exports.CreatePlanDto = CreatePlanDto;
+
+
+/***/ }),
+/* 51 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdatePlanDto = void 0;
+const class_validator_1 = __webpack_require__(23);
+class UpdatePlanDto {
+}
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdatePlanDto.prototype, "name", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsPositive)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], UpdatePlanDto.prototype, "price", void 0);
+__decorate([
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsPositive)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], UpdatePlanDto.prototype, "limit", void 0);
+exports.UpdatePlanDto = UpdatePlanDto;
+
+
+/***/ }),
+/* 52 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Roles = exports.ROLES_KEY = void 0;
+const common_1 = __webpack_require__(3);
+exports.ROLES_KEY = 'roles';
+const Roles = (...roles) => (0, common_1.SetMetadata)(exports.ROLES_KEY, roles);
+exports.Roles = Roles;
+
+
+/***/ }),
+/* 53 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Role = void 0;
+var Role;
+(function (Role) {
+    Role["User"] = "user";
+    Role["Admin"] = "admin";
+})(Role = exports.Role || (exports.Role = {}));
+
+
+/***/ }),
+/* 54 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RolesGuard = void 0;
+const common_1 = __webpack_require__(3);
+const core_1 = __webpack_require__(1);
+const roles_decorator_1 = __webpack_require__(52);
+let RolesGuard = class RolesGuard {
+    constructor(reflector) {
+        this.reflector = reflector;
+    }
+    canActivate(context) {
+        const requiredRoles = this.reflector.getAllAndOverride(roles_decorator_1.ROLES_KEY, [context.getHandler(), context.getClass()]);
+        if (!requiredRoles) {
+            return true;
+        }
+        const { user } = context.switchToHttp().getRequest();
+        if (!user) {
+            return false;
+        }
+        const userRoles = Array.isArray(user.roles)
+            ? user.roles
+            : user.role
+                ? [user.role]
+                : [];
+        return requiredRoles.some((role) => userRoles.includes(role));
+    }
+};
+RolesGuard = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof core_1.Reflector !== "undefined" && core_1.Reflector) === "function" ? _a : Object])
+], RolesGuard);
+exports.RolesGuard = RolesGuard;
+
+
+/***/ }),
+/* 55 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LoggerModule = void 0;
+const common_1 = __webpack_require__(3);
+const logger_service_1 = __webpack_require__(18);
+let LoggerModule = class LoggerModule {
+};
+LoggerModule = __decorate([
+    (0, common_1.Global)(),
+    (0, common_1.Module)({
+        providers: [logger_service_1.LoggerService],
+        exports: [logger_service_1.LoggerService],
+    })
+], LoggerModule);
+exports.LoggerModule = LoggerModule;
+
+
+/***/ }),
+/* 56 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.IntegrationsModule = void 0;
+const common_1 = __webpack_require__(3);
+const email_service_1 = __webpack_require__(38);
+const whatsapp_service_1 = __webpack_require__(39);
+let IntegrationsModule = class IntegrationsModule {
+};
+IntegrationsModule = __decorate([
+    (0, common_1.Module)({
+        providers: [email_service_1.EmailService, whatsapp_service_1.WhatsappService],
+        exports: [email_service_1.EmailService, whatsapp_service_1.WhatsappService],
+    })
+], IntegrationsModule);
+exports.IntegrationsModule = IntegrationsModule;
+
+
+/***/ }),
+/* 57 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BillingModule = void 0;
+const common_1 = __webpack_require__(3);
+const typeorm_1 = __webpack_require__(4);
+const billing_controller_1 = __webpack_require__(58);
+const billing_service_1 = __webpack_require__(59);
+const subscription_entity_1 = __webpack_require__(16);
+const logger_module_1 = __webpack_require__(55);
+const webhook_validation_service_1 = __webpack_require__(62);
+let BillingModule = class BillingModule {
+};
+BillingModule = __decorate([
+    (0, common_1.Module)({
+        imports: [typeorm_1.TypeOrmModule.forFeature([subscription_entity_1.Subscription]), logger_module_1.LoggerModule],
+        controllers: [billing_controller_1.BillingController],
+        providers: [billing_service_1.BillingService, webhook_validation_service_1.WebhookValidationService],
+        exports: [billing_service_1.BillingService],
+    })
+], BillingModule);
+exports.BillingModule = BillingModule;
+
+
+/***/ }),
+/* 58 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.BillingController = void 0;
 const common_1 = __webpack_require__(3);
-const billing_service_1 = __webpack_require__(70);
-const create_subscription_dto_1 = __webpack_require__(72);
+const billing_service_1 = __webpack_require__(59);
+const create_subscription_dto_1 = __webpack_require__(61);
 const logger_service_1 = __webpack_require__(18);
 const passport_1 = __webpack_require__(26);
+const webhook_validation_service_1 = __webpack_require__(62);
 let BillingController = class BillingController {
-    constructor(logger, billingService) {
+    constructor(logger, billingService, webhookValidationService) {
         this.logger = logger;
         this.billingService = billingService;
+        this.webhookValidationService = webhookValidationService;
     }
     createSubscription(createSubscriptionDto) {
         return this.billingService.createSubscription(createSubscriptionDto);
     }
-    webhook(body) {
-        this.logger.log(`Webhook de billing recebido: ${JSON.stringify(body)}`);
+    async webhook(signature, body) {
+        const secret = process.env.MP_WEBHOOK_SECRET;
+        if (!secret) {
+            this.logger.error('MP_WEBHOOK_SECRET não está configurado. Webhook não pode ser validado.');
+            throw new common_1.BadRequestException('Webhook secret não configurado');
+        }
+        if (!signature) {
+            this.logger.warn('Assinatura de webhook ausente ao chamar /billing/webhook');
+            throw new common_1.UnauthorizedException('Assinatura de webhook ausente');
+        }
+        const valid = this.webhookValidationService.validate(signature, body, secret);
+        if (!valid) {
+            this.logger.warn('Assinatura de webhook inválida');
+            throw new common_1.UnauthorizedException('Assinatura de webhook inválida');
+        }
+        this.logger.log(`Webhook de billing recebido e validado: ${JSON.stringify(body)}`);
         return this.billingService.webhook(body);
     }
     getSubscription(id) {
@@ -3103,15 +2675,16 @@ __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof create_subscription_dto_1.CreateSubscriptionDto !== "undefined" && create_subscription_dto_1.CreateSubscriptionDto) === "function" ? _c : Object]),
+    __metadata("design:paramtypes", [typeof (_d = typeof create_subscription_dto_1.CreateSubscriptionDto !== "undefined" && create_subscription_dto_1.CreateSubscriptionDto) === "function" ? _d : Object]),
     __metadata("design:returntype", void 0)
 ], BillingController.prototype, "createSubscription", null);
 __decorate([
     (0, common_1.Post)('webhook'),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Headers)('x-signature')),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
 ], BillingController.prototype, "webhook", null);
 __decorate([
     (0, common_1.Get)('subscription/:id'),
@@ -3123,13 +2696,13 @@ __decorate([
 ], BillingController.prototype, "getSubscription", null);
 BillingController = __decorate([
     (0, common_1.Controller)('billing'),
-    __metadata("design:paramtypes", [typeof (_a = typeof logger_service_1.LoggerService !== "undefined" && logger_service_1.LoggerService) === "function" ? _a : Object, typeof (_b = typeof billing_service_1.BillingService !== "undefined" && billing_service_1.BillingService) === "function" ? _b : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof logger_service_1.LoggerService !== "undefined" && logger_service_1.LoggerService) === "function" ? _a : Object, typeof (_b = typeof billing_service_1.BillingService !== "undefined" && billing_service_1.BillingService) === "function" ? _b : Object, typeof (_c = typeof webhook_validation_service_1.WebhookValidationService !== "undefined" && webhook_validation_service_1.WebhookValidationService) === "function" ? _c : Object])
 ], BillingController);
 exports.BillingController = BillingController;
 
 
 /***/ }),
-/* 70 */
+/* 59 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3152,7 +2725,7 @@ const common_1 = __webpack_require__(3);
 const typeorm_1 = __webpack_require__(4);
 const typeorm_2 = __webpack_require__(9);
 const subscription_entity_1 = __webpack_require__(16);
-const mercadopago_1 = __webpack_require__(71);
+const mercadopago_1 = __webpack_require__(60);
 const logger_service_1 = __webpack_require__(18);
 let BillingService = class BillingService {
     constructor(logger, subscriptionRepository) {
@@ -3163,6 +2736,11 @@ let BillingService = class BillingService {
         });
     }
     async createSubscription(createSubscriptionDto) {
+        const appUrl = process.env.APP_URL;
+        if (!appUrl) {
+            this.logger.error('APP_URL não está configurado. Não é possível criar assinatura.');
+            throw new common_1.InternalServerErrorException('Configuração incompleta do serviço de pagamentos.');
+        }
         const subscriptionRequest = {
             reason: createSubscriptionDto.reason,
             auto_recurring: {
@@ -3171,13 +2749,15 @@ let BillingService = class BillingService {
                 transaction_amount: createSubscriptionDto.price,
                 currency_id: 'BRL',
             },
-            back_url: 'https://www.google.com',
+            back_url: `${appUrl}/billing/return`,
             payer_email: createSubscriptionDto.payer_email,
             preapproval_plan_id: process.env.MP_PLAN_ID,
         };
         try {
             const preApprovalClient = new mercadopago_1.PreApproval(this.client);
-            const response = await preApprovalClient.create({ body: subscriptionRequest });
+            const response = await preApprovalClient.create({
+                body: subscriptionRequest,
+            });
             const subscription = this.subscriptionRepository.create({
                 id: response.id,
                 tenant_id: createSubscriptionDto.tenant_id,
@@ -3227,13 +2807,13 @@ exports.BillingService = BillingService;
 
 
 /***/ }),
-/* 71 */
+/* 60 */
 /***/ ((module) => {
 
 module.exports = require("mercadopago");
 
 /***/ }),
-/* 72 */
+/* 61 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3245,25 +2825,586 @@ exports.CreateSubscriptionDto = CreateSubscriptionDto;
 
 
 /***/ }),
-/* 73 */
+/* 62 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.WebhookValidationService = void 0;
+const common_1 = __webpack_require__(3);
+const crypto = __webpack_require__(63);
+let WebhookValidationService = class WebhookValidationService {
+    validate(signature, body, secret) {
+        const hash = crypto
+            .createHmac('sha256', secret)
+            .update(JSON.stringify(body))
+            .digest('hex');
+        return hash === signature;
+    }
+};
+WebhookValidationService = __decorate([
+    (0, common_1.Injectable)()
+], WebhookValidationService);
+exports.WebhookValidationService = WebhookValidationService;
+
+
+/***/ }),
+/* 63 */
 /***/ ((module) => {
 
-module.exports = require("dotenv");
+module.exports = require("crypto");
+
+/***/ }),
+/* 64 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/jwt");
+
+/***/ }),
+/* 65 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AuthService = void 0;
+const common_1 = __webpack_require__(3);
+const users_service_1 = __webpack_require__(8);
+const tenants_service_1 = __webpack_require__(28);
+const jwt_1 = __webpack_require__(64);
+const bcrypt = __webpack_require__(17);
+const login_dto_1 = __webpack_require__(66);
+const express_1 = __webpack_require__(20);
+const logger_service_1 = __webpack_require__(18);
+let AuthService = class AuthService {
+    constructor(logger, usersService, tenantsService, jwtService) {
+        this.logger = logger;
+        this.usersService = usersService;
+        this.tenantsService = tenantsService;
+        this.jwtService = jwtService;
+    }
+    async login(req, loginDto) {
+        const suppliedTenant = req.headers['x-tenant-id'] ||
+            ((req === null || req === void 0 ? void 0 : req.subdomains) && req.subdomains.length > 0
+                ? req.subdomains[0]
+                : loginDto.tenant_id);
+        this.logger.log(`Login attempt for tenant ${suppliedTenant}`);
+        if (!suppliedTenant) {
+            this.logger.warn('Login attempt without tenant');
+            throw new common_1.UnauthorizedException('Tenant não identificado. Informe tenant_id.');
+        }
+        let tenantId = suppliedTenant;
+        const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+        if (!uuidRegex.test(tenantId)) {
+            try {
+                const tenant = await this.tenantsService.findByName(tenantId);
+                tenantId = tenant.id;
+            }
+            catch (nameErr) {
+                this.logger.log(`Tenant not found by name ${tenantId}, tentando por email`);
+                try {
+                    const tenant = await this.tenantsService.findByEmail(tenantId);
+                    tenantId = tenant.id;
+                }
+                catch (emailErr) {
+                    this.logger.warn(`Tenant não encontrado usando nome/email \"${tenantId}\" `);
+                    throw new common_1.UnauthorizedException('Tenant inválido');
+                }
+            }
+        }
+        const { email, password } = loginDto;
+        try {
+            const user = await this.usersService.findByEmail(tenantId, email);
+            const isPasswordMatching = await bcrypt.compare(password, user.password);
+            if (!isPasswordMatching) {
+                this.logger.warn(`Login failed for email \"${email}\" in tenant \"${tenantId}\" - Invalid password`);
+                throw new common_1.UnauthorizedException('Invalid credentials');
+            }
+            const payload = {
+                sub: user.id,
+                email: user.email,
+                tenant_id: user.tenant_id,
+            };
+            this.logger.log(`Login successful for user ${user.id} in tenant ${tenantId}`);
+            try {
+                return {
+                    access_token: this.jwtService.sign(payload),
+                };
+            }
+            catch (error) {
+                this.logger.error('Falha ao assinar token JWT:', error);
+                throw new common_1.InternalServerErrorException('Erro interno de autenticação');
+            }
+        }
+        catch (error) {
+            this.logger.error('Login error:', error);
+            if (error instanceof common_1.NotFoundException ||
+                error instanceof common_1.UnauthorizedException) {
+                throw new common_1.UnauthorizedException('Invalid credentials');
+            }
+            throw new common_1.InternalServerErrorException('Erro interno de autenticação');
+        }
+    }
+};
+__decorate([
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_e = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _e : Object, typeof (_f = typeof login_dto_1.LoginDto !== "undefined" && login_dto_1.LoginDto) === "function" ? _f : Object]),
+    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+], AuthService.prototype, "login", null);
+AuthService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof logger_service_1.LoggerService !== "undefined" && logger_service_1.LoggerService) === "function" ? _a : Object, typeof (_b = typeof users_service_1.UsersService !== "undefined" && users_service_1.UsersService) === "function" ? _b : Object, typeof (_c = typeof tenants_service_1.TenantsService !== "undefined" && tenants_service_1.TenantsService) === "function" ? _c : Object, typeof (_d = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _d : Object])
+], AuthService);
+exports.AuthService = AuthService;
+
+
+/***/ }),
+/* 66 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LoginDto = void 0;
+const class_validator_1 = __webpack_require__(23);
+class LoginDto {
+}
+__decorate([
+    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], LoginDto.prototype, "email", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], LoginDto.prototype, "password", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], LoginDto.prototype, "tenant_id", void 0);
+exports.LoginDto = LoginDto;
+
+
+/***/ }),
+/* 67 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AuthController = void 0;
+const common_1 = __webpack_require__(3);
+const auth_service_1 = __webpack_require__(65);
+const login_dto_1 = __webpack_require__(66);
+const throttler_1 = __webpack_require__(68);
+let AuthController = class AuthController {
+    constructor(authService) {
+        this.authService = authService;
+    }
+    async login(loginDto, req) {
+        return this.authService.login(req, loginDto);
+    }
+};
+__decorate([
+    (0, throttler_1.Throttle)({ default: { limit: 10, ttl: 60000 } }),
+    (0, common_1.Post)('login'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof login_dto_1.LoginDto !== "undefined" && login_dto_1.LoginDto) === "function" ? _b : Object, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "login", null);
+AuthController = __decorate([
+    (0, common_1.Controller)('auth'),
+    __metadata("design:paramtypes", [typeof (_a = typeof auth_service_1.AuthService !== "undefined" && auth_service_1.AuthService) === "function" ? _a : Object])
+], AuthController);
+exports.AuthController = AuthController;
+
+
+/***/ }),
+/* 68 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/throttler");
+
+/***/ }),
+/* 69 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.JwtStrategy = void 0;
+const common_1 = __webpack_require__(3);
+const passport_1 = __webpack_require__(26);
+const passport_jwt_1 = __webpack_require__(70);
+const users_service_1 = __webpack_require__(8);
+let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
+    constructor(usersService) {
+        super({
+            jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
+            ignoreExpiration: false,
+            secretOrKey: process.env.JWT_SECRET,
+        });
+        this.usersService = usersService;
+    }
+    async validate(payload) {
+        if (!payload.sub || !payload.tenant_id) {
+            throw new common_1.UnauthorizedException('Token inválido ou malformado');
+        }
+        const user = await this.usersService.findOne(payload.tenant_id, payload.sub);
+        if (!user) {
+            throw new common_1.UnauthorizedException('Usuário não encontrado ou token inválido');
+        }
+        return user;
+    }
+};
+JwtStrategy = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof users_service_1.UsersService !== "undefined" && users_service_1.UsersService) === "function" ? _a : Object])
+], JwtStrategy);
+exports.JwtStrategy = JwtStrategy;
+
+
+/***/ }),
+/* 70 */
+/***/ ((module) => {
+
+module.exports = require("passport-jwt");
+
+/***/ }),
+/* 71 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AppController = void 0;
+const common_1 = __webpack_require__(3);
+const app_service_1 = __webpack_require__(72);
+const express_1 = __webpack_require__(20);
+let AppController = class AppController {
+    constructor(appService) {
+        this.appService = appService;
+    }
+    getIndex() {
+        return { status: 'ok' };
+    }
+    getHello(res) {
+        const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nexus Rifa API</title>
+    <style>
+      body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background: #f4f6fb; color: #1f2937; }
+      .hero { background: linear-gradient(135deg, #2a61ff, #001f70); color: white; padding: 38px 20px; text-align: center; }
+      .container { max-width: 960px; margin: 24px auto; padding: 0 16px; }
+      .card { background: white; border-radius: 12px; box-shadow: 0 10px 28px rgba(15, 23, 42, 0.12); padding: 20px; margin-bottom: 16px; }
+      .grid { display: grid; grid-gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+      h1, h2 { margin: 0; }
+      p { color: #475569; }
+      a { color: #1d4ed8; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .badge { display: inline-block; background: #e0e7ff; color: #1e3a8a; padding: 4px 10px; border-radius: 999px; font-weight: 600; font-size: 12px; }
+      code { background: #e2e8f0; padding: 3px 6px; border-radius: 5px; }
+      .footer { text-align: center; padding: 16px; color: #94a3b8; font-size: 13px; }
+    </style>
+  </head>
+  <body>
+    <div class="hero">
+      <h1>Nexus Rifa API</h1>
+      <p>Backend em funcionamento</p>
+      <div class="badge">Status: Online</div>
+    </div>
+    <div class="container">
+      <div class="card">
+        <h2>Endpoints disponíveis</h2>
+        <div class="grid">
+          <div>
+            <strong>/status-page</strong>
+            <p>Página de status</p>
+          </div>
+          <div>
+            <strong>/health</strong>
+            <p>Verificação de saúde (JSON)</p>
+          </div>
+          <div>
+            <strong>/status</strong>
+            <p>Informações do app (uptime)</p>
+          </div>
+          <div>
+            <strong>/docs</strong>
+            <p>Swagger UI para API</p>
+          </div>
+          <div>
+            <strong>/auth/login</strong>
+            <p>Login JWT</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Como testar</h2>
+        <p>Use suas credenciais de usuário reais ou crie um usuário no banco de dados de teste.</p>
+        <p>Não exiba credenciais de contas reais ou de seeds em ambientes públicos.</p>
+        <p>Exemplo:</p>
+        <code>POST /auth/login</code> com JSON:
+        <pre>{"email":"seu-email@example.com","password":"sua-senha","tenant_id":"<tenant-id>"}</pre>
+      </div>
+
+      <div class="card">
+        <h2>Configuração do frontend</h2>
+        <p>Em produção, aponte para a URL do backend real:</p>
+        <code>VITE_API_BASE_URL=https://seu-backend.onrender.com</code>
+      </div>
+    </div>
+    <div class="footer">Nexus Rifa &copy; 2026 | backend powered by NestJS</div>
+  </body>
+</html>`;
+        res.contentType('text/html');
+        res.send(html);
+    }
+    getHealth() {
+        return { status: 'ok' };
+    }
+    getStatus() {
+        return { app: 'nexus-rifa', uptime: process.uptime() };
+    }
+};
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Object)
+], AppController.prototype, "getIndex", null);
+__decorate([
+    (0, common_1.Get)('status-page'),
+    __param(0, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _b : Object]),
+    __metadata("design:returntype", void 0)
+], AppController.prototype, "getHello", null);
+__decorate([
+    (0, common_1.Get)('health'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Object)
+], AppController.prototype, "getHealth", null);
+__decorate([
+    (0, common_1.Get)('status'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Object)
+], AppController.prototype, "getStatus", null);
+AppController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof app_service_1.AppService !== "undefined" && app_service_1.AppService) === "function" ? _a : Object])
+], AppController);
+exports.AppController = AppController;
+
+
+/***/ }),
+/* 72 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AppService = void 0;
+const common_1 = __webpack_require__(3);
+let AppService = class AppService {
+    getHello() {
+        return 'Hello World!';
+    }
+};
+AppService = __decorate([
+    (0, common_1.Injectable)()
+], AppService);
+exports.AppService = AppService;
+
+
+/***/ }),
+/* 73 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RootUser = void 0;
+const typeorm_1 = __webpack_require__(9);
+let RootUser = class RootUser {
+};
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], RootUser.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'text', unique: true }),
+    __metadata("design:type", String)
+], RootUser.prototype, "email", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'text' }),
+    __metadata("design:type", String)
+], RootUser.prototype, "password", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ type: 'timestamp' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], RootUser.prototype, "created_at", void 0);
+RootUser = __decorate([
+    (0, typeorm_1.Entity)('root_users')
+], RootUser);
+exports.RootUser = RootUser;
+
 
 /***/ }),
 /* 74 */
-/***/ ((module) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-module.exports = require("path");
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Pagamento = void 0;
+const typeorm_1 = __webpack_require__(9);
+const reserva_entity_1 = __webpack_require__(13);
+let Pagamento = class Pagamento {
+};
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], Pagamento.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Pagamento.prototype, "reserva_id", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => reserva_entity_1.Reserva),
+    (0, typeorm_1.JoinColumn)({ name: 'reserva_id' }),
+    __metadata("design:type", typeof (_a = typeof reserva_entity_1.Reserva !== "undefined" && reserva_entity_1.Reserva) === "function" ? _a : Object)
+], Pagamento.prototype, "reserva", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Pagamento.prototype, "status", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Pagamento.prototype, "gateway_pagamento", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Pagamento.prototype, "transacao_id", void 0);
+Pagamento = __decorate([
+    (0, typeorm_1.Entity)('pagamentos')
+], Pagamento);
+exports.Pagamento = Pagamento;
+
 
 /***/ }),
 /* 75 */
 /***/ ((module) => {
 
-module.exports = require("@nestjs/swagger");
+module.exports = require("dotenv");
 
 /***/ }),
 /* 76 */
+/***/ ((module) => {
+
+module.exports = require("path");
+
+/***/ }),
+/* 77 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/swagger");
+
+/***/ }),
+/* 78 */
 /***/ ((module) => {
 
 module.exports = require("helmet");
@@ -3305,13 +3446,44 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __webpack_require__(1);
 const app_module_1 = __webpack_require__(2);
 const common_1 = __webpack_require__(3);
-const dotenv_1 = __webpack_require__(73);
-const path_1 = __webpack_require__(74);
-const swagger_1 = __webpack_require__(75);
-const helmet_1 = __webpack_require__(76);
-(0, dotenv_1.config)({ path: (0, path_1.resolve)(__dirname, `../.env.${process.env.NODE_ENV || 'development'}`) });
+const dotenv_1 = __webpack_require__(75);
+const path_1 = __webpack_require__(76);
+const swagger_1 = __webpack_require__(77);
+const helmet_1 = __webpack_require__(78);
+(0, dotenv_1.config)({
+    path: (0, path_1.resolve)(__dirname, `../.env.${process.env.NODE_ENV || 'development'}`),
+});
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule, { bodyParser: true });
+    const allowedOrigins = process.env.CORS_ORIGIN
+        ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim())
+        : [
+            'https://nexus-rifa.onrender.com',
+            'https://nexus-rifa-jwi51tf00-adrianoisrael7s-projects.vercel.app',
+            'https://nexus-rifa-sigma.vercel.app',
+        ];
+    app.enableCors({
+        origin: (origin, callback) => {
+            if (!origin) {
+                callback(null, true);
+                return;
+            }
+            if (process.env.CORS_ORIGIN) {
+                const allowed = allowedOrigins;
+                if (allowed.includes(origin)) {
+                    callback(null, true);
+                }
+                else {
+                    callback(new Error(`Origin ${origin} not allowed by CORS`));
+                }
+                return;
+            }
+            callback(null, true);
+        },
+        methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+        credentials: true,
+    });
     app.use((0, helmet_1.default)());
     app.useGlobalPipes(new common_1.ValidationPipe());
     const config = new swagger_1.DocumentBuilder()
@@ -3321,7 +3493,8 @@ async function bootstrap() {
         .build();
     const document = swagger_1.SwaggerModule.createDocument(app, config);
     swagger_1.SwaggerModule.setup('docs', app, document);
-    await app.listen(process.env.PORT || 3000);
+    const port = Number(process.env.PORT || 3000);
+    await app.listen(port, '0.0.0.0');
 }
 bootstrap();
 
