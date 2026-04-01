@@ -15,31 +15,52 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 const users_service_1 = require("../../users/users.service");
+const tenants_service_1 = require("../../tenants/tenants.service");
 const jwt_1 = require("@nestjs/jwt");
 const bcrypt = require("bcrypt");
 const login_dto_1 = require("../dto/login.dto");
 const logger_service_1 = require("../../../common/logger/logger.service");
 let AuthService = class AuthService {
-    constructor(logger, usersService, jwtService) {
+    constructor(logger, usersService, tenantsService, jwtService) {
         this.logger = logger;
         this.usersService = usersService;
+        this.tenantsService = tenantsService;
         this.jwtService = jwtService;
     }
     async login(req, loginDto) {
-        const tenant_id = req.subdomains && req.subdomains.length > 0
+        const suppliedTenant = (req === null || req === void 0 ? void 0 : req.subdomains) && req.subdomains.length > 0
             ? req.subdomains[0]
             : loginDto.tenant_id;
-        this.logger.log(`Login attempt for tenant ${tenant_id}`);
-        if (!tenant_id) {
+        this.logger.log(`Login attempt for tenant ${suppliedTenant}`);
+        if (!suppliedTenant) {
             this.logger.warn('Login attempt without tenant');
             throw new common_1.UnauthorizedException('Tenant não identificado. Informe tenant_id.');
         }
+        let tenantId = suppliedTenant;
+        const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+        if (!uuidRegex.test(tenantId)) {
+            try {
+                const tenant = await this.tenantsService.findByName(tenantId);
+                tenantId = tenant.id;
+            }
+            catch (nameErr) {
+                this.logger.log(`Tenant not found by name ${tenantId}, tentando por email`);
+                try {
+                    const tenant = await this.tenantsService.findByEmail(tenantId);
+                    tenantId = tenant.id;
+                }
+                catch (emailErr) {
+                    this.logger.warn(`Tenant não encontrado usando nome/email "${tenantId}"`);
+                    throw new common_1.UnauthorizedException('Tenant inválido');
+                }
+            }
+        }
         const { email, password } = loginDto;
         try {
-            const user = await this.usersService.findByEmail(tenant_id, email);
+            const user = await this.usersService.findByEmail(tenantId, email);
             const isPasswordMatching = await bcrypt.compare(password, user.password);
             if (!isPasswordMatching) {
-                this.logger.warn(`Login failed for email \"${email}\" in tenant \"${tenant_id}\" - Invalid password`);
+                this.logger.warn(`Login failed for email \"${email}\" in tenant \"${tenantId}\" - Invalid password`);
                 throw new common_1.UnauthorizedException('Invalid credentials');
             }
             const payload = {
@@ -47,7 +68,7 @@ let AuthService = class AuthService {
                 email: user.email,
                 tenant_id: user.tenant_id,
             };
-            this.logger.log(`Login successful for user ${user.id} in tenant ${tenant_id}`);
+            this.logger.log(`Login successful for user ${user.id} in tenant ${tenantId}`);
             try {
                 return {
                     access_token: this.jwtService.sign(payload),
@@ -79,6 +100,7 @@ exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [logger_service_1.LoggerService,
         users_service_1.UsersService,
+        tenants_service_1.TenantsService,
         jwt_1.JwtService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

@@ -50,6 +50,15 @@ let TenantsService = class TenantsService {
         }
         return tenant;
     }
+    async findByName(nome) {
+        this.logger.log(`Finding tenant with nome ${nome}`);
+        const tenant = await this.tenantRepository.findOne({ where: { nome } });
+        if (!tenant) {
+            this.logger.warn(`Tenant with nome "${nome}" not found`);
+            throw new common_1.NotFoundException(`Tenant with nome "${nome}" not found`);
+        }
+        return tenant;
+    }
     async update(id, updateTenantDto) {
         this.logger.log(`Updating tenant with id ${id}`);
         const tenant = await this.tenantRepository.preload(Object.assign({ id: id }, updateTenantDto));

@@ -11,6 +11,7 @@ export declare class TenantsService {
     findAll(): Promise<Tenant[]>;
     findOne(id: string): Promise<Tenant>;
     findByEmail(email: string): Promise<Tenant>;
+    findByName(nome: string): Promise<Tenant>;
     update(id: string, updateTenantDto: UpdateTenantDto): Promise<Tenant>;
     remove(id: string): Promise<void>;
 }

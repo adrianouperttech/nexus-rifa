@@ -6,6 +6,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { UsersService } from '../../users/users.service';
+import { TenantsService } from '../../tenants/tenants.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from '../dto/login.dto';
@@ -17,6 +18,7 @@ export class AuthService {
   constructor(
     private readonly logger: LoggerService,
     private readonly usersService: UsersService,
+    private readonly tenantsService: TenantsService,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -24,29 +26,55 @@ export class AuthService {
     @Req() req: Request, // Recebe a requisição completa
     loginDto: LoginDto,
   ): Promise<{ access_token: string }> {
-    const tenant_id =
-      req.subdomains && req.subdomains.length > 0
+    const suppliedTenant =
+      req?.subdomains && req.subdomains.length > 0
         ? req.subdomains[0]
         : loginDto.tenant_id;
 
-    this.logger.log(`Login attempt for tenant ${tenant_id}`);
-    if (!tenant_id) {
+    this.logger.log(`Login attempt for tenant ${suppliedTenant}`);
+
+    if (!suppliedTenant) {
       this.logger.warn('Login attempt without tenant');
       throw new UnauthorizedException(
         'Tenant não identificado. Informe tenant_id.',
       );
     }
 
+    let tenantId = suppliedTenant;
+    const uuidRegex =
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+
+    if (!uuidRegex.test(tenantId)) {
+      // Caso tenant_id seja nome/subdomínio, tenta buscar tenant pelo nome e/ou email
+      try {
+        const tenant = await this.tenantsService.findByName(tenantId);
+        tenantId = tenant.id;
+      } catch (nameErr) {
+        this.logger.log(
+          `Tenant not found by name ${tenantId}, tentando por email`,
+        );
+        try {
+          const tenant = await this.tenantsService.findByEmail(tenantId);
+          tenantId = tenant.id;
+        } catch (emailErr) {
+          this.logger.warn(
+            `Tenant não encontrado usando nome/email "${tenantId}"`,
+          );
+          throw new UnauthorizedException('Tenant inválido');
+        }
+      }
+    }
+
     const { email, password } = loginDto;
 
     try {
-      const user = await this.usersService.findByEmail(tenant_id, email);
+      const user = await this.usersService.findByEmail(tenantId, email);
 
       const isPasswordMatching = await bcrypt.compare(password, user.password);
 
       if (!isPasswordMatching) {
         this.logger.warn(
-          `Login failed for email \"${email}\" in tenant \"${tenant_id}\" - Invalid password`,
+          `Login failed for email \"${email}\" in tenant \"${tenantId}\" - Invalid password`,
         );
         throw new UnauthorizedException('Invalid credentials');
       }
@@ -58,7 +86,7 @@ export class AuthService {
       };
 
       this.logger.log(
-        `Login successful for user ${user.id} in tenant ${tenant_id}`,
+        `Login successful for user ${user.id} in tenant ${tenantId}`,
       );
 
       try {

@@ -44,7 +44,15 @@ export class TenantsService {
     }
     return tenant;
   }
-
+  async findByName(nome: string): Promise<Tenant> {
+    this.logger.log(`Finding tenant with nome ${nome}`);
+    const tenant = await this.tenantRepository.findOne({ where: { nome } });
+    if (!tenant) {
+      this.logger.warn(`Tenant with nome "${nome}" not found`);
+      throw new NotFoundException(`Tenant with nome "${nome}" not found`);
+    }
+    return tenant;
+  }
   async update(id: string, updateTenantDto: UpdateTenantDto): Promise<Tenant> {
     this.logger.log(`Updating tenant with id ${id}`);
     const tenant = await this.tenantRepository.preload({
