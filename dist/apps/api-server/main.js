@@ -25,20 +25,23 @@ const typeorm_1 = __webpack_require__(4);
 const config_1 = __webpack_require__(5);
 const auth_module_1 = __webpack_require__(6);
 const users_module_1 = __webpack_require__(7);
-const rifas_module_1 = __webpack_require__(36);
+const app_controller_1 = __webpack_require__(36);
+const app_service_1 = __webpack_require__(37);
+const rifas_module_1 = __webpack_require__(38);
 const throttler_1 = __webpack_require__(31);
 const core_1 = __webpack_require__(1);
 const cota_entity_1 = __webpack_require__(15);
 const rifa_entity_1 = __webpack_require__(12);
 const user_entity_1 = __webpack_require__(10);
+const root_user_entity_1 = __webpack_require__(52);
 const premio_entity_1 = __webpack_require__(14);
 const reserva_entity_1 = __webpack_require__(13);
-const pagamento_entity_1 = __webpack_require__(50);
+const pagamento_entity_1 = __webpack_require__(53);
 const tenant_entity_1 = __webpack_require__(11);
-const tenants_module_1 = __webpack_require__(51);
+const tenants_module_1 = __webpack_require__(54);
 const subscription_entity_1 = __webpack_require__(16);
-const billing_module_1 = __webpack_require__(65);
-const logger_module_1 = __webpack_require__(49);
+const billing_module_1 = __webpack_require__(68);
+const logger_module_1 = __webpack_require__(51);
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -47,10 +50,14 @@ AppModule = __decorate([
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
             }),
-            throttler_1.ThrottlerModule.forRoot([{
-                    ttl: 60000,
-                    limit: 60,
-                }]),
+            throttler_1.ThrottlerModule.forRoot({
+                throttlers: [
+                    {
+                        ttl: 60,
+                        limit: 60,
+                    },
+                ],
+            }),
             typeorm_1.TypeOrmModule.forRootAsync({
                 imports: [config_1.ConfigModule],
                 inject: [config_1.ConfigService],
@@ -62,8 +69,8 @@ AppModule = __decorate([
                     return {
                         type: 'postgres',
                         url: databaseUrl,
-                        entities: [cota_entity_1.Cota, rifa_entity_1.Rifa, user_entity_1.User, premio_entity_1.Premio, reserva_entity_1.Reserva, pagamento_entity_1.Pagamento, tenant_entity_1.Tenant, subscription_entity_1.Subscription],
-                        synchronize: true,
+                        entities: [cota_entity_1.Cota, rifa_entity_1.Rifa, user_entity_1.User, root_user_entity_1.RootUser, premio_entity_1.Premio, reserva_entity_1.Reserva, pagamento_entity_1.Pagamento, tenant_entity_1.Tenant, subscription_entity_1.Subscription],
+                        synchronize: false,
                         ssl: {
                             rejectUnauthorized: false,
                         },
@@ -77,7 +84,9 @@ AppModule = __decorate([
             billing_module_1.BillingModule,
             logger_module_1.LoggerModule,
         ],
+        controllers: [app_controller_1.AppController],
         providers: [
+            app_service_1.AppService,
             {
                 provide: core_1.APP_GUARD,
                 useClass: throttler_1.ThrottlerGuard,
@@ -1091,7 +1100,7 @@ const jwt_1 = __webpack_require__(27);
 const bcrypt = __webpack_require__(17);
 const login_dto_1 = __webpack_require__(29);
 const express_1 = __webpack_require__(20);
-const winston_1 = __webpack_require__(19);
+const logger_service_1 = __webpack_require__(18);
 let AuthService = class AuthService {
     constructor(logger, usersService, jwtService) {
         this.logger = logger;
@@ -1099,21 +1108,23 @@ let AuthService = class AuthService {
         this.jwtService = jwtService;
     }
     async login(req, loginDto) {
-        const tenant_id = req.subdomains.length > 0 ? req.subdomains[0] : null;
-        this.logger.info(`Login attempt for tenant ${tenant_id}`);
+        const tenant_id = req.subdomains && req.subdomains.length > 0
+            ? req.subdomains[0]
+            : loginDto.tenant_id;
+        this.logger.log(`Login attempt for tenant ${tenant_id}`);
         if (!tenant_id) {
             this.logger.warn('Login attempt without tenant');
-            throw new common_1.UnauthorizedException('Tenant não identificado.');
+            throw new common_1.UnauthorizedException('Tenant não identificado. Informe tenant_id.');
         }
         const { email, password } = loginDto;
         const user = await this.usersService.findByEmail(tenant_id, email);
         if (!user) {
-            this.logger.warn(`Login failed for email "${email}" in tenant "${tenant_id}" - User not found`);
+            this.logger.warn(`Login failed for email \"${email}\" in tenant \"${tenant_id}\" - User not found`);
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
         const isPasswordMatching = await bcrypt.compare(password, user.password);
         if (!isPasswordMatching) {
-            this.logger.warn(`Login failed for email "${email}" in tenant "${tenant_id}" - Invalid password`);
+            this.logger.warn(`Login failed for email \"${email}\" in tenant \"${tenant_id}\" - Invalid password`);
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
         const payload = {
@@ -1121,7 +1132,7 @@ let AuthService = class AuthService {
             email: user.email,
             tenant_id: user.tenant_id,
         };
-        this.logger.info(`Login successful for user ${user.id} in tenant ${tenant_id}`);
+        this.logger.log(`Login successful for user ${user.id} in tenant ${tenant_id}`);
         return {
             access_token: this.jwtService.sign(payload),
         };
@@ -1135,8 +1146,7 @@ __decorate([
 ], AuthService.prototype, "login", null);
 AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, common_1.Inject)('winston')),
-    __metadata("design:paramtypes", [typeof (_a = typeof winston_1.Logger !== "undefined" && winston_1.Logger) === "function" ? _a : Object, typeof (_b = typeof users_service_1.UsersService !== "undefined" && users_service_1.UsersService) === "function" ? _b : Object, typeof (_c = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _c : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof logger_service_1.LoggerService !== "undefined" && logger_service_1.LoggerService) === "function" ? _a : Object, typeof (_b = typeof users_service_1.UsersService !== "undefined" && users_service_1.UsersService) === "function" ? _b : Object, typeof (_c = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _c : Object])
 ], AuthService);
 exports.AuthService = AuthService;
 
@@ -1170,6 +1180,10 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], LoginDto.prototype, "password", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], LoginDto.prototype, "tenant_id", void 0);
 exports.LoginDto = LoginDto;
 
 
@@ -1345,15 +1359,179 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AppController = void 0;
+const common_1 = __webpack_require__(3);
+const app_service_1 = __webpack_require__(37);
+const express_1 = __webpack_require__(20);
+let AppController = class AppController {
+    constructor(appService) {
+        this.appService = appService;
+    }
+    getHello(res) {
+        const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nexus Rifa API</title>
+    <style>
+      body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background: #f4f6fb; color: #1f2937; }
+      .hero { background: linear-gradient(135deg, #2a61ff, #001f70); color: white; padding: 38px 20px; text-align: center; }
+      .container { max-width: 960px; margin: 24px auto; padding: 0 16px; }
+      .card { background: white; border-radius: 12px; box-shadow: 0 10px 28px rgba(15, 23, 42, 0.12); padding: 20px; margin-bottom: 16px; }
+      .grid { display: grid; grid-gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+      h1, h2 { margin: 0; }
+      p { color: #475569; }
+      a { color: #1d4ed8; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .badge { display: inline-block; background: #e0e7ff; color: #1e3a8a; padding: 4px 10px; border-radius: 999px; font-weight: 600; font-size: 12px; }
+      code { background: #e2e8f0; padding: 3px 6px; border-radius: 5px; }
+      .footer { text-align: center; padding: 16px; color: #94a3b8; font-size: 13px; }
+    </style>
+  </head>
+  <body>
+    <div class="hero">
+      <h1>Nexus Rifa API</h1>
+      <p>Backend em funcionamento</p>
+      <div class="badge">Status: Online</div>
+    </div>
+    <div class="container">
+      <div class="card">
+        <h2>Endpoints disponíveis</h2>
+        <div class="grid">
+          <div>
+            <strong>/</strong>
+            <p>Página de status</p>
+          </div>
+          <div>
+            <strong>/health</strong>
+            <p>Verificação de saúde (JSON)</p>
+          </div>
+          <div>
+            <strong>/status</strong>
+            <p>Informações do app (uptime)</p>
+          </div>
+          <div>
+            <strong>/docs</strong>
+            <p>Swagger UI para API</p>
+          </div>
+          <div>
+            <strong>/auth/login</strong>
+            <p>Login JWT</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Como testar</h2>
+        <p>Use as credenciais seeded:</p>
+        <ul>
+          <li><code>admin@teste.com</code> / <code>Pa$$w0rd</code></li>
+          <li><code>root@example.com</code> / <code>root</code></li>
+        </ul>
+        <p>Exemplo:</p>
+        <code>POST /auth/login</code> com JSON:
+        <pre>{"email":"admin@teste.com","password":"Pa$$w0rd","tenant_id":"<tenant-id>"}</pre>
+      </div>
+
+      <div class="card">
+        <h2>Configuração do frontend</h2>
+        <p>Em produção, aponte para a URL do backend real:</p>
+        <code>VITE_API_BASE_URL=https://seu-backend.onrender.com</code>
+      </div>
+    </div>
+    <div class="footer">Nexus Rifa &copy; 2026 | backend powered by NestJS</div>
+  </body>
+</html>`;
+        res.contentType('text/html');
+        res.send(html);
+    }
+    getHealth() {
+        return { status: 'ok' };
+    }
+    getStatus() {
+        return { app: 'nexus-rifa', uptime: process.uptime() };
+    }
+};
+__decorate([
+    (0, common_1.Get)(),
+    __param(0, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _b : Object]),
+    __metadata("design:returntype", void 0)
+], AppController.prototype, "getHello", null);
+__decorate([
+    (0, common_1.Get)('health'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Object)
+], AppController.prototype, "getHealth", null);
+__decorate([
+    (0, common_1.Get)('status'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Object)
+], AppController.prototype, "getStatus", null);
+AppController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof app_service_1.AppService !== "undefined" && app_service_1.AppService) === "function" ? _a : Object])
+], AppController);
+exports.AppController = AppController;
+
+
+/***/ }),
+/* 37 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AppService = void 0;
+const common_1 = __webpack_require__(3);
+let AppService = class AppService {
+    getHello() {
+        return 'Hello World!';
+    }
+};
+AppService = __decorate([
+    (0, common_1.Injectable)()
+], AppService);
+exports.AppService = AppService;
+
+
+/***/ }),
+/* 38 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RifasModule = void 0;
 const common_1 = __webpack_require__(3);
 const typeorm_1 = __webpack_require__(4);
-const rifas_controller_1 = __webpack_require__(37);
-const rifas_service_1 = __webpack_require__(38);
+const rifas_controller_1 = __webpack_require__(39);
+const rifas_service_1 = __webpack_require__(40);
 const rifa_entity_1 = __webpack_require__(12);
-const cotas_module_1 = __webpack_require__(43);
-const plans_module_1 = __webpack_require__(44);
+const cotas_module_1 = __webpack_require__(45);
+const plans_module_1 = __webpack_require__(46);
 let RifasModule = class RifasModule {
 };
 RifasModule = __decorate([
@@ -1368,7 +1546,7 @@ exports.RifasModule = RifasModule;
 
 
 /***/ }),
-/* 37 */
+/* 39 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1388,9 +1566,9 @@ var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RifasController = void 0;
 const common_1 = __webpack_require__(3);
-const rifas_service_1 = __webpack_require__(38);
-const create_rifa_dto_1 = __webpack_require__(41);
-const update_rifa_dto_1 = __webpack_require__(42);
+const rifas_service_1 = __webpack_require__(40);
+const create_rifa_dto_1 = __webpack_require__(43);
+const update_rifa_dto_1 = __webpack_require__(44);
 const passport_1 = __webpack_require__(26);
 let RifasController = class RifasController {
     constructor(rifasService) {
@@ -1466,7 +1644,7 @@ exports.RifasController = RifasController;
 
 
 /***/ }),
-/* 38 */
+/* 40 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1489,7 +1667,7 @@ const common_1 = __webpack_require__(3);
 const typeorm_1 = __webpack_require__(4);
 const typeorm_2 = __webpack_require__(9);
 const rifa_entity_1 = __webpack_require__(12);
-const plans_service_1 = __webpack_require__(39);
+const plans_service_1 = __webpack_require__(41);
 const logger_service_1 = __webpack_require__(18);
 let RifasService = class RifasService {
     constructor(logger, rifasRepository, plansService) {
@@ -1545,7 +1723,7 @@ exports.RifasService = RifasService;
 
 
 /***/ }),
-/* 39 */
+/* 41 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1567,7 +1745,7 @@ exports.PlansService = void 0;
 const common_1 = __webpack_require__(3);
 const typeorm_1 = __webpack_require__(4);
 const typeorm_2 = __webpack_require__(9);
-const plan_entity_1 = __webpack_require__(40);
+const plan_entity_1 = __webpack_require__(42);
 const logger_service_1 = __webpack_require__(18);
 let PlansService = class PlansService {
     constructor(logger, planRepository) {
@@ -1612,7 +1790,6 @@ let PlansService = class PlansService {
 };
 PlansService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, common_1.Inject)(logger_service_1.LoggerService)),
     __param(1, (0, typeorm_1.InjectRepository)(plan_entity_1.Plan)),
     __metadata("design:paramtypes", [typeof (_a = typeof logger_service_1.LoggerService !== "undefined" && logger_service_1.LoggerService) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object])
 ], PlansService);
@@ -1620,7 +1797,7 @@ exports.PlansService = PlansService;
 
 
 /***/ }),
-/* 40 */
+/* 42 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1670,7 +1847,7 @@ exports.Plan = Plan;
 
 
 /***/ }),
-/* 41 */
+/* 43 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1711,7 +1888,7 @@ exports.CreateRifaDto = CreateRifaDto;
 
 
 /***/ }),
-/* 42 */
+/* 44 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1727,7 +1904,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateRifaDto = void 0;
 const mapped_types_1 = __webpack_require__(25);
-const create_rifa_dto_1 = __webpack_require__(41);
+const create_rifa_dto_1 = __webpack_require__(43);
 const class_validator_1 = __webpack_require__(23);
 class UpdateRifaDto extends (0, mapped_types_1.PartialType)(create_rifa_dto_1.CreateRifaDto) {
 }
@@ -1758,7 +1935,7 @@ exports.UpdateRifaDto = UpdateRifaDto;
 
 
 /***/ }),
-/* 43 */
+/* 45 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1786,7 +1963,7 @@ exports.CotasModule = CotasModule;
 
 
 /***/ }),
-/* 44 */
+/* 46 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1800,10 +1977,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PlansModule = void 0;
 const common_1 = __webpack_require__(3);
 const typeorm_1 = __webpack_require__(4);
-const plan_entity_1 = __webpack_require__(40);
-const plans_service_1 = __webpack_require__(39);
-const plans_controller_1 = __webpack_require__(45);
-const logger_module_1 = __webpack_require__(49);
+const plan_entity_1 = __webpack_require__(42);
+const plans_service_1 = __webpack_require__(41);
+const plans_controller_1 = __webpack_require__(47);
+const logger_module_1 = __webpack_require__(51);
 let PlansModule = class PlansModule {
 };
 PlansModule = __decorate([
@@ -1818,7 +1995,7 @@ exports.PlansModule = PlansModule;
 
 
 /***/ }),
-/* 45 */
+/* 47 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1838,12 +2015,12 @@ var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PlansController = void 0;
 const common_1 = __webpack_require__(3);
-const plans_service_1 = __webpack_require__(39);
-const create_plan_dto_1 = __webpack_require__(46);
-const update_plan_dto_1 = __webpack_require__(47);
+const plans_service_1 = __webpack_require__(41);
+const create_plan_dto_1 = __webpack_require__(48);
+const update_plan_dto_1 = __webpack_require__(49);
 const passport_1 = __webpack_require__(26);
 const roles_decorator_1 = __webpack_require__(35);
-const role_enum_1 = __webpack_require__(48);
+const role_enum_1 = __webpack_require__(50);
 const roles_guard_1 = __webpack_require__(34);
 let PlansController = class PlansController {
     constructor(plansService) {
@@ -1914,7 +2091,7 @@ exports.PlansController = PlansController;
 
 
 /***/ }),
-/* 46 */
+/* 48 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1950,7 +2127,7 @@ exports.CreatePlanDto = CreatePlanDto;
 
 
 /***/ }),
-/* 47 */
+/* 49 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1989,7 +2166,7 @@ exports.UpdatePlanDto = UpdatePlanDto;
 
 
 /***/ }),
-/* 48 */
+/* 50 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2003,7 +2180,7 @@ var Role;
 
 
 /***/ }),
-/* 49 */
+/* 51 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2020,6 +2197,7 @@ const logger_service_1 = __webpack_require__(18);
 let LoggerModule = class LoggerModule {
 };
 LoggerModule = __decorate([
+    (0, common_1.Global)(),
     (0, common_1.Module)({
         providers: [logger_service_1.LoggerService],
         exports: [logger_service_1.LoggerService],
@@ -2029,7 +2207,49 @@ exports.LoggerModule = LoggerModule;
 
 
 /***/ }),
-/* 50 */
+/* 52 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RootUser = void 0;
+const typeorm_1 = __webpack_require__(9);
+let RootUser = class RootUser {
+};
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], RootUser.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'text', unique: true }),
+    __metadata("design:type", String)
+], RootUser.prototype, "email", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'text' }),
+    __metadata("design:type", String)
+], RootUser.prototype, "password", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ type: 'timestamp' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], RootUser.prototype, "created_at", void 0);
+RootUser = __decorate([
+    (0, typeorm_1.Entity)('root_users')
+], RootUser);
+exports.RootUser = RootUser;
+
+
+/***/ }),
+/* 53 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2081,7 +2301,7 @@ exports.Pagamento = Pagamento;
 
 
 /***/ }),
-/* 51 */
+/* 54 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2094,14 +2314,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TenantsModule = void 0;
 const common_1 = __webpack_require__(3);
-const tenants_service_1 = __webpack_require__(52);
-const tenants_controller_1 = __webpack_require__(53);
+const tenants_service_1 = __webpack_require__(55);
+const tenants_controller_1 = __webpack_require__(56);
 const typeorm_1 = __webpack_require__(4);
 const tenant_entity_1 = __webpack_require__(11);
 const users_module_1 = __webpack_require__(7);
-const platform_express_1 = __webpack_require__(56);
-const reservas_module_1 = __webpack_require__(57);
-const billing_module_1 = __webpack_require__(65);
+const platform_express_1 = __webpack_require__(59);
+const reservas_module_1 = __webpack_require__(60);
+const billing_module_1 = __webpack_require__(68);
 let TenantsModule = class TenantsModule {
 };
 TenantsModule = __decorate([
@@ -2116,7 +2336,7 @@ exports.TenantsModule = TenantsModule;
 
 
 /***/ }),
-/* 52 */
+/* 55 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2200,7 +2420,7 @@ exports.TenantsService = TenantsService;
 
 
 /***/ }),
-/* 53 */
+/* 56 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2220,9 +2440,9 @@ var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TenantsController = void 0;
 const common_1 = __webpack_require__(3);
-const tenants_service_1 = __webpack_require__(52);
-const create_tenant_dto_1 = __webpack_require__(54);
-const update_tenant_dto_1 = __webpack_require__(55);
+const tenants_service_1 = __webpack_require__(55);
+const create_tenant_dto_1 = __webpack_require__(57);
+const update_tenant_dto_1 = __webpack_require__(58);
 let TenantsController = class TenantsController {
     constructor(tenantsService) {
         this.tenantsService = tenantsService;
@@ -2297,7 +2517,7 @@ exports.TenantsController = TenantsController;
 
 
 /***/ }),
-/* 54 */
+/* 57 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2329,7 +2549,7 @@ exports.CreateTenantDto = CreateTenantDto;
 
 
 /***/ }),
-/* 55 */
+/* 58 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2345,7 +2565,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateTenantDto = void 0;
 const mapped_types_1 = __webpack_require__(25);
-const create_tenant_dto_1 = __webpack_require__(54);
+const create_tenant_dto_1 = __webpack_require__(57);
 const class_validator_1 = __webpack_require__(23);
 class UpdateTenantDto extends (0, mapped_types_1.PartialType)(create_tenant_dto_1.CreateTenantDto) {
 }
@@ -2363,13 +2583,13 @@ exports.UpdateTenantDto = UpdateTenantDto;
 
 
 /***/ }),
-/* 56 */
+/* 59 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/platform-express");
 
 /***/ }),
-/* 57 */
+/* 60 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2382,13 +2602,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ReservasModule = void 0;
 const common_1 = __webpack_require__(3);
-const reservas_service_1 = __webpack_require__(58);
-const reservas_controller_1 = __webpack_require__(61);
+const reservas_service_1 = __webpack_require__(61);
+const reservas_controller_1 = __webpack_require__(64);
 const typeorm_1 = __webpack_require__(4);
 const reserva_entity_1 = __webpack_require__(13);
-const tenants_module_1 = __webpack_require__(51);
-const rifas_module_1 = __webpack_require__(36);
-const integrations_module_1 = __webpack_require__(64);
+const tenants_module_1 = __webpack_require__(54);
+const rifas_module_1 = __webpack_require__(38);
+const integrations_module_1 = __webpack_require__(67);
 let ReservasModule = class ReservasModule {
 };
 ReservasModule = __decorate([
@@ -2408,7 +2628,7 @@ exports.ReservasModule = ReservasModule;
 
 
 /***/ }),
-/* 58 */
+/* 61 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2431,9 +2651,9 @@ const common_1 = __webpack_require__(3);
 const typeorm_1 = __webpack_require__(4);
 const typeorm_2 = __webpack_require__(9);
 const reserva_entity_1 = __webpack_require__(13);
-const rifas_service_1 = __webpack_require__(38);
-const email_service_1 = __webpack_require__(59);
-const whatsapp_service_1 = __webpack_require__(60);
+const rifas_service_1 = __webpack_require__(40);
+const email_service_1 = __webpack_require__(62);
+const whatsapp_service_1 = __webpack_require__(63);
 const logger_service_1 = __webpack_require__(18);
 let ReservasService = class ReservasService {
     constructor(logger, reservaRepository, connection, rifasService, emailService, whatsappService) {
@@ -2537,7 +2757,7 @@ exports.ReservasService = ReservasService;
 
 
 /***/ }),
-/* 59 */
+/* 62 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2562,7 +2782,7 @@ exports.EmailService = EmailService;
 
 
 /***/ }),
-/* 60 */
+/* 63 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2587,7 +2807,7 @@ exports.WhatsappService = WhatsappService;
 
 
 /***/ }),
-/* 61 */
+/* 64 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2607,9 +2827,9 @@ var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ReservasController = void 0;
 const common_1 = __webpack_require__(3);
-const reservas_service_1 = __webpack_require__(58);
-const create_reserva_dto_1 = __webpack_require__(62);
-const update_reserva_dto_1 = __webpack_require__(63);
+const reservas_service_1 = __webpack_require__(61);
+const create_reserva_dto_1 = __webpack_require__(65);
+const update_reserva_dto_1 = __webpack_require__(66);
 const passport_1 = __webpack_require__(26);
 let ReservasController = class ReservasController {
     constructor(reservasService) {
@@ -2685,7 +2905,7 @@ exports.ReservasController = ReservasController;
 
 
 /***/ }),
-/* 62 */
+/* 65 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2732,7 +2952,7 @@ exports.CreateReservaDto = CreateReservaDto;
 
 
 /***/ }),
-/* 63 */
+/* 66 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2748,7 +2968,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateReservaDto = void 0;
 const mapped_types_1 = __webpack_require__(25);
-const create_reserva_dto_1 = __webpack_require__(62);
+const create_reserva_dto_1 = __webpack_require__(65);
 const class_validator_1 = __webpack_require__(23);
 class UpdateReservaDto extends (0, mapped_types_1.PartialType)(create_reserva_dto_1.CreateReservaDto) {
 }
@@ -2779,7 +2999,7 @@ exports.UpdateReservaDto = UpdateReservaDto;
 
 
 /***/ }),
-/* 64 */
+/* 67 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2792,8 +3012,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.IntegrationsModule = void 0;
 const common_1 = __webpack_require__(3);
-const email_service_1 = __webpack_require__(59);
-const whatsapp_service_1 = __webpack_require__(60);
+const email_service_1 = __webpack_require__(62);
+const whatsapp_service_1 = __webpack_require__(63);
 let IntegrationsModule = class IntegrationsModule {
 };
 IntegrationsModule = __decorate([
@@ -2806,7 +3026,7 @@ exports.IntegrationsModule = IntegrationsModule;
 
 
 /***/ }),
-/* 65 */
+/* 68 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2819,11 +3039,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.BillingModule = void 0;
 const common_1 = __webpack_require__(3);
-const billing_service_1 = __webpack_require__(66);
-const billing_controller_1 = __webpack_require__(68);
 const typeorm_1 = __webpack_require__(4);
+const billing_controller_1 = __webpack_require__(69);
+const billing_service_1 = __webpack_require__(70);
 const subscription_entity_1 = __webpack_require__(16);
-const logger_module_1 = __webpack_require__(49);
+const logger_module_1 = __webpack_require__(51);
 let BillingModule = class BillingModule {
 };
 BillingModule = __decorate([
@@ -2838,7 +3058,78 @@ exports.BillingModule = BillingModule;
 
 
 /***/ }),
-/* 66 */
+/* 69 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BillingController = void 0;
+const common_1 = __webpack_require__(3);
+const billing_service_1 = __webpack_require__(70);
+const create_subscription_dto_1 = __webpack_require__(72);
+const logger_service_1 = __webpack_require__(18);
+const passport_1 = __webpack_require__(26);
+let BillingController = class BillingController {
+    constructor(logger, billingService) {
+        this.logger = logger;
+        this.billingService = billingService;
+    }
+    createSubscription(createSubscriptionDto) {
+        return this.billingService.createSubscription(createSubscriptionDto);
+    }
+    webhook(body) {
+        this.logger.log(`Webhook de billing recebido: ${JSON.stringify(body)}`);
+        return this.billingService.webhook(body);
+    }
+    getSubscription(id) {
+        return this.billingService.getSubscription(id);
+    }
+};
+__decorate([
+    (0, common_1.Post)('subscription'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_c = typeof create_subscription_dto_1.CreateSubscriptionDto !== "undefined" && create_subscription_dto_1.CreateSubscriptionDto) === "function" ? _c : Object]),
+    __metadata("design:returntype", void 0)
+], BillingController.prototype, "createSubscription", null);
+__decorate([
+    (0, common_1.Post)('webhook'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], BillingController.prototype, "webhook", null);
+__decorate([
+    (0, common_1.Get)('subscription/:id'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], BillingController.prototype, "getSubscription", null);
+BillingController = __decorate([
+    (0, common_1.Controller)('billing'),
+    __metadata("design:paramtypes", [typeof (_a = typeof logger_service_1.LoggerService !== "undefined" && logger_service_1.LoggerService) === "function" ? _a : Object, typeof (_b = typeof billing_service_1.BillingService !== "undefined" && billing_service_1.BillingService) === "function" ? _b : Object])
+], BillingController);
+exports.BillingController = BillingController;
+
+
+/***/ }),
+/* 70 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2861,8 +3152,8 @@ const common_1 = __webpack_require__(3);
 const typeorm_1 = __webpack_require__(4);
 const typeorm_2 = __webpack_require__(9);
 const subscription_entity_1 = __webpack_require__(16);
-const mercadopago_1 = __webpack_require__(67);
-const winston_1 = __webpack_require__(19);
+const mercadopago_1 = __webpack_require__(71);
+const logger_service_1 = __webpack_require__(18);
 let BillingService = class BillingService {
     constructor(logger, subscriptionRepository) {
         this.logger = logger;
@@ -2896,7 +3187,7 @@ let BillingService = class BillingService {
             return response;
         }
         catch (error) {
-            this.logger.error('Erro ao criar assinatura no Mercado Pago:', { error });
+            this.logger.error(`Erro ao criar assinatura no Mercado Pago: ${JSON.stringify(error)}`);
             throw new common_1.InternalServerErrorException('Falha ao se comunicar com o gateway de pagamento.');
         }
     }
@@ -2913,11 +3204,11 @@ let BillingService = class BillingService {
                     await this.subscriptionRepository.save(subscription);
                 }
                 else {
-                    this.logger.warn(`Assinatura com id "${preapproval.id}" não encontrada.`);
+                    this.logger.warn(`Assinatura com id \"${preapproval.id}\" não encontrada.`);
                 }
             }
             catch (error) {
-                this.logger.error(`Erro ao processar webhook de preapproval: ${body.data.id}`, { error });
+                this.logger.error(`Erro ao processar webhook de preapproval: ${body.data.id}: ${JSON.stringify(error)}`);
                 throw new common_1.InternalServerErrorException('Erro ao consultar status da assinatura no gateway.');
             }
         }
@@ -2929,90 +3220,20 @@ let BillingService = class BillingService {
 };
 BillingService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, common_1.Inject)('winston')),
     __param(1, (0, typeorm_1.InjectRepository)(subscription_entity_1.Subscription)),
-    __metadata("design:paramtypes", [typeof (_a = typeof winston_1.Logger !== "undefined" && winston_1.Logger) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof logger_service_1.LoggerService !== "undefined" && logger_service_1.LoggerService) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object])
 ], BillingService);
 exports.BillingService = BillingService;
 
 
 /***/ }),
-/* 67 */
+/* 71 */
 /***/ ((module) => {
 
 module.exports = require("mercadopago");
 
 /***/ }),
-/* 68 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.BillingController = void 0;
-const common_1 = __webpack_require__(3);
-const billing_service_1 = __webpack_require__(66);
-const create_subscription_dto_1 = __webpack_require__(69);
-const winston_1 = __webpack_require__(19);
-let BillingController = class BillingController {
-    constructor(logger, billingService) {
-        this.logger = logger;
-        this.billingService = billingService;
-    }
-    createSubscription(createSubscriptionDto) {
-        return this.billingService.createSubscription(createSubscriptionDto);
-    }
-    webhook(body) {
-        this.logger.info('Webhook de billing recebido:', { body });
-        return this.billingService.webhook(body);
-    }
-    getSubscription(id) {
-        return this.billingService.getSubscription(id);
-    }
-};
-__decorate([
-    (0, common_1.Post)('subscription'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof create_subscription_dto_1.CreateSubscriptionDto !== "undefined" && create_subscription_dto_1.CreateSubscriptionDto) === "function" ? _c : Object]),
-    __metadata("design:returntype", void 0)
-], BillingController.prototype, "createSubscription", null);
-__decorate([
-    (0, common_1.Post)('webhook'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
-], BillingController.prototype, "webhook", null);
-__decorate([
-    (0, common_1.Get)('subscription/:id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], BillingController.prototype, "getSubscription", null);
-BillingController = __decorate([
-    (0, common_1.Controller)('billing'),
-    __param(0, (0, common_1.Inject)('winston')),
-    __metadata("design:paramtypes", [typeof (_a = typeof winston_1.Logger !== "undefined" && winston_1.Logger) === "function" ? _a : Object, typeof (_b = typeof billing_service_1.BillingService !== "undefined" && billing_service_1.BillingService) === "function" ? _b : Object])
-], BillingController);
-exports.BillingController = BillingController;
-
-
-/***/ }),
-/* 69 */
+/* 72 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3024,25 +3245,25 @@ exports.CreateSubscriptionDto = CreateSubscriptionDto;
 
 
 /***/ }),
-/* 70 */
+/* 73 */
 /***/ ((module) => {
 
 module.exports = require("dotenv");
 
 /***/ }),
-/* 71 */
+/* 74 */
 /***/ ((module) => {
 
 module.exports = require("path");
 
 /***/ }),
-/* 72 */
+/* 75 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/swagger");
 
 /***/ }),
-/* 73 */
+/* 76 */
 /***/ ((module) => {
 
 module.exports = require("helmet");
@@ -3084,10 +3305,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __webpack_require__(1);
 const app_module_1 = __webpack_require__(2);
 const common_1 = __webpack_require__(3);
-const dotenv_1 = __webpack_require__(70);
-const path_1 = __webpack_require__(71);
-const swagger_1 = __webpack_require__(72);
-const helmet_1 = __webpack_require__(73);
+const dotenv_1 = __webpack_require__(73);
+const path_1 = __webpack_require__(74);
+const swagger_1 = __webpack_require__(75);
+const helmet_1 = __webpack_require__(76);
 (0, dotenv_1.config)({ path: (0, path_1.resolve)(__dirname, `../.env.${process.env.NODE_ENV || 'development'}`) });
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule, { bodyParser: true });

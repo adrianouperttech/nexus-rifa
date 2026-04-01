@@ -27,13 +27,14 @@ import { LoggerModule } from './common/logger/logger.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    ThrottlerModule.forRoot([{
-      ttl: 60000, // 60 segundos
-      limit: 60, // 60 requisições
-    }]),
-  ],
-  controllers: [AppController],
-  providers: [AppService,
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 60, // 60 segundos
+          limit: 60, // 60 requisições
+        },
+      ],
+    }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -61,7 +62,9 @@ import { LoggerModule } from './common/logger/logger.module';
     BillingModule,
     LoggerModule,
   ],
+  controllers: [AppController],
   providers: [
+    AppService,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

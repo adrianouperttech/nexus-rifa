@@ -15,8 +15,17 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('should send HTML status page', () => {
+      const send = jest.fn();
+      const res = {
+        contentType: jest.fn().mockReturnThis(),
+        send,
+      } as any;
+
+      appController.getHello(res);
+
+      expect(res.contentType).toHaveBeenCalledWith('text/html');
+      expect(send).toHaveBeenCalledWith(expect.stringContaining('<html'));
     });
   });
 });
