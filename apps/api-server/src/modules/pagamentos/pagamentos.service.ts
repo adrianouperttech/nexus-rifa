@@ -29,10 +29,10 @@ export class PagamentosService {
     const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
     if (!accessToken) {
       this.logger.error(
-        'Chave de acesso do Mercado Pago não foi configurada (MERCADOPAGO_ACCESS_TOKEN).'
+        'Chave de acesso do Mercado Pago não foi configurada (MERCADOPAGO_ACCESS_TOKEN).',
       );
       throw new InternalServerErrorException(
-        'Chave de acesso do Mercado Pago não foi configurada (MERCADOPAGO_ACCESS_TOKEN).'
+        'Chave de acesso do Mercado Pago não foi configurada (MERCADOPAGO_ACCESS_TOKEN).',
       );
     }
     this.mercadopago = new MercadoPagoConfig({ accessToken });
@@ -94,12 +94,14 @@ export class PagamentosService {
       }
 
       const transacao_id = String(paymentResponse.id);
-      const qr_code_data = paymentResponse.point_of_interaction.transaction_data?.qr_code;
-      const qr_code_base64 = paymentResponse.point_of_interaction.transaction_data?.qr_code_base64;
+      const qr_code_data =
+        paymentResponse.point_of_interaction.transaction_data?.qr_code;
+      const qr_code_base64 =
+        paymentResponse.point_of_interaction.transaction_data?.qr_code_base64;
 
       if (!qr_code_data || !qr_code_base64) {
         throw new InternalServerErrorException(
-          'Falha ao obter os dados do QR Code do gateway de pagamento.'
+          'Falha ao obter os dados do QR Code do gateway de pagamento.',
         );
       }
 
@@ -132,7 +134,11 @@ export class PagamentosService {
   }
 
   async handlePagamentoWebhook(notification: any): Promise<void> {
-    if (notification.type === 'payment' && notification.data && notification.data.id) {
+    if (
+      notification.type === 'payment' &&
+      notification.data &&
+      notification.data.id
+    ) {
       const paymentId = notification.data.id;
       const payment = new Payment(this.mercadopago);
 
@@ -146,12 +152,16 @@ export class PagamentosService {
         });
 
         if (!pagamento) {
-          this.logger.warn(`Pagamento com transacao_id \"${transacao_id}\" não encontrado.`);
+          this.logger.warn(
+            `Pagamento com transacao_id \"${transacao_id}\" não encontrado.`,
+          );
           return;
         }
 
         if (pagamento.status !== 'pendente') {
-          this.logger.log(`Webhook recebido para pagamento ${pagamento.id} que não está pendente.`);
+          this.logger.log(
+            `Webhook recebido para pagamento ${pagamento.id} que não está pendente.`,
+          );
           return;
         }
 
@@ -179,11 +189,13 @@ export class PagamentosService {
         await this.reservasService.updateStatus(
           pagamento.reserva.tenant_id,
           pagamento.reserva_id,
-          novoStatusReserva
+          novoStatusReserva,
         );
       } catch (error) {
         this.logger.error('Erro ao processar webhook do Mercado Pago:', error);
-        throw new InternalServerErrorException('Erro ao consultar status do pagamento no gateway.');
+        throw new InternalServerErrorException(
+          'Erro ao consultar status do pagamento no gateway.',
+        );
       }
     }
   }

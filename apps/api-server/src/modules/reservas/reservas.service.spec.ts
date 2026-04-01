@@ -34,12 +34,25 @@ describe('ReservasService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ReservasService,
-        { provide: getRepositoryToken(Reserva), useFactory: () => ({ create: jest.fn().mockImplementation((dto) => dto) }) },
+        {
+          provide: getRepositoryToken(Reserva),
+          useFactory: () => ({
+            create: jest.fn().mockImplementation((dto) => dto),
+          }),
+        },
         { provide: RifasService, useFactory: () => ({ findOne: jest.fn() }) },
         { provide: EmailService, useValue: { send: jest.fn() } },
         { provide: WhatsappService, useValue: { send: jest.fn() } },
-        { provide: LoggerService, useValue: { log: jest.fn(), error: jest.fn() } },
-        { provide: Connection, useFactory: () => ({ createQueryRunner: jest.fn(() => mockQueryRunner) }) },
+        {
+          provide: LoggerService,
+          useValue: { log: jest.fn(), error: jest.fn() },
+        },
+        {
+          provide: Connection,
+          useFactory: () => ({
+            createQueryRunner: jest.fn(() => mockQueryRunner),
+          }),
+        },
       ],
     }).compile();
 
@@ -52,14 +65,22 @@ describe('ReservasService', () => {
   });
 
   describe('create', () => {
-    const createReservaDto: CreateReservaDto = { rifa_id: '1', numero: 1, nome: 'test', email: 'test@example.com', whatsapp: '12345' };
+    const createReservaDto: CreateReservaDto = {
+      rifa_id: '1',
+      numero: 1,
+      nome: 'test',
+      email: 'test@example.com',
+      whatsapp: '12345',
+    };
     const rifa = { id: '1', limite: 100, nome: 'Test Rifa' };
 
     it('should throw ConflictException if reserva already exists', async () => {
       jest.spyOn(rifasService, 'findOne').mockResolvedValue(rifa as any);
       mockQueryRunner.manager.findOne.mockResolvedValue({} as any);
 
-      await expect(service.create(createReservaDto, '1')).rejects.toThrow(ConflictException);
+      await expect(service.create(createReservaDto, '1')).rejects.toThrow(
+        ConflictException,
+      );
 
       expect(mockQueryRunner.startTransaction).toHaveBeenCalled();
       expect(mockQueryRunner.manager.findOne).toHaveBeenCalled();
@@ -71,7 +92,10 @@ describe('ReservasService', () => {
     it('should create a reserva successfully', async () => {
       jest.spyOn(rifasService, 'findOne').mockResolvedValue(rifa as any);
       mockQueryRunner.manager.findOne.mockResolvedValue(null);
-      mockQueryRunner.manager.save.mockResolvedValue({ ...createReservaDto, id: 'new-id' } as any);
+      mockQueryRunner.manager.save.mockResolvedValue({
+        ...createReservaDto,
+        id: 'new-id',
+      } as any);
 
       await service.create(createReservaDto, '1');
 

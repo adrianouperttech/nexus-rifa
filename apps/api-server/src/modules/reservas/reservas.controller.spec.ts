@@ -37,9 +37,18 @@ describe('ReservasController', () => {
           provide: LoggerService,
           useValue: { log: jest.fn(), error: jest.fn(), warn: jest.fn() },
         },
-        { 
-          provide: Connection, 
-          useValue: { createQueryRunner: jest.fn().mockReturnValue({ connect: jest.fn(), startTransaction: jest.fn(), commitTransaction: jest.fn(), rollbackTransaction: jest.fn(), release: jest.fn(), manager: { save: jest.fn(), findOne: jest.fn() } }) } 
+        {
+          provide: Connection,
+          useValue: {
+            createQueryRunner: jest.fn().mockReturnValue({
+              connect: jest.fn(),
+              startTransaction: jest.fn(),
+              commitTransaction: jest.fn(),
+              rollbackTransaction: jest.fn(),
+              release: jest.fn(),
+              manager: { save: jest.fn(), findOne: jest.fn() },
+            }),
+          },
         },
       ],
     }).compile();

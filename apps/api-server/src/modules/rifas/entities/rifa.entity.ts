@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
 import { Tenant } from '../../tenants/entities/tenant.entity';
 import { Cota } from '../../cotas/entities/cota.entity';
 import { Reserva } from '../../reservas/entities/reserva.entity';

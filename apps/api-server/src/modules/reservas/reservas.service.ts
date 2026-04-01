@@ -35,7 +35,9 @@ export class ReservasService {
     tenant_id: string,
   ): Promise<Reserva> {
     const { rifa_id, numero, email, whatsapp } = createReservaDto;
-    this.logger.log(`Creating reservation for Rifa ${rifa_id}, number ${numero}, tenant ${tenant_id}`);
+    this.logger.log(
+      `Creating reservation for Rifa ${rifa_id}, number ${numero}, tenant ${tenant_id}`,
+    );
 
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
@@ -78,7 +80,9 @@ export class ReservasService {
       );
 
       await queryRunner.commitTransaction();
-      this.logger.log(`Reservation created successfully for Rifa ${rifa_id}, number ${numero}`);
+      this.logger.log(
+        `Reservation created successfully for Rifa ${rifa_id}, number ${numero}`,
+      );
 
       return savedReserva;
     } catch (err) {
@@ -99,13 +103,17 @@ export class ReservasService {
   }
 
   async findOne(tenant_id: string, id: string): Promise<Reserva> {
-    this.logger.log(`Finding reservation with id ${id} for tenant ${tenant_id}`);
+    this.logger.log(
+      `Finding reservation with id ${id} for tenant ${tenant_id}`,
+    );
     const reserva = await this.reservaRepository.findOne({
       where: { id, tenant_id },
       relations: ['rifa'],
     });
     if (!reserva) {
-      this.logger.warn(`Reservation with ID "${id}" not found for tenant "${tenant_id}"`);
+      this.logger.warn(
+        `Reservation with ID "${id}" not found for tenant "${tenant_id}"`,
+      );
       throw new NotFoundException(`Reserva with ID \"${id}\" not found`);
     }
     return reserva;
@@ -116,35 +124,51 @@ export class ReservasService {
     id: string,
     updateReservaDto: UpdateReservaDto,
   ): Promise<Reserva> {
-    this.logger.log(`Updating reservation with id ${id} for tenant ${tenant_id}`);
+    this.logger.log(
+      `Updating reservation with id ${id} for tenant ${tenant_id}`,
+    );
     const reserva = await this.reservaRepository.preload({
       id: id,
       tenant_id: tenant_id,
       ...updateReservaDto,
     });
     if (!reserva) {
-      this.logger.warn(`Reservation with ID "${id}" not found for tenant "${tenant_id}" to update`);
+      this.logger.warn(
+        `Reservation with ID "${id}" not found for tenant "${tenant_id}" to update`,
+      );
       throw new NotFoundException(`Reserva with ID \"${id}\" not found`);
     }
     return this.reservaRepository.save(reserva);
   }
 
   async remove(tenant_id: string, id: string): Promise<void> {
-    this.logger.log(`Removing reservation with id ${id} for tenant ${tenant_id}`);
+    this.logger.log(
+      `Removing reservation with id ${id} for tenant ${tenant_id}`,
+    );
     const result = await this.reservaRepository.delete({ id, tenant_id });
     if (result.affected === 0) {
-      this.logger.warn(`Reservation with ID "${id}" not found for tenant "${tenant_id}" to remove`);
+      this.logger.warn(
+        `Reservation with ID "${id}" not found for tenant "${tenant_id}" to remove`,
+      );
       throw new NotFoundException(`Reserva with ID \"${id}\" not found`);
     }
   }
 
   async findByStatus(tenant_id: string, status: string): Promise<Reserva[]> {
-    this.logger.log(`Finding reservations with status ${status} for tenant ${tenant_id}`);
+    this.logger.log(
+      `Finding reservations with status ${status} for tenant ${tenant_id}`,
+    );
     return this.reservaRepository.find({ where: { tenant_id, status } });
   }
 
-  async updateStatus(tenant_id: string, id: string, status: string): Promise<Reserva> {
-    this.logger.log(`Updating status of reservation with id ${id} to ${status} for tenant ${tenant_id}`);
+  async updateStatus(
+    tenant_id: string,
+    id: string,
+    status: string,
+  ): Promise<Reserva> {
+    this.logger.log(
+      `Updating status of reservation with id ${id} to ${status} for tenant ${tenant_id}`,
+    );
     const reserva = await this.findOne(tenant_id, id);
     reserva.status = status;
     return this.reservaRepository.save(reserva);

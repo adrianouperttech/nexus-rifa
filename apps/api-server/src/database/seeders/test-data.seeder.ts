@@ -24,7 +24,9 @@ export class TestDataSeeder implements Seeder {
 
   async seed(): Promise<any> {
     const tenantEmail = 'teste@tenant.com';
-    let tenant = await this.tenantRepository.findOne({ where: { email: tenantEmail } });
+    let tenant = await this.tenantRepository.findOne({
+      where: { email: tenantEmail },
+    });
     if (!tenant) {
       tenant = this.tenantRepository.create({
         nome: 'Tenant de Teste',
@@ -38,7 +40,9 @@ export class TestDataSeeder implements Seeder {
     }
 
     const userEmail = 'admin@teste.com';
-    const existingUser = await this.userRepository.findOne({ where: { email: userEmail, tenant_id: tenant.id } });
+    const existingUser = await this.userRepository.findOne({
+      where: { email: userEmail, tenant_id: tenant.id },
+    });
     if (!existingUser) {
       const salt = await bcrypt.genSalt();
       const hashedPassword = await bcrypt.hash('Pa$$w0rd', salt);
@@ -57,7 +61,9 @@ export class TestDataSeeder implements Seeder {
     }
 
     const rifaTitulo = 'Rifa de Teste';
-    let rifa = await this.rifaRepository.findOne({ where: { tenant_id: tenant.id, titulo: rifaTitulo } });
+    let rifa = await this.rifaRepository.findOne({
+      where: { tenant_id: tenant.id, titulo: rifaTitulo },
+    });
     if (!rifa) {
       rifa = this.rifaRepository.create({
         tenant_id: tenant.id,
@@ -77,7 +83,9 @@ export class TestDataSeeder implements Seeder {
       console.log('Rifa de teste já existe:', rifa.id);
     }
 
-    const existsCotas = await this.cotaRepository.findOne({ where: { rifa_id: rifa.id } });
+    const existsCotas = await this.cotaRepository.findOne({
+      where: { rifa_id: rifa.id },
+    });
     if (!existsCotas) {
       const cotas: Cota[] = [];
       for (let i = 1; i <= 20; i++) {
@@ -100,7 +108,9 @@ export class TestDataSeeder implements Seeder {
   }
 
   async drop(): Promise<any> {
-    const tenant = await this.tenantRepository.findOne({ where: { email: 'teste@tenant.com' } });
+    const tenant = await this.tenantRepository.findOne({
+      where: { email: 'teste@tenant.com' },
+    });
     if (!tenant) return;
 
     await this.cotaRepository.delete({ tenant_id: tenant.id });

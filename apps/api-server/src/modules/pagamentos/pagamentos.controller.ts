@@ -58,7 +58,9 @@ export class PagamentosController {
       return;
     }
 
-    this.logger.info('Webhook do Mercado Pago recebido e validado:', { notification });
+    this.logger.info('Webhook do Mercado Pago recebido e validado:', {
+      notification,
+    });
     try {
       await this.pagamentosService.handlePagamentoWebhook(notification);
     } catch (error) {

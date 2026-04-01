@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -41,13 +40,25 @@ import { LoggerModule } from './common/logger/logger.module';
       useFactory: (configService: ConfigService) => {
         const databaseUrl = configService.get<string>('DATABASE_URL');
         if (!databaseUrl) {
-          throw new Error('A variável de ambiente DATABASE_URL não está definida.');
+          throw new Error(
+            'A variável de ambiente DATABASE_URL não está definida.',
+          );
         }
 
         return {
           type: 'postgres',
           url: databaseUrl,
-          entities: [Cota, Rifa, User, RootUser, Premio, Reserva, Pagamento, Tenant, Subscription],
+          entities: [
+            Cota,
+            Rifa,
+            User,
+            RootUser,
+            Premio,
+            Reserva,
+            Pagamento,
+            Tenant,
+            Subscription,
+          ],
           synchronize: false,
           ssl: {
             rejectUnauthorized: false,

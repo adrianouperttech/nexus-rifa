@@ -14,9 +14,23 @@ describe('RifasService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RifasService,
-        { provide: getRepositoryToken(Rifa), useFactory: () => ({ find: jest.fn(), findOne: jest.fn(), create: jest.fn(), save: jest.fn(), remove: jest.fn(), count: jest.fn(), delete: jest.fn() }) },
-        { provide: PlansService, useFactory: () => ({ findOne: jest.fn() }) }, 
-        { provide: LoggerService, useValue: { error: jest.fn(), warn: jest.fn(), log: jest.fn() } },
+        {
+          provide: getRepositoryToken(Rifa),
+          useFactory: () => ({
+            find: jest.fn(),
+            findOne: jest.fn(),
+            create: jest.fn(),
+            save: jest.fn(),
+            remove: jest.fn(),
+            count: jest.fn(),
+            delete: jest.fn(),
+          }),
+        },
+        { provide: PlansService, useFactory: () => ({ findOne: jest.fn() }) },
+        {
+          provide: LoggerService,
+          useValue: { error: jest.fn(), warn: jest.fn(), log: jest.fn() },
+        },
       ],
     }).compile();
 
@@ -30,18 +44,21 @@ describe('RifasService', () => {
 
   describe('create', () => {
     it('should create a rifa', async () => {
-        const createRifaDto = { titulo: 'My Rifa' };
-        const tenant_id = '1';
-        const createdRifa = { id: '1', ...createRifaDto, tenant_id };
+      const createRifaDto = { titulo: 'My Rifa' };
+      const tenant_id = '1';
+      const createdRifa = { id: '1', ...createRifaDto, tenant_id };
 
-        jest.spyOn(repository, 'create').mockReturnValue(createdRifa);
-        jest.spyOn(repository, 'save').mockResolvedValue(createdRifa);
+      jest.spyOn(repository, 'create').mockReturnValue(createdRifa);
+      jest.spyOn(repository, 'save').mockResolvedValue(createdRifa);
 
-        const result = await service.create(tenant_id, createRifaDto as any);
-        
-        expect(repository.create).toHaveBeenCalledWith({ ...createRifaDto, tenant_id });
-        expect(repository.save).toHaveBeenCalledWith(createdRifa);
-        expect(result).toEqual(createdRifa);
+      const result = await service.create(tenant_id, createRifaDto as any);
+
+      expect(repository.create).toHaveBeenCalledWith({
+        ...createRifaDto,
+        tenant_id,
+      });
+      expect(repository.save).toHaveBeenCalledWith(createdRifa);
+      expect(result).toEqual(createdRifa);
     });
   });
 
@@ -62,20 +79,25 @@ describe('RifasService', () => {
 
     it('should throw NotFoundException if rifa not found', async () => {
       jest.spyOn(repository, 'findOne').mockResolvedValue(undefined);
-      await expect(service.findOne('1', '1')).rejects.toThrow(NotFoundException);
+      await expect(service.findOne('1', '1')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
   describe('remove', () => {
     it('should remove a rifa', async () => {
-        jest.spyOn(repository, 'delete').mockResolvedValue({ affected: 1 });
-        await service.remove('1', '1');
-        expect(repository.delete).toHaveBeenCalledWith({ id: '1', tenant_id: '1' });
+      jest.spyOn(repository, 'delete').mockResolvedValue({ affected: 1 });
+      await service.remove('1', '1');
+      expect(repository.delete).toHaveBeenCalledWith({
+        id: '1',
+        tenant_id: '1',
+      });
     });
 
     it('should throw NotFoundException if rifa is not found', async () => {
-        jest.spyOn(repository, 'delete').mockResolvedValue({ affected: 0 });
-        await expect(service.remove('1', '1')).rejects.toThrow(NotFoundException);
+      jest.spyOn(repository, 'delete').mockResolvedValue({ affected: 0 });
+      await expect(service.remove('1', '1')).rejects.toThrow(NotFoundException);
     });
   });
 });

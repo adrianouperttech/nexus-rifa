@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://nexus-rifa.onrender.com'
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'https://nexus-rifa.onrender.com').replace(/\/+$/g, '')
 
 function getToken() {
   return window.localStorage.getItem('nexus_rifa_token')
@@ -26,7 +26,8 @@ async function apiFetch(path, options = {}) {
     headers.Authorization = `Bearer ${token}`
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const normalizedPath = path.replace(/^\/+/, '')
+  const response = await fetch(`${API_BASE_URL}/${normalizedPath}`, {
     ...options,
     headers,
   })

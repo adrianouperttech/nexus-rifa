@@ -1,4 +1,3 @@
-
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -39,7 +38,9 @@ export class BillingService {
 
     try {
       const preApprovalClient = new PreApproval(this.client);
-      const response = await preApprovalClient.create({ body: subscriptionRequest });
+      const response = await preApprovalClient.create({
+        body: subscriptionRequest,
+      });
 
       const subscription = this.subscriptionRepository.create({
         id: response.id,
@@ -50,7 +51,9 @@ export class BillingService {
 
       return response;
     } catch (error) {
-      this.logger.error(`Erro ao criar assinatura no Mercado Pago: ${JSON.stringify(error)}`);
+      this.logger.error(
+        `Erro ao criar assinatura no Mercado Pago: ${JSON.stringify(error)}`,
+      );
       throw new InternalServerErrorException(
         'Falha ao se comunicar com o gateway de pagamento.',
       );

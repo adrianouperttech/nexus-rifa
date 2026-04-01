@@ -14,7 +14,16 @@ dotenv.config();
 export default new DataSource({
   type: 'postgres',
   url: process.env.DATABASE_URL,
-  entities: [Cota, Rifa, User, Premio, Reserva, Pagamento, Tenant, Subscription],
+  entities: [
+    Cota,
+    Rifa,
+    User,
+    Premio,
+    Reserva,
+    Pagamento,
+    Tenant,
+    Subscription,
+  ],
   migrations: ['apps/api-server/src/migrations/*.ts'],
   ssl: {
     rejectUnauthorized: false,

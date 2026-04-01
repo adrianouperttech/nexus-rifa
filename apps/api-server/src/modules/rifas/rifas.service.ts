@@ -38,7 +38,9 @@ export class RifasService {
       where: { id, tenant_id },
     });
     if (!rifa) {
-      this.logger.warn(`Rifa with ID "${id}" not found for tenant "${tenant_id}"`);
+      this.logger.warn(
+        `Rifa with ID "${id}" not found for tenant "${tenant_id}"`,
+      );
       throw new NotFoundException(`Rifa with ID \"${id}\" not found`);
     }
     return rifa;
@@ -56,7 +58,9 @@ export class RifasService {
       ...updateRifaDto,
     });
     if (!rifa) {
-      this.logger.warn(`Rifa with ID "${id}" not found for tenant "${tenant_id}" to update`);
+      this.logger.warn(
+        `Rifa with ID "${id}" not found for tenant "${tenant_id}" to update`,
+      );
       throw new NotFoundException(`Rifa with ID \"${id}\" not found`);
     }
     return this.rifasRepository.save(rifa);
@@ -66,7 +70,9 @@ export class RifasService {
     this.logger.log(`Removing Rifa with id ${id} for tenant ${tenant_id}`);
     const result = await this.rifasRepository.delete({ id, tenant_id });
     if (result.affected === 0) {
-      this.logger.warn(`Rifa with ID "${id}" not found for tenant "${tenant_id}" to remove`);
+      this.logger.warn(
+        `Rifa with ID "${id}" not found for tenant "${tenant_id}" to remove`,
+      );
       throw new NotFoundException(`Rifa with ID \"${id}\" not found`);
     }
   }

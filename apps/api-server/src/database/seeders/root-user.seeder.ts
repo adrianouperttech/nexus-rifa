@@ -13,7 +13,9 @@ export class RootUserSeeder implements Seeder {
   ) {}
 
   async seed(): Promise<any> {
-    const existingUser = await this.rootUserRepository.findOne({ where: { email: 'root@example.com' } });
+    const existingUser = await this.rootUserRepository.findOne({
+      where: { email: 'root@example.com' },
+    });
 
     if (existingUser) {
       console.log('Root user already exists, skipping seed.');
