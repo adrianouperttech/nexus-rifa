@@ -144,7 +144,7 @@ const tenants_module_1 = __webpack_require__(27);
 const passport_1 = __webpack_require__(26);
 const jwt_1 = __webpack_require__(64);
 const auth_service_1 = __webpack_require__(65);
-const auth_controller_1 = __webpack_require__(67);
+const auth_controller_1 = __webpack_require__(66);
 const jwt_strategy_1 = __webpack_require__(69);
 const roles_guard_1 = __webpack_require__(54);
 let AuthModule = class AuthModule {
@@ -1174,21 +1174,14 @@ let TenantsService = class TenantsService {
         }
         return tenant;
     }
-    async findByEmail(email) {
-        this.logger.log(`Finding tenant with email ${email}`);
-        const tenant = await this.tenantRepository.findOne({ where: { email } });
+    async findByNameOrEmail(identifier) {
+        this.logger.log(`Finding tenant by name or email: ${identifier}`);
+        const tenant = await this.tenantRepository.findOne({
+            where: [{ nome: identifier }, { email: identifier }],
+        });
         if (!tenant) {
-            this.logger.warn(`Tenant with email "${email}" not found`);
-            throw new common_1.NotFoundException(`Tenant with email \"${email}\" not found`);
-        }
-        return tenant;
-    }
-    async findByName(nome) {
-        this.logger.log(`Finding tenant with nome ${nome}`);
-        const tenant = await this.tenantRepository.findOne({ where: { nome } });
-        if (!tenant) {
-            this.logger.warn(`Tenant with nome "${nome}" not found`);
-            throw new common_1.NotFoundException(`Tenant with nome "${nome}" not found`);
+            this.logger.warn(`Tenant with identifier "${identifier}" not found`);
+            throw new common_1.NotFoundException(`Tenant with identifier "${identifier}" not found`);
         }
         return tenant;
     }
@@ -2880,10 +2873,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c, _d, _e, _f, _g;
+var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthService = void 0;
 const common_1 = __webpack_require__(3);
@@ -2891,8 +2881,6 @@ const users_service_1 = __webpack_require__(8);
 const tenants_service_1 = __webpack_require__(28);
 const jwt_1 = __webpack_require__(64);
 const bcrypt = __webpack_require__(17);
-const login_dto_1 = __webpack_require__(66);
-const express_1 = __webpack_require__(20);
 const logger_service_1 = __webpack_require__(18);
 let AuthService = class AuthService {
     constructor(logger, usersService, tenantsService, jwtService) {
@@ -2901,12 +2889,8 @@ let AuthService = class AuthService {
         this.tenantsService = tenantsService;
         this.jwtService = jwtService;
     }
-    async login(req, loginDto) {
-        const suppliedTenant = req.headers['x-tenant-id'] ||
-            loginDto.tenant_id ||
-            ((req === null || req === void 0 ? void 0 : req.subdomains) && req.subdomains.length > 0
-                ? req.subdomains[0]
-                : null);
+    async login(loginDto) {
+        const suppliedTenant = loginDto.tenant_id;
         this.logger.log(`Login attempt for tenant ${suppliedTenant}`);
         if (!suppliedTenant) {
             this.logger.warn('Login attempt without tenant');
@@ -2916,19 +2900,12 @@ let AuthService = class AuthService {
         const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
         if (!uuidRegex.test(tenantId)) {
             try {
-                const tenant = await this.tenantsService.findByName(tenantId);
+                const tenant = await this.tenantsService.findByNameOrEmail(tenantId);
                 tenantId = tenant.id;
             }
-            catch (nameErr) {
-                this.logger.log(`Tenant not found by name ${tenantId}, tentando por email`);
-                try {
-                    const tenant = await this.tenantsService.findByEmail(tenantId);
-                    tenantId = tenant.id;
-                }
-                catch (emailErr) {
-                    this.logger.warn(`Tenant não encontrado usando nome/email \"${tenantId}\" `);
-                    throw new common_1.UnauthorizedException('Tenant inválido');
-                }
+            catch (error) {
+                this.logger.warn(`Tenant not found using identifier \"${tenantId}\" `, error);
+                throw new common_1.UnauthorizedException('Tenant inválido');
             }
         }
         const { email, password } = loginDto;
@@ -2951,8 +2928,8 @@ let AuthService = class AuthService {
                 };
             }
             catch (error) {
-                this.logger.error('Falha ao assinar token JWT:', error);
-                throw new common_1.InternalServerErrorException('Erro interno de autenticação');
+                this.logger.error('JWT signing failed:', error);
+                throw new common_1.InternalServerErrorException('Internal authentication error');
             }
         }
         catch (error) {
@@ -2961,16 +2938,10 @@ let AuthService = class AuthService {
                 error instanceof common_1.UnauthorizedException) {
                 throw new common_1.UnauthorizedException('Invalid credentials');
             }
-            throw new common_1.InternalServerErrorException('Erro interno de autenticação');
+            throw new common_1.InternalServerErrorException('Internal authentication error');
         }
     }
 };
-__decorate([
-    __param(0, (0, common_1.Req)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _e : Object, typeof (_f = typeof login_dto_1.LoginDto !== "undefined" && login_dto_1.LoginDto) === "function" ? _f : Object]),
-    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
-], AuthService.prototype, "login", null);
 AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [typeof (_a = typeof logger_service_1.LoggerService !== "undefined" && logger_service_1.LoggerService) === "function" ? _a : Object, typeof (_b = typeof users_service_1.UsersService !== "undefined" && users_service_1.UsersService) === "function" ? _b : Object, typeof (_c = typeof tenants_service_1.TenantsService !== "undefined" && tenants_service_1.TenantsService) === "function" ? _c : Object, typeof (_d = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _d : Object])
@@ -2980,6 +2951,53 @@ exports.AuthService = AuthService;
 
 /***/ }),
 /* 66 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AuthController = void 0;
+const common_1 = __webpack_require__(3);
+const auth_service_1 = __webpack_require__(65);
+const login_dto_1 = __webpack_require__(67);
+const throttler_1 = __webpack_require__(68);
+let AuthController = class AuthController {
+    constructor(authService) {
+        this.authService = authService;
+    }
+    async login(loginDto) {
+        return this.authService.login(loginDto);
+    }
+};
+__decorate([
+    (0, throttler_1.Throttle)({ default: { limit: 10, ttl: 60000 } }),
+    (0, common_1.Post)('login'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof login_dto_1.LoginDto !== "undefined" && login_dto_1.LoginDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "login", null);
+AuthController = __decorate([
+    (0, common_1.Controller)('auth'),
+    __metadata("design:paramtypes", [typeof (_a = typeof auth_service_1.AuthService !== "undefined" && auth_service_1.AuthService) === "function" ? _a : Object])
+], AuthController);
+exports.AuthController = AuthController;
+
+
+/***/ }),
+/* 67 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3012,55 +3030,6 @@ __decorate([
     __metadata("design:type", String)
 ], LoginDto.prototype, "tenant_id", void 0);
 exports.LoginDto = LoginDto;
-
-
-/***/ }),
-/* 67 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AuthController = void 0;
-const common_1 = __webpack_require__(3);
-const auth_service_1 = __webpack_require__(65);
-const login_dto_1 = __webpack_require__(66);
-const throttler_1 = __webpack_require__(68);
-const express_1 = __webpack_require__(20);
-let AuthController = class AuthController {
-    constructor(authService) {
-        this.authService = authService;
-    }
-    async login(req, loginDto) {
-        return this.authService.login(req, loginDto);
-    }
-};
-__decorate([
-    (0, throttler_1.Throttle)({ default: { limit: 10, ttl: 60000 } }),
-    (0, common_1.Post)('login'),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _b : Object, typeof (_c = typeof login_dto_1.LoginDto !== "undefined" && login_dto_1.LoginDto) === "function" ? _c : Object]),
-    __metadata("design:returntype", Promise)
-], AuthController.prototype, "login", null);
-AuthController = __decorate([
-    (0, common_1.Controller)('auth'),
-    __metadata("design:paramtypes", [typeof (_a = typeof auth_service_1.AuthService !== "undefined" && auth_service_1.AuthService) === "function" ? _a : Object])
-], AuthController);
-exports.AuthController = AuthController;
 
 
 /***/ }),

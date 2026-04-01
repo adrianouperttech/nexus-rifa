@@ -32,9 +32,9 @@ export class TenantsController {
     return this.tenantsService.findOne(id);
   }
 
-  @Get('email/:email')
-  findByEmail(@Param('email') email: string) {
-    return this.tenantsService.findByEmail(email);
+  @Get('identifier/:identifier')
+  findByNameOrEmail(@Param('identifier') identifier: string) {
+    return this.tenantsService.findByNameOrEmail(identifier);
   }
 
   @Patch(':id')
