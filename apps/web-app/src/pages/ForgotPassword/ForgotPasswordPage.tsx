@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'https://nexus-rifa.onrender.com').replace(/\/+$/g, '');
 
@@ -29,33 +29,26 @@ async function apiFetch(path: string, options: RequestInit = {}) {
   return response.json();
 }
 
-function setToken(token: string) {
-  window.localStorage.setItem('nexus_rifa_token', token);
-}
-
-const LoginPage: React.FC = () => {
+const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [tenantId, setTenantId] = useState('default');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [message, setMessage] = useState('');
 
-  const handleLogin = async (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError('');
+    setMessage('');
     setLoading(true);
 
     try {
-      const data = await apiFetch('/auth/login', {
+      await apiFetch('/auth/forgot-password', {
         method: 'POST',
-        body: JSON.stringify({ email, password, tenant_id: tenantId }),
+        body: JSON.stringify({ email }),
       });
-
-      setToken(data.access_token);
-      navigate('/');
+      setMessage('Um link para redefinição de senha foi enviado para o seu e-mail.');
     } catch (err: any) {
-      setError(`Login falhou: ${err.message}`);
+      setError(`Falha ao enviar o e-mail: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -63,31 +56,21 @@ const LoginPage: React.FC = () => {
 
   return (
     <main className="container small">
-      <div className="brand">Nexus Rifa</div>
-      <Link to="/">Root</Link>
-      <br />
-      <Link to="/subscriptions/new">Assinar</Link>
-      <h1>Entrar</h1>
-      <form onSubmit={handleLogin}>
-        <label>
-          Tenant ID
-          <input value={tenantId} onChange={(e) => setTenantId(e.target.value)} required />
-        </label>
+      <h1>Esqueci minha senha</h1>
+      <p>Insira seu e-mail para receber um link de redefinição de senha.</p>
+      <form onSubmit={handleSubmit}>
         <label>
           E-mail
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         </label>
-        <label>
-          Senha
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        </label>
-        <button className="btn primary" type="submit" disabled={loading}>Entrar</button>
+        <button className="btn primary" type="submit" disabled={loading}>Enviar</button>
       </form>
-      <Link to="/forgot-password">Esqueci minha senha</Link>
+      {message && <p className="success">{message}</p>}
       {error && <p className="error">{error}</p>}
-      <p className="help">Use um usuário existente (admin/test) e o mesmo tenant do backend.</p>
+      <br />
+      <Link to="/login">Voltar para o Login</Link>
     </main>
   );
 };
 
-export default LoginPage;
+export default ForgotPasswordPage;

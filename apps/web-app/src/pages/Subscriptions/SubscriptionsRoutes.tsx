@@ -5,7 +5,7 @@ import SubscriptionsPage from './SubscriptionsPage';
 const SubscriptionsRoutes: React.FC = () => {
   return (
     <Routes>
-      <Route path="/subscriptions/new" element={<SubscriptionsPage />} />
+      <Route path="/new" element={<SubscriptionsPage />} />
     </Routes>
   );
 };
