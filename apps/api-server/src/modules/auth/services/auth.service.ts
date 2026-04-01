@@ -18,11 +18,15 @@ export class AuthService {
     @Req() req: Request, // Recebe a requisição completa
     loginDto: LoginDto,
   ): Promise<{ access_token: string }> {
-    const tenant_id = req.subdomains.length > 0 ? req.subdomains[0] : null;
+    const tenant_id =
+      req.subdomains && req.subdomains.length > 0
+        ? req.subdomains[0]
+        : loginDto.tenant_id;
+
     this.logger.log(`Login attempt for tenant ${tenant_id}`);
     if (!tenant_id) {
       this.logger.warn('Login attempt without tenant');
-      throw new UnauthorizedException('Tenant não identificado.');
+      throw new UnauthorizedException('Tenant não identificado. Informe tenant_id.');
     }
 
     const { email, password } = loginDto;
