@@ -17,42 +17,53 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const plan_entity_1 = require("./entities/plan.entity");
+const logger_service_1 = require("../../common/logger/logger.service");
 let PlansService = class PlansService {
-    constructor(planRepository) {
+    constructor(logger, planRepository) {
+        this.logger = logger;
         this.planRepository = planRepository;
     }
     async create(createPlanDto) {
+        this.logger.log('Creating a new plan');
         const plan = this.planRepository.create(createPlanDto);
         return this.planRepository.save(plan);
     }
     async findAll() {
+        this.logger.log('Finding all plans');
         return this.planRepository.find();
     }
     async findOne(id) {
+        this.logger.log(`Finding plan with id ${id}`);
         const plan = await this.planRepository.findOne({ where: { id } });
         if (!plan) {
-            throw new common_1.NotFoundException(`Plan with ID "${id}" not found`);
+            this.logger.warn(`Plan with ID "${id}" not found`);
+            throw new common_1.NotFoundException(`Plan with ID \"${id}\" not found`);
         }
         return plan;
     }
     async update(id, updatePlanDto) {
+        this.logger.log(`Updating plan with id ${id}`);
         const plan = await this.planRepository.preload(Object.assign({ id: id }, updatePlanDto));
         if (!plan) {
-            throw new common_1.NotFoundException(`Plan with ID "${id}" not found`);
+            this.logger.warn(`Plan with ID "${id}" not found for update`);
+            throw new common_1.NotFoundException(`Plan with ID \"${id}\" not found`);
         }
         return this.planRepository.save(plan);
     }
     async remove(id) {
+        this.logger.log(`Removing plan with id ${id}`);
         const result = await this.planRepository.delete(id);
         if (result.affected === 0) {
-            throw new common_1.NotFoundException(`Plan with ID "${id}" not found`);
+            this.logger.warn(`Plan with ID "${id}" not found for removal`);
+            throw new common_1.NotFoundException(`Plan with ID \"${id}\" not found`);
         }
     }
 };
-PlansService = __decorate([
-    (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(plan_entity_1.Plan)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
-], PlansService);
 exports.PlansService = PlansService;
+exports.PlansService = PlansService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(1, (0, typeorm_1.InjectRepository)(plan_entity_1.Plan)),
+    __metadata("design:paramtypes", [logger_service_1.LoggerService,
+        typeorm_2.Repository])
+], PlansService);
 //# sourceMappingURL=plans.service.js.map

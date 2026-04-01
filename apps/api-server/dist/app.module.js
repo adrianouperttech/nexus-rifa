@@ -18,15 +18,19 @@ const core_1 = require("@nestjs/core");
 const cota_entity_1 = require("./modules/cotas/entities/cota.entity");
 const rifa_entity_1 = require("./modules/rifas/entities/rifa.entity");
 const user_entity_1 = require("./modules/users/entities/user.entity");
+const root_user_entity_1 = require("./modules/root-users/entities/root-user.entity");
 const premio_entity_1 = require("./modules/premios/entities/premio.entity");
 const reserva_entity_1 = require("./modules/reservas/entities/reserva.entity");
 const pagamento_entity_1 = require("./modules/pagamentos/entities/pagamento.entity");
 const tenant_entity_1 = require("./modules/tenants/entities/tenant.entity");
 const tenants_module_1 = require("./modules/tenants/tenants.module");
-const subscription_entity_1 = require("./modules/subscriptions/entities/subscription.entity");
+const subscription_entity_1 = require("./modules/billing/entities/subscription.entity");
+const billing_module_1 = require("./modules/billing/billing.module");
+const logger_module_1 = require("./common/logger/logger.module");
 let AppModule = class AppModule {
 };
-AppModule = __decorate([
+exports.AppModule = AppModule;
+exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
             config_1.ConfigModule.forRoot({
@@ -47,8 +51,8 @@ AppModule = __decorate([
                     return {
                         type: 'postgres',
                         url: databaseUrl,
-                        entities: [cota_entity_1.Cota, rifa_entity_1.Rifa, user_entity_1.User, premio_entity_1.Premio, reserva_entity_1.Reserva, pagamento_entity_1.Pagamento, tenant_entity_1.Tenant, subscription_entity_1.Subscription],
-                        synchronize: true,
+                        entities: [cota_entity_1.Cota, rifa_entity_1.Rifa, user_entity_1.User, root_user_entity_1.RootUser, premio_entity_1.Premio, reserva_entity_1.Reserva, pagamento_entity_1.Pagamento, tenant_entity_1.Tenant, subscription_entity_1.Subscription],
+                        synchronize: false,
                         ssl: {
                             rejectUnauthorized: false,
                         },
@@ -59,6 +63,8 @@ AppModule = __decorate([
             users_module_1.UsersModule,
             rifas_module_1.RifasModule,
             tenants_module_1.TenantsModule,
+            billing_module_1.BillingModule,
+            logger_module_1.LoggerModule,
         ],
         providers: [
             {
@@ -68,5 +74,4 @@ AppModule = __decorate([
         ],
     })
 ], AppModule);
-exports.AppModule = AppModule;
 //# sourceMappingURL=app.module.js.map

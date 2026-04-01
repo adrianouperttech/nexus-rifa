@@ -15,16 +15,16 @@ const tenant_entity_1 = require("./entities/tenant.entity");
 const users_module_1 = require("../users/users.module");
 const platform_express_1 = require("@nestjs/platform-express");
 const reservas_module_1 = require("../reservas/reservas.module");
-const subscriptions_module_1 = require("../subscriptions/subscriptions.module");
+const billing_module_1 = require("../billing/billing.module");
 let TenantsModule = class TenantsModule {
 };
-TenantsModule = __decorate([
+exports.TenantsModule = TenantsModule;
+exports.TenantsModule = TenantsModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([tenant_entity_1.Tenant]), users_module_1.UsersModule, platform_express_1.MulterModule, (0, common_1.forwardRef)(() => reservas_module_1.ReservasModule), subscriptions_module_1.SubscriptionsModule],
+        imports: [typeorm_1.TypeOrmModule.forFeature([tenant_entity_1.Tenant]), users_module_1.UsersModule, platform_express_1.MulterModule, (0, common_1.forwardRef)(() => reservas_module_1.ReservasModule), billing_module_1.BillingModule],
         controllers: [tenants_controller_1.TenantsController],
         providers: [tenants_service_1.TenantsService],
         exports: [tenants_service_1.TenantsService],
     })
 ], TenantsModule);
-exports.TenantsModule = TenantsModule;
 //# sourceMappingURL=tenants.module.js.map

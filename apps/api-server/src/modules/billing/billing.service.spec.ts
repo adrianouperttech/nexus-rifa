@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BillingService } from './billing.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Subscription } from './entities/subscription.entity';
-import { Logger } from 'winston';
+import { LoggerService } from '../../common/logger/logger.service';
 import { PreApproval } from 'mercadopago';
 
 // Mocking MercadoPago PreApproval
@@ -33,7 +33,7 @@ describe('BillingService', () => {
       providers: [
         BillingService,
         { provide: getRepositoryToken(Subscription), useFactory: () => ({ save: jest.fn(), findOne: jest.fn(), create: jest.fn() }) },
-        { provide: 'winston', useValue: { error: jest.fn(), log: jest.fn(), warn: jest.fn() } },
+        { provide: LoggerService, useValue: { error: jest.fn(), warn: jest.fn(), log: jest.fn(), debug: jest.fn(), verbose: jest.fn() } },
       ],
     }).compile();
 

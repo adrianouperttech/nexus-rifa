@@ -18,8 +18,10 @@ const users_service_1 = require("../../users/users.service");
 const jwt_1 = require("@nestjs/jwt");
 const bcrypt = require("bcrypt");
 const login_dto_1 = require("../dto/login.dto");
+const logger_service_1 = require("../../../common/logger/logger.service");
 let AuthService = class AuthService {
-    constructor(usersService, jwtService) {
+    constructor(logger, usersService, jwtService) {
+        this.logger = logger;
         this.usersService = usersService;
         this.jwtService = jwtService;
     }
@@ -27,16 +29,20 @@ let AuthService = class AuthService {
         const tenant_id = req.subdomains && req.subdomains.length > 0
             ? req.subdomains[0]
             : loginDto.tenant_id;
+        this.logger.log(`Login attempt for tenant ${tenant_id}`);
         if (!tenant_id) {
+            this.logger.warn('Login attempt without tenant');
             throw new common_1.UnauthorizedException('Tenant não identificado. Informe tenant_id.');
         }
         const { email, password } = loginDto;
         const user = await this.usersService.findByEmail(tenant_id, email);
         if (!user) {
+            this.logger.warn(`Login failed for email \"${email}\" in tenant \"${tenant_id}\" - User not found`);
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
         const isPasswordMatching = await bcrypt.compare(password, user.password);
         if (!isPasswordMatching) {
+            this.logger.warn(`Login failed for email \"${email}\" in tenant \"${tenant_id}\" - Invalid password`);
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
         const payload = {
@@ -44,21 +50,23 @@ let AuthService = class AuthService {
             email: user.email,
             tenant_id: user.tenant_id,
         };
+        this.logger.log(`Login successful for user ${user.id} in tenant ${tenant_id}`);
         return {
             access_token: this.jwtService.sign(payload),
         };
     }
 };
+exports.AuthService = AuthService;
 __decorate([
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, login_dto_1.LoginDto]),
     __metadata("design:returntype", Promise)
 ], AuthService.prototype, "login", null);
-AuthService = __decorate([
+exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [users_service_1.UsersService,
+    __metadata("design:paramtypes", [logger_service_1.LoggerService,
+        users_service_1.UsersService,
         jwt_1.JwtService])
 ], AuthService);
-exports.AuthService = AuthService;
 //# sourceMappingURL=auth.service.js.map

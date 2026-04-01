@@ -41,6 +41,7 @@ let AutomationsService = AutomationsService_1 = class AutomationsService {
         this.logger.log('Executando cobrança SaaS...');
     }
 };
+exports.AutomationsService = AutomationsService;
 __decorate([
     (0, schedule_1.Cron)(schedule_1.CronExpression.EVERY_HOUR),
     __metadata("design:type", Function),
@@ -53,10 +54,9 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], AutomationsService.prototype, "handleSaaSCobran\u00E7a", null);
-AutomationsService = AutomationsService_1 = __decorate([
+exports.AutomationsService = AutomationsService = AutomationsService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [reservas_service_1.ReservasService,
         tenants_service_1.TenantsService])
 ], AutomationsService);
-exports.AutomationsService = AutomationsService;
 //# sourceMappingURL=automations.service.js.map

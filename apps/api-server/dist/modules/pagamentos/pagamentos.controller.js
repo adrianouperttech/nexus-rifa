@@ -19,8 +19,10 @@ const create_pagamento_dto_1 = require("./dto/create-pagamento.dto");
 const passport_1 = require("@nestjs/passport");
 const webhook_validation_service_1 = require("../../common/security/webhook-validation.service");
 const throttler_1 = require("@nestjs/throttler");
+const winston_1 = require("winston");
 let PagamentosController = class PagamentosController {
-    constructor(pagamentosService, webhookValidationService) {
+    constructor(logger, pagamentosService, webhookValidationService) {
+        this.logger = logger;
         this.pagamentosService = pagamentosService;
         this.webhookValidationService = webhookValidationService;
     }
@@ -31,23 +33,24 @@ let PagamentosController = class PagamentosController {
     async handleWebhook(signature, notification) {
         const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
         if (!secret) {
-            console.error('MERCADOPAGO_WEBHOOK_SECRET não está configurado.');
+            this.logger.error('MERCADOPAGO_WEBHOOK_SECRET não está configurado.');
             return;
         }
         const isValid = this.webhookValidationService.validate(signature, notification, secret);
         if (!isValid) {
-            console.warn('Assinatura de webhook do Mercado Pago inválida.');
+            this.logger.warn('Assinatura de webhook do Mercado Pago inválida.');
             return;
         }
-        console.log('Webhook do Mercado Pago recebido e validado:', notification);
+        this.logger.info('Webhook do Mercado Pago recebido e validado:', { notification });
         try {
             await this.pagamentosService.handlePagamentoWebhook(notification);
         }
         catch (error) {
-            console.error('Erro ao processar webhook validado:', error);
+            this.logger.error('Erro ao processar webhook validado:', { error });
         }
     }
 };
+exports.PagamentosController = PagamentosController;
 __decorate([
     (0, common_1.Post)(),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
@@ -67,10 +70,11 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], PagamentosController.prototype, "handleWebhook", null);
-PagamentosController = __decorate([
+exports.PagamentosController = PagamentosController = __decorate([
     (0, common_1.Controller)('pagamentos'),
-    __metadata("design:paramtypes", [pagamentos_service_1.PagamentosService,
+    __param(0, (0, common_1.Inject)('winston')),
+    __metadata("design:paramtypes", [winston_1.Logger,
+        pagamentos_service_1.PagamentosService,
         webhook_validation_service_1.WebhookValidationService])
 ], PagamentosController);
-exports.PagamentosController = PagamentosController;
 //# sourceMappingURL=pagamentos.controller.js.map

@@ -17,17 +17,21 @@ const common_1 = require("@nestjs/common");
 const assinaturas_service_1 = require("./assinaturas.service");
 const create_assinatura_dto_1 = require("./dto/create-assinatura.dto");
 const billing_guard_1 = require("../../billing/guards/billing.guard");
+const winston_1 = require("winston");
 let AssinaturasController = class AssinaturasController {
-    constructor(assinaturasService) {
+    constructor(logger, assinaturasService) {
+        this.logger = logger;
         this.assinaturasService = assinaturasService;
     }
     create(tenant_id, createAssinaturaDto) {
         return this.assinaturasService.create(tenant_id, createAssinaturaDto);
     }
     webhook(data) {
+        this.logger.info('Webhook de assinatura recebido:', { data });
         return this.assinaturasService.handleWebhook(data);
     }
 };
+exports.AssinaturasController = AssinaturasController;
 __decorate([
     (0, common_1.Post)(),
     (0, common_1.UseGuards)(billing_guard_1.BillingGuard),
@@ -44,9 +48,10 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], AssinaturasController.prototype, "webhook", null);
-AssinaturasController = __decorate([
+exports.AssinaturasController = AssinaturasController = __decorate([
     (0, common_1.Controller)('tenants/:tenant_id/assinaturas'),
-    __metadata("design:paramtypes", [assinaturas_service_1.AssinaturasService])
+    __param(0, (0, common_1.Inject)('winston')),
+    __metadata("design:paramtypes", [winston_1.Logger,
+        assinaturas_service_1.AssinaturasService])
 ], AssinaturasController);
-exports.AssinaturasController = AssinaturasController;
 //# sourceMappingURL=assinaturas.controller.js.map

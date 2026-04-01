@@ -19,12 +19,15 @@ const typeorm_2 = require("typeorm");
 const pagamento_entity_1 = require("./entities/pagamento.entity");
 const reservas_service_1 = require("../reservas/reservas.service");
 const mercadopago_1 = require("mercadopago");
+const logger_service_1 = require("../../common/logger/logger.service");
 let PagamentosService = class PagamentosService {
-    constructor(pagamentoRepository, reservasService) {
+    constructor(logger, pagamentoRepository, reservasService) {
+        this.logger = logger;
         this.pagamentoRepository = pagamentoRepository;
         this.reservasService = reservasService;
         const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
         if (!accessToken) {
+            this.logger.error('Chave de acesso do Mercado Pago não foi configurada (MERCADOPAGO_ACCESS_TOKEN).');
             throw new common_1.InternalServerErrorException('Chave de acesso do Mercado Pago não foi configurada (MERCADOPAGO_ACCESS_TOKEN).');
         }
         this.mercadopago = new mercadopago_1.MercadoPagoConfig({ accessToken });
@@ -85,7 +88,7 @@ let PagamentosService = class PagamentosService {
             };
         }
         catch (error) {
-            console.error('Erro ao criar pagamento no Mercado Pago:', error);
+            this.logger.error('Erro ao criar pagamento no Mercado Pago:', error);
             throw new common_1.InternalServerErrorException('Falha ao se comunicar com o gateway de pagamento.');
         }
     }
@@ -101,11 +104,11 @@ let PagamentosService = class PagamentosService {
                     relations: ['reserva'],
                 });
                 if (!pagamento) {
-                    console.warn(`Pagamento com transacao_id \"${transacao_id}\" não encontrado.`);
+                    this.logger.warn(`Pagamento com transacao_id \"${transacao_id}\" não encontrado.`);
                     return;
                 }
                 if (pagamento.status !== 'pendente') {
-                    console.log(`Webhook recebido para pagamento ${pagamento.id} que não está pendente.`);
+                    this.logger.log(`Webhook recebido para pagamento ${pagamento.id} que não está pendente.`);
                     return;
                 }
                 let novoStatus;
@@ -129,18 +132,20 @@ let PagamentosService = class PagamentosService {
                 await this.reservasService.updateStatus(pagamento.reserva.tenant_id, pagamento.reserva_id, novoStatusReserva);
             }
             catch (error) {
-                console.error('Erro ao processar webhook do Mercado Pago:', error);
+                this.logger.error('Erro ao processar webhook do Mercado Pago:', error);
                 throw new common_1.InternalServerErrorException('Erro ao consultar status do pagamento no gateway.');
             }
         }
     }
 };
-PagamentosService = __decorate([
+exports.PagamentosService = PagamentosService;
+exports.PagamentosService = PagamentosService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(pagamento_entity_1.Pagamento)),
-    __param(1, (0, common_1.Inject)((0, common_1.forwardRef)(() => reservas_service_1.ReservasService))),
-    __metadata("design:paramtypes", [typeorm_2.Repository,
+    __param(0, (0, common_1.Inject)(logger_service_1.LoggerService)),
+    __param(1, (0, typeorm_1.InjectRepository)(pagamento_entity_1.Pagamento)),
+    __param(2, (0, common_1.Inject)((0, common_1.forwardRef)(() => reservas_service_1.ReservasService))),
+    __metadata("design:paramtypes", [logger_service_1.LoggerService,
+        typeorm_2.Repository,
         reservas_service_1.ReservasService])
 ], PagamentosService);
-exports.PagamentosService = PagamentosService;
 //# sourceMappingURL=pagamentos.service.js.map

@@ -43,6 +43,7 @@ let RifasController = class RifasController {
         return this.rifasService.remove(tenant_id, id);
     }
 };
+exports.RifasController = RifasController;
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Req)()),
@@ -83,10 +84,9 @@ __decorate([
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], RifasController.prototype, "remove", null);
-RifasController = __decorate([
+exports.RifasController = RifasController = __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
     (0, common_1.Controller)('rifas'),
     __metadata("design:paramtypes", [rifas_service_1.RifasService])
 ], RifasController);
-exports.RifasController = RifasController;
 //# sourceMappingURL=rifas.controller.js.map

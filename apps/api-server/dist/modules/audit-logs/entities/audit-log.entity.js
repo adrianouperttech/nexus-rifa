@@ -13,6 +13,7 @@ exports.AuditLog = void 0;
 const typeorm_1 = require("typeorm");
 let AuditLog = class AuditLog {
 };
+exports.AuditLog = AuditLog;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
     __metadata("design:type", String)
@@ -41,8 +42,7 @@ __decorate([
     (0, typeorm_1.CreateDateColumn)({ type: 'timestamp' }),
     __metadata("design:type", Date)
 ], AuditLog.prototype, "created_at", void 0);
-AuditLog = __decorate([
+exports.AuditLog = AuditLog = __decorate([
     (0, typeorm_1.Entity)('audit_logs')
 ], AuditLog);
-exports.AuditLog = AuditLog;
 //# sourceMappingURL=audit-log.entity.js.map

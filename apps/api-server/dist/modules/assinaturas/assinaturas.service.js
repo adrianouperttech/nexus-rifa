@@ -20,8 +20,10 @@ const assinatura_entity_1 = require("./entities/assinatura.entity");
 const axios_1 = require("@nestjs/axios");
 const config_1 = require("@nestjs/config");
 const rxjs_1 = require("rxjs");
+const winston_1 = require("winston");
 let AssinaturasService = class AssinaturasService {
-    constructor(assinaturaRepository, httpService, configService) {
+    constructor(logger, assinaturaRepository, httpService, configService) {
+        this.logger = logger;
         this.assinaturaRepository = assinaturaRepository;
         this.httpService = httpService;
         this.configService = configService;
@@ -59,7 +61,8 @@ let AssinaturasService = class AssinaturasService {
             return await this.assinaturaRepository.save(newAssinatura);
         }
         catch (error) {
-            throw new common_1.HttpException(error.response.data, error.response.status);
+            this.logger.error('Erro ao criar assinatura no Mercado Pago:', { error });
+            throw new common_1.InternalServerErrorException('Falha ao se comunicar com o gateway de pagamento.');
         }
     }
     async handleWebhook(data) {
@@ -79,9 +82,13 @@ let AssinaturasService = class AssinaturasService {
                     assinatura.status = preapprovalData.status;
                     await this.assinaturaRepository.save(assinatura);
                 }
+                else {
+                    this.logger.warn(`Assinatura com preapprovalId "${preapprovalId}" não encontrada.`);
+                }
             }
             catch (error) {
-                throw new common_1.HttpException(error.response.data, error.response.status);
+                this.logger.error(`Erro ao processar webhook de preapproval: ${preapprovalId}`, { error });
+                throw new common_1.InternalServerErrorException('Erro ao consultar status da assinatura no gateway.');
             }
         }
         return { message: 'Webhook received' };
@@ -93,12 +100,14 @@ let AssinaturasService = class AssinaturasService {
         });
     }
 };
-AssinaturasService = __decorate([
+exports.AssinaturasService = AssinaturasService;
+exports.AssinaturasService = AssinaturasService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(assinatura_entity_1.Assinatura)),
-    __metadata("design:paramtypes", [typeorm_2.Repository,
+    __param(0, (0, common_1.Inject)('winston')),
+    __param(1, (0, typeorm_1.InjectRepository)(assinatura_entity_1.Assinatura)),
+    __metadata("design:paramtypes", [winston_1.Logger,
+        typeorm_2.Repository,
         axios_1.HttpService,
         config_1.ConfigService])
 ], AssinaturasService);
-exports.AssinaturasService = AssinaturasService;
 //# sourceMappingURL=assinaturas.service.js.map

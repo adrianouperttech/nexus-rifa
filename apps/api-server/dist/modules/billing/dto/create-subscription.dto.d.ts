@@ -1,3 +1,6 @@
 export declare class CreateSubscriptionDto {
-    planId: string;
+    tenant_id: string;
+    payer_email: string;
+    reason: string;
+    price: number;
 }

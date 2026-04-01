@@ -13,12 +13,12 @@ const root_user_entity_1 = require("./entities/root-user.entity");
 const root_users_service_1 = require("./root-users.service");
 let RootUsersModule = class RootUsersModule {
 };
-RootUsersModule = __decorate([
+exports.RootUsersModule = RootUsersModule;
+exports.RootUsersModule = RootUsersModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([root_user_entity_1.RootUser])],
         providers: [root_users_service_1.RootUsersService],
         exports: [root_users_service_1.RootUsersService],
     })
 ], RootUsersModule);
-exports.RootUsersModule = RootUsersModule;
 //# sourceMappingURL=root-users.module.js.map

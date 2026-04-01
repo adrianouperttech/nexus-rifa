@@ -25,10 +25,10 @@ let RootUsersService = class RootUsersService {
         return this.rootUserRepository.findOne({ where: { email } });
     }
 };
-RootUsersService = __decorate([
+exports.RootUsersService = RootUsersService;
+exports.RootUsersService = RootUsersService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(root_user_entity_1.RootUser)),
     __metadata("design:paramtypes", [typeorm_2.Repository])
 ], RootUsersService);
-exports.RootUsersService = RootUsersService;
 //# sourceMappingURL=root-users.service.js.map

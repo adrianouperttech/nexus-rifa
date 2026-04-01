@@ -14,6 +14,7 @@ const typeorm_1 = require("typeorm");
 const reserva_entity_1 = require("../../reservas/entities/reserva.entity");
 let Pagamento = class Pagamento {
 };
+exports.Pagamento = Pagamento;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
     __metadata("design:type", String)
@@ -39,8 +40,7 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Pagamento.prototype, "transacao_id", void 0);
-Pagamento = __decorate([
-    (0, typeorm_1.Entity)()
+exports.Pagamento = Pagamento = __decorate([
+    (0, typeorm_1.Entity)('pagamentos')
 ], Pagamento);
-exports.Pagamento = Pagamento;
 //# sourceMappingURL=pagamento.entity.js.map

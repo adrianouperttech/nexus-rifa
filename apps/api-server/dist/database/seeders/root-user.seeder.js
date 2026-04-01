@@ -22,10 +22,10 @@ let RootUserSeeder = class RootUserSeeder {
     constructor(rootUserRepository) {
         this.rootUserRepository = rootUserRepository;
     }
-    async run() {
+    async seed() {
         const existingUser = await this.rootUserRepository.findOne({ where: { email: 'root@example.com' } });
         if (existingUser) {
-            console.log("Root user already exists, skipping seed.");
+            console.log('Root user already exists, skipping seed.');
             return;
         }
         const salt = await bcrypt.genSalt();
@@ -36,11 +36,14 @@ let RootUserSeeder = class RootUserSeeder {
         });
         return this.rootUserRepository.save(rootUser);
     }
+    async drop() {
+        return this.rootUserRepository.delete({ email: 'root@example.com' });
+    }
 };
-RootUserSeeder = __decorate([
+exports.RootUserSeeder = RootUserSeeder;
+exports.RootUserSeeder = RootUserSeeder = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(root_user_entity_1.RootUser)),
     __metadata("design:paramtypes", [typeorm_2.Repository])
 ], RootUserSeeder);
-exports.RootUserSeeder = RootUserSeeder;
 //# sourceMappingURL=root-user.seeder.js.map

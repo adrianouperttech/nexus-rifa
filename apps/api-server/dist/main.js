@@ -6,9 +6,11 @@ const common_1 = require("@nestjs/common");
 const dotenv_1 = require("dotenv");
 const path_1 = require("path");
 const swagger_1 = require("@nestjs/swagger");
+const helmet_1 = require("helmet");
 (0, dotenv_1.config)({ path: (0, path_1.resolve)(__dirname, `../.env.${process.env.NODE_ENV || 'development'}`) });
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule, { bodyParser: true });
+    app.use((0, helmet_1.default)());
     app.useGlobalPipes(new common_1.ValidationPipe());
     const config = new swagger_1.DocumentBuilder()
         .setTitle('Nexus Rifa API')

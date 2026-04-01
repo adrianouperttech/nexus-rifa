@@ -10,6 +10,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { Cota } from './modules/cotas/entities/cota.entity';
 import { Rifa } from './modules/rifas/entities/rifa.entity';
 import { User } from './modules/users/entities/user.entity';
+import { RootUser } from './modules/root-users/entities/root-user.entity';
 import { Premio } from './modules/premios/entities/premio.entity';
 import { Reserva } from './modules/reservas/entities/reserva.entity';
 import { Pagamento } from './modules/pagamentos/entities/pagamento.entity';
@@ -40,7 +41,7 @@ import { LoggerModule } from './common/logger/logger.module';
         return {
           type: 'postgres',
           url: databaseUrl,
-          entities: [Cota, Rifa, User, Premio, Reserva, Pagamento, Tenant, Subscription],
+          entities: [Cota, Rifa, User, RootUser, Premio, Reserva, Pagamento, Tenant, Subscription],
           synchronize: false,
           ssl: {
             rejectUnauthorized: false,

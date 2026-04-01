@@ -26,9 +26,9 @@ let RolesGuard = class RolesGuard {
         return requiredRoles.some((role) => { var _a; return (_a = user.roles) === null || _a === void 0 ? void 0 : _a.includes(role); });
     }
 };
-RolesGuard = __decorate([
+exports.RolesGuard = RolesGuard;
+exports.RolesGuard = RolesGuard = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [core_1.Reflector])
 ], RolesGuard);
-exports.RolesGuard = RolesGuard;
 //# sourceMappingURL=roles.guard.js.map

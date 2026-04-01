@@ -15,6 +15,7 @@ const tenant_entity_1 = require("../../tenants/entities/tenant.entity");
 const rifa_entity_1 = require("../../rifas/entities/rifa.entity");
 let Reserva = class Reserva {
 };
+exports.Reserva = Reserva;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
     __metadata("design:type", String)
@@ -61,8 +62,7 @@ __decorate([
     (0, typeorm_1.JoinColumn)({ name: 'rifa_id' }),
     __metadata("design:type", rifa_entity_1.Rifa)
 ], Reserva.prototype, "rifa", void 0);
-Reserva = __decorate([
+exports.Reserva = Reserva = __decorate([
     (0, typeorm_1.Entity)('reservas')
 ], Reserva);
-exports.Reserva = Reserva;
 //# sourceMappingURL=reserva.entity.js.map

@@ -11,11 +11,11 @@ const common_1 = require("@nestjs/common");
 const billing_guard_1 = require("./guards/billing.guard");
 let BillingModule = class BillingModule {
 };
-BillingModule = __decorate([
+exports.BillingModule = BillingModule;
+exports.BillingModule = BillingModule = __decorate([
     (0, common_1.Module)({
         providers: [billing_guard_1.BillingGuard],
         exports: [billing_guard_1.BillingGuard],
     })
 ], BillingModule);
-exports.BillingModule = BillingModule;
 //# sourceMappingURL=billing.module.js.map

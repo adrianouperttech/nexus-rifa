@@ -17,49 +17,63 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const tenant_entity_1 = require("./entities/tenant.entity");
+const logger_service_1 = require("../../common/logger/logger.service");
 let TenantsService = class TenantsService {
-    constructor(tenantRepository) {
+    constructor(logger, tenantRepository) {
+        this.logger = logger;
         this.tenantRepository = tenantRepository;
     }
     async create(createTenantDto) {
+        this.logger.log('Creating a new tenant');
         const tenant = this.tenantRepository.create(createTenantDto);
         return this.tenantRepository.save(tenant);
     }
     async findAll() {
+        this.logger.log('Finding all tenants');
         return this.tenantRepository.find();
     }
     async findOne(id) {
+        this.logger.log(`Finding tenant with id ${id}`);
         const tenant = await this.tenantRepository.findOne({ where: { id } });
         if (!tenant) {
-            throw new common_1.NotFoundException(`Tenant with ID "${id}" not found`);
+            this.logger.warn(`Tenant with ID "${id}" not found`);
+            throw new common_1.NotFoundException(`Tenant with ID \"${id}\" not found`);
         }
         return tenant;
     }
     async findByEmail(email) {
+        this.logger.log(`Finding tenant with email ${email}`);
         const tenant = await this.tenantRepository.findOne({ where: { email } });
         if (!tenant) {
-            throw new common_1.NotFoundException(`Tenant with email "${email}" not found`);
+            this.logger.warn(`Tenant with email "${email}" not found`);
+            throw new common_1.NotFoundException(`Tenant with email \"${email}\" not found`);
         }
         return tenant;
     }
     async update(id, updateTenantDto) {
+        this.logger.log(`Updating tenant with id ${id}`);
         const tenant = await this.tenantRepository.preload(Object.assign({ id: id }, updateTenantDto));
         if (!tenant) {
-            throw new common_1.NotFoundException(`Tenant with ID "${id}" not found`);
+            this.logger.warn(`Tenant with ID "${id}" not found for update`);
+            throw new common_1.NotFoundException(`Tenant with ID \"${id}\" not found`);
         }
         return this.tenantRepository.save(tenant);
     }
     async remove(id) {
+        this.logger.log(`Removing tenant with id ${id}`);
         const result = await this.tenantRepository.delete(id);
         if (result.affected === 0) {
-            throw new common_1.NotFoundException(`Tenant with ID "${id}" not found`);
+            this.logger.warn(`Tenant with ID "${id}" not found for removal`);
+            throw new common_1.NotFoundException(`Tenant with ID \"${id}\" not found`);
         }
     }
 };
-TenantsService = __decorate([
-    (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(tenant_entity_1.Tenant)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
-], TenantsService);
 exports.TenantsService = TenantsService;
+exports.TenantsService = TenantsService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, common_1.Inject)(logger_service_1.LoggerService)),
+    __param(1, (0, typeorm_1.InjectRepository)(tenant_entity_1.Tenant)),
+    __metadata("design:paramtypes", [logger_service_1.LoggerService,
+        typeorm_2.Repository])
+], TenantsService);
 //# sourceMappingURL=tenants.service.js.map

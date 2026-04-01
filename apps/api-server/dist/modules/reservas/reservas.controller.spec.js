@@ -8,12 +8,10 @@ const reserva_entity_1 = require("./entities/reserva.entity");
 const rifas_service_1 = require("../rifas/rifas.service");
 const email_service_1 = require("../../integrations/email/email.service");
 const whatsapp_service_1 = require("../../integrations/whatsapp/whatsapp.service");
+const logger_service_1 = require("../../common/logger/logger.service");
+const typeorm_2 = require("typeorm");
 describe('ReservasController', () => {
     let controller;
-    const mockReservaRepository = {};
-    const mockRifasService = {};
-    const mockEmailService = {};
-    const mockWhatsappService = {};
     beforeEach(async () => {
         const module = await testing_1.Test.createTestingModule({
             controllers: [reservas_controller_1.ReservasController],
@@ -21,19 +19,27 @@ describe('ReservasController', () => {
                 reservas_service_1.ReservasService,
                 {
                     provide: (0, typeorm_1.getRepositoryToken)(reserva_entity_1.Reserva),
-                    useValue: mockReservaRepository,
+                    useValue: {},
                 },
                 {
                     provide: rifas_service_1.RifasService,
-                    useValue: mockRifasService,
+                    useValue: {},
                 },
                 {
                     provide: email_service_1.EmailService,
-                    useValue: mockEmailService,
+                    useValue: {},
                 },
                 {
                     provide: whatsapp_service_1.WhatsappService,
-                    useValue: mockWhatsappService,
+                    useValue: {},
+                },
+                {
+                    provide: logger_service_1.LoggerService,
+                    useValue: { log: jest.fn(), error: jest.fn(), warn: jest.fn() },
+                },
+                {
+                    provide: typeorm_2.Connection,
+                    useValue: { createQueryRunner: jest.fn().mockReturnValue({ connect: jest.fn(), startTransaction: jest.fn(), commitTransaction: jest.fn(), rollbackTransaction: jest.fn(), release: jest.fn(), manager: { save: jest.fn(), findOne: jest.fn() } }) }
                 },
             ],
         }).compile();

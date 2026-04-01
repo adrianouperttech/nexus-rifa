@@ -13,6 +13,7 @@ exports.RootUser = void 0;
 const typeorm_1 = require("typeorm");
 let RootUser = class RootUser {
 };
+exports.RootUser = RootUser;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
     __metadata("design:type", String)
@@ -29,8 +30,7 @@ __decorate([
     (0, typeorm_1.CreateDateColumn)({ type: 'timestamp' }),
     __metadata("design:type", Date)
 ], RootUser.prototype, "created_at", void 0);
-RootUser = __decorate([
+exports.RootUser = RootUser = __decorate([
     (0, typeorm_1.Entity)('root_users')
 ], RootUser);
-exports.RootUser = RootUser;
 //# sourceMappingURL=root-user.entity.js.map

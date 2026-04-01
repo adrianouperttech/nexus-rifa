@@ -12,11 +12,11 @@ const email_service_1 = require("./email/email.service");
 const whatsapp_service_1 = require("./whatsapp/whatsapp.service");
 let IntegrationsModule = class IntegrationsModule {
 };
-IntegrationsModule = __decorate([
+exports.IntegrationsModule = IntegrationsModule;
+exports.IntegrationsModule = IntegrationsModule = __decorate([
     (0, common_1.Module)({
         providers: [email_service_1.EmailService, whatsapp_service_1.WhatsappService],
         exports: [email_service_1.EmailService, whatsapp_service_1.WhatsappService],
     })
 ], IntegrationsModule);
-exports.IntegrationsModule = IntegrationsModule;
 //# sourceMappingURL=integrations.module.js.map

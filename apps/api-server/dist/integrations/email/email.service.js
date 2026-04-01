@@ -13,8 +13,8 @@ let EmailService = class EmailService {
         console.log(`Sending email to ${to}: ${subject}`);
     }
 };
-EmailService = __decorate([
+exports.EmailService = EmailService;
+exports.EmailService = EmailService = __decorate([
     (0, common_1.Injectable)()
 ], EmailService);
-exports.EmailService = EmailService;
 //# sourceMappingURL=email.service.js.map
