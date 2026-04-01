@@ -31,7 +31,8 @@ export class AuthService {
       (req.headers['x-tenant-id'] as string) ||
       (req?.subdomains && req.subdomains.length > 0
         ? req.subdomains[0]
-        : loginDto.tenant_id);
+        : null) ||
+      loginDto.tenant_id;
 
     this.logger.log(`Login attempt for tenant ${suppliedTenant}`);
 

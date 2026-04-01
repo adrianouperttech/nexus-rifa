@@ -2905,7 +2905,8 @@ let AuthService = class AuthService {
         const suppliedTenant = req.headers['x-tenant-id'] ||
             ((req === null || req === void 0 ? void 0 : req.subdomains) && req.subdomains.length > 0
                 ? req.subdomains[0]
-                : loginDto.tenant_id);
+                : null) ||
+            loginDto.tenant_id;
         this.logger.log(`Login attempt for tenant ${suppliedTenant}`);
         if (!suppliedTenant) {
             this.logger.warn('Login attempt without tenant');
