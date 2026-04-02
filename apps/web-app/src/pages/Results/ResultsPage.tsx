@@ -2,47 +2,46 @@ import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../api';
 
 const ResultsPage: React.FC = () => {
-  const [results, setResults] = useState<any[]>([]);
+  const [raffles, setRaffles] = useState<any[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchResults = async () => {
+    const fetchRaffles = async () => {
       setLoading(true);
       setError('');
       try {
-        const data = await apiFetch('/raffles/results');
-        setResults(data);
+        const data = await apiFetch('/rifas');
+        setRaffles(data);
       } catch (err: any) {
         setError(`Falha ao buscar resultados: ${err.message}`);
       }
       setLoading(false);
     };
 
-    fetchResults();
+    fetchRaffles();
   }, []);
 
-  if (loading) {
-    return <p>Carregando...</p>;
-  }
-
-  if (error) {
-    return <p className="error">{error}</p>;
-  }
-
   return (
-    <div className="raffle-list">
-      {results.length > 0 ? (
-        results.map((result) => (
-          <div key={result.id} className="raffle-item">
-            <h3>{result.name}</h3>
-            <p>Vencedor: {result.winner}</p>
-          </div>
-        ))
-      ) : (
-        <p>Nenhum resultado disponível no momento.</p>
+    <>
+      <h1>Resultados</h1>
+      {loading && <p>Carregando...</p>}
+      {error && <p className="error">{error}</p>}
+      {!loading && !error && (
+        <div className="raffle-list">
+          {raffles.length > 0 ? (
+            raffles.map((raffle) => (
+              <div key={raffle.id} className="raffle-item">
+                <h3>{raffle.name}</h3>
+                <p>{raffle.description}</p>
+              </div>
+            ))
+          ) : (
+            <p>Nenhum resultado disponível no momento.</p>
+          )}
+        </div>
       )}
-    </div>
+    </>
   );
 };
 
