@@ -1,0 +1,79 @@
+.root-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  height: 100vh;
+  background-color: var(--bg);
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1.5rem;
+  border-right: 1px solid var(--border);
+  background-color: var(--card);
+}
+
+.sidebar .brand {
+  margin-bottom: 2.5rem;
+  font-size: 1.1rem;
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--muted);
+  font-weight: 500;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sidebar nav a:hover {
+  background-color: #f0f4fa;
+}
+
+.sidebar nav a.active {
+  background-color: var(--primary);
+  color: #fff;
+}
+
+.sidebar .footer {
+  margin-top: auto;
+}
+
+.sidebar .footer button {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: none;
+  background: none;
+  color: var(--muted);
+  text-align: left;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.sidebar .footer button:hover {
+  background-color: #f0f4fa;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.main-content header {
+  padding: 2rem 2.5rem 0;
+}
+
+.main-content .content-outlet {
+  padding: 2rem 2.5rem;
+}

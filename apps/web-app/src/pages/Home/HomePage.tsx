@@ -22,27 +22,26 @@ const HomePage: React.FC = () => {
     fetchRaffles();
   }, []);
 
-  if (loading) {
-    return <p>Carregando...</p>;
-  }
-
-  if (error) {
-    return <p className="error">{error}</p>;
-  }
-
   return (
-    <div className="raffle-list">
-      {raffles.length > 0 ? (
-        raffles.map((raffle) => (
-          <div key={raffle.id} className="raffle-item">
-            <h3>{raffle.name}</h3>
-            <p>{raffle.description}</p>
-          </div>
-        ))
-      ) : (
-        <p>Nenhuma rifa disponível no momento.</p>
+    <>
+      <h1>Próximas Rifas</h1>
+      {loading && <p>Carregando...</p>}
+      {error && <p className="error">{error}</p>}
+      {!loading && !error && (
+        <div className="raffle-list">
+          {raffles.length > 0 ? (
+            raffles.map((raffle) => (
+              <div key={raffle.id} className="raffle-item">
+                <h3>{raffle.name}</h3>
+                <p>{raffle.description}</p>
+              </div>
+            ))
+          ) : (
+            <p>Nenhuma rifa disponível no momento.</p>
+          )}
+        </div>
       )}
-    </div>
+    </>
   );
 };
 

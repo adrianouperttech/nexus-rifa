@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { Link, useNavigate, Outlet, NavLink } from 'react-router-dom';
+import { useNavigate, Outlet, NavLink } from 'react-router-dom';
+import './RootPage.css'; 
 
 function getToken() {
   return window.localStorage.getItem('nexus_rifa_token');
@@ -20,27 +21,30 @@ const RootPage: React.FC = () => {
   };
 
   return (
-    <main className="container">
-      <header>
-        <div className="brand">Nexus Rifa</div>
-        <nav className="tabs">
-          <NavLink to="/" end className={({ isActive }) => (isActive ? 'active' : '')}>
+    <div className="root-layout">
+      <aside className="sidebar">
+        <div className="brand">NEXUS RIFA</div>
+        <nav>
+          <NavLink to="/" end>
             Próximas Rifas
           </NavLink>
-          <NavLink to="/results" className={({ isActive }) => (isActive ? 'active' : '')}>
+          <NavLink to="/results">
             Resultados
           </NavLink>
+          <NavLink to="/subscriptions/new">
+            Assinar
+          </NavLink>
         </nav>
-        <div>
-            <Link to="/subscriptions/new">Assinar</Link>
-            <button onClick={handleLogout} style={{ marginLeft: '1rem' }}>Sair</button>
+        <footer className="footer">
+          <button onClick={handleLogout}>Sair</button>
+        </footer>
+      </aside>
+      <main className="main-content">
+        <div className="content-outlet">
+          <Outlet />
         </div>
-      </header>
-
-      <div className="content">
-        <Outlet />
-      </div>
-    </main>
+      </main>
+    </div>
   );
 };
 
